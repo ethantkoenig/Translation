@@ -4,7 +4,7 @@ resource ResEng = {
     Person = First | Second | Third;
     Polarity = Pos | Neg;
     Tense = Pres | Past;
-    Aux = Be | Have | Do | NonAux;
+    Bool = True | False;
   oper
     {- TYPES -}
 
@@ -15,7 +15,7 @@ resource ResEng = {
 
     D : Type = {s : Number => Str};
 
-    V : Type = {auxtype : Aux; inf : Str; pres : Str; past : Str;
+    V : Type = {aux : Bool; inf : Str; pres : Str; past : Str;
                     conj : Tense => Number => Person => Str};
     V' : Type = {head : V; suffix : Str};
     VP__ : Type = V';
@@ -71,10 +71,10 @@ resource ResEng = {
     mkD : Str -> Str -> D =
       \this, those -> {s = table {Sg => this; Pl => those}};
 
-     _mkV_helper : (a: Aux) -> (be, being, been, am, are, is, was, were : Str)
-                            -> V =
-      \a, be, being, been, am, are, is, was, were ->
-          {auxtype = a; inf = be; pres = being; past = been;
+     _constructV : (aux : Bool ) -> (be, being, been, am,
+                                     are, is, was, were : Str) -> V =
+      \aux, be, being, been, am, are, is, was, were ->
+          {aux = aux; inf = be; pres = being; past = been;
            conj = table 
                   {Pres => table
                            {Sg => table
@@ -91,27 +91,31 @@ resource ResEng = {
                                   {First | Second | Third => were}}}};
 
     _mkV = overload {
-      _mkV : (a : Aux) -> (walk : Str) -> V =
-        \a, walk -> _mkV_helper a walk (append_ing walk) (append_ed walk)
+      _mkV : (aux : Bool) -> (walk : Str) -> V =
+        \aux, walk -> _constructV aux walk (append_ing walk) (append_ed walk)
                                   walk walk (append_s walk) (append_ed walk) 
                                   (append_ed walk); 
             
-      _mkV : (a : Aux) -> (buy, bought : Str) -> V =
-        \a, buy, bought -> _mkV_helper a buy (append_ing buy) bought buy buy 
+      _mkV : (aux : Bool) -> (buy, bought : Str) -> V =
+        \aux, buy, bought -> _constructV aux buy (append_ing buy) bought buy buy
                                          (append_s buy) bought bought;
 
-      _mkV : (a : Aux) -> (be, being, been, am, are, is, was, were : Str)
-                           -> V = _mkV_helper
+      _mkV : (aux : Bool) -> (be, being, been, am,
+                              are, is, was, were : Str) -> V = _constructV;
       };
+
+    {- Creates a modal, such as "will" or "would" -}
+    _modal : Str -> V =
+      \v -> _constructV True v v v v v v v v;
 
     mkV = overload {
       mkV : (walk : Str) -> V =
-        \walk -> _mkV NonAux walk;
+        \walk -> _mkV False walk;
       mkV : (buy, bought : Str) -> V =
-        \buy, bought -> _mkV NonAux buy bought;
+        \buy, bought -> _mkV False buy bought;
       mkV : (be, being, been, am, are, is, was, were : Str) -> V = 
         \be, being ,been, am, are, is, was, were -> 
-          _mkV NonAux be being been am are is was were;       
+          _mkV False be being been am are is was were;       
       };
       
     {- FEATURE FUNCTIONS -}
@@ -127,14 +131,20 @@ resource ResEng = {
     past : VP__ -> VP_ =
       \vp -> {t = Past; head = vp.head; suffix = vp.suffix};
 
+    future : VP__ -> VP_ =
+      \vp -> {t = Pres; head = will; suffix = vp.head.inf ++ vp.suffix};
+
+    cond : VP__ -> VP_ =
+      \vp -> {t = Pres; head = would; suffix =vp.head.inf ++ vp.suffix}; 
+
     positive : VP_ -> VP =
       \vp -> {p = Pos; t = vp.t; s = vp.head.conj ! vp.t; suffix = vp.suffix};
 
     negative : VP_ -> VP =
-      \vp -> case vp.head.auxtype of
-             {NonAux => {p = Neg; t = vp.t; s = do.conj ! vp.t;
+      \vp -> case vp.head.aux of
+             {False => {p = Neg; t = vp.t; s = do.conj ! vp.t;
                          suffix = "not" ++ (vp.head.inf) ++ vp.suffix};
-              _ => {p = Neg; t = vp.t; s = vp.head.conj ! vp.t;
+              True => {p = Neg; t = vp.t; s = vp.head.conj ! vp.t;
                     suffix = "not" ++ vp.suffix}
              };  
 
@@ -175,7 +185,9 @@ resource ResEng = {
     a : D = {s = table {_ => "a"}};
     the : D = {s = table {_ => "the"}};
 
-    be : V = _mkV Be "be" "being" "been" "am" "are" "is" "was" "were";
-    do : V = _mkV Do "do" "did";
-    have : V = _mkV Have "have" "having" "had" "have" "have" "has" "had" "had";
+    be : V = _mkV True "be" "being" "been" "am" "are" "is" "was" "were";
+    do : V = _mkV True "do" "did";
+    have : V = _mkV True "have" "having" "had" "have" "have" "has" "had" "had";
+    will : V = _modal "will";
+    would : V = _modal "would";
 }

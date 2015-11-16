@@ -41,6 +41,8 @@ concrete TransIta of Trans = open ResIta, MorphIta in { -- TODO ideally would no
     Negative = negative;
     Present = present;
     Past = past; 
+    Future = future;
+    Cond = cond;
     AuxBe = auxBe;
     AuxHave = auxHave;
 

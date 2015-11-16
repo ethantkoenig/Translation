@@ -5,7 +5,7 @@ resource MorphIta = {
     Gender = Masc | Fem;
     {- Complex includes impure s, self-geminating consonants, complex clusters -}
     NounInitial = Con | Vow | Complex;
-    Participle = Avere | Essere;
+    Aux = Avere | Essere;
   oper
     {- FUNCTIONS FOR NOUNS -}
     inferGender : (gatto : Str) -> Gender =
@@ -58,20 +58,26 @@ resource MorphIta = {
                      mangi + "ire" => mangi + "ito";
                      _ => ""};
 
-    pastParticiples : (p : Participle) -> (mangiato : Str) -> Number => Gender => Str =
-      \p, mangiato -> case p of {
-                        Avere => \\_, _ => mangiato;
-                        Essere => let mangiat : Str = 
-                                    case mangiato of {
-                                      mangiat + ? => mangiat;
-                                      _ => ""} in
-                                  table {Sg => table {Masc => mangiat + "o";
-                                                      Fem => mangiat + "a"};
-                                         Pl => table {Masc => mangiat + "i";
-                                                      Fem => mangiat + "e"}}};
+    pastParticiples : (aux : Aux) -> (mangiato : Str) -> Number => Gender => Str =
+      \aux, mangiato -> case aux of {
+                          Avere => \\_, _ => mangiato;
+                          Essere => let mangiat : Str = 
+                                      case mangiato of {
+                                        mangiat + ? => mangiat;
+                                        _ => ""} in
+                                    table {Sg => table {Masc => mangiat + "o";
+                                                        Fem => mangiat + "a"};
+                                           Pl => table {Masc => mangiat + "i";
+                                                        Fem => mangiat + "e"}}};
+
+    stem : (mangiare : Str) -> Str =
+      \mangiare -> case mangiare of {
+                     mangi + "are" => mangi + "e";
+                     mangia + "re" => mangia;
+                     _ => ""};
    
-    genericConjugate : (firstSg, secondSg, thirdSg, firstPl, secondPl, thirdPl : Str -> Str)
-                -> (abitare : Str) -> Number => Person => Str =
+    genericPresConjugate : (firstSg, secondSg, thirdSg, firstPl, secondPl, thirdPl : Str -> Str)
+                       -> (abitare : Str) -> Number => Person => Str =
       \firstSg, secondSg, thirdSg, firstPl, secondPl, thirdPl, abitare ->
         let abit : Str = getRoot abitare in
         table {Sg => table {First => firstSg abit;
@@ -81,48 +87,67 @@ resource MorphIta = {
                             Second => secondPl abit;
                             Third => thirdPl abit}};
 
-    areConjugate : (abitare : Str) -> Number => Person => Str =
-      \abitare -> genericConjugate (\abit -> abit + "o")
-                                   (\abit -> case abit of {
-                                               _ + "i" => abit;
-                                               _ + ("c" | "g") => abit + "hi";
-                                               _ => abit + "i"})
-                                   (\abit -> abit + "a")
-                                   (\abit -> case abit of {
-                                               _ + "i" => abit + "amo";
-                                               _ + ("c" | "g") => abit + "hiamo";
-                                               _ => abit + "iamo"})
-                                   (\abit -> abit + "ate")
-                                   (\abit -> abit + "ano")
-                                   abitare;
+    arePresConjugate : (abitare : Str) -> Number => Person => Str =
+      \abitare -> genericPresConjugate (\abit -> abit + "o")
+                                       (\abit -> case abit of {
+                                                   _ + "i" => abit;
+                                                   _ + ("c" | "g") => abit + "hi";
+                                                   _ => abit + "i"})
+                                       (\abit -> abit + "a")
+                                       (\abit -> case abit of {
+                                                   _ + "i" => abit + "amo";
+                                                   _ + ("c" | "g") => abit + "hiamo";
+                                                   _ => abit + "iamo"})
+                                       (\abit -> abit + "ate")
+                                       (\abit -> abit + "ano")
+                                       abitare;
 
-    ereConjugate : (cadere : Str) -> Number => Person => Str =
-      \cadere -> genericConjugate (\cad -> cad + "o")
-                                  (\cad -> case cad of {
-                                             _ + "i" => cad;
-                                             _ => cad + "i"})
-                                  (\cad -> cad + "e")
-                                  (\cad -> case cad of {
-                                             _ + "i" => cad + "amo";
-                                             _ => cad + "iamo"})
-                                  (\cad -> cad + "ete")
-                                  (\cad -> cad + "ono")
-                                  cadere;
+    erePresConjugate : (credere : Str) -> Number => Person => Str =
+      \credere -> genericPresConjugate (\cred -> cred + "o")
+                                       (\cred -> case cred of {
+                                                  _ + "i" => cred;
+                                                  _ => cred + "i"})
+                                       (\cred -> cred + "e")
+                                       (\cred -> case cred of {
+                                                  _ + "i" => cred + "amo";
+                                                  _ => cred + "iamo"})
+                                       (\cred -> cred + "ete")
+                                       (\cred -> cred + "ono")
+                                       credere;
                                       
-    ireConjugate : (dormire : Str) -> Number => Person => Str =
-      \dormire -> genericConjugate (\dorm -> dorm + "o")
-                                   (\dorm -> dorm + "i")
-                                   (\dorm -> dorm + "e")
-                                   (\dorm -> dorm + "iamo")
-                                   (\dorm -> dorm + "ite")
-                                   (\dorm -> dorm + "ono")
-                                   dormire;
+    irePresConjugate : (dormire : Str) -> Number => Person => Str =
+      \dormire -> genericPresConjugate (\dorm -> dorm + "o")
+                                       (\dorm -> dorm + "i")
+                                       (\dorm -> dorm + "e")
+                                       (\dorm -> dorm + "iamo")
+                                       (\dorm -> dorm + "ite")
+                                       (\dorm -> dorm + "ono")
+                                       dormire;
 
-    conjugate : (abitare : Str) -> Number => Person => Str =
+    presConjugate : (abitare : Str) -> Number => Person => Str =
       \abitare -> case abitare of {
-                    _ + "are" => areConjugate abitare;
-                    _ + "ere" => ereConjugate abitare;
-                    _ + "ire" => ireConjugate abitare;
+                    _ + "are" => arePresConjugate abitare;
+                    _ + "ere" => erePresConjugate abitare;
+                    _ + "ire" => irePresConjugate abitare;
                     _ => \\_, _ => "" {- this shouldn't happen -}
                   };
+
+
+    futureConjugate : (mangie : Str) -> Number => Person => Str =
+      \mangie -> table {
+                   Sg => table { First => mangie + "ro'";
+                                 Second => mangie + "rai";
+                                 Third => mangie + "ra'"};
+                   Pl => table { First => mangie + "remo";
+                                 Second => mangie + "rete";
+                                 Third => mangie + "ranno"}};
+
+    condConjugate : (mangie : Str) -> Number => Person => Str =
+      \mangie -> table {
+                   Sg => table { First => mangie + "rei";
+                                 Second => mangie + "resti";
+                                 Third => mangie + "rebbe"};
+                   Pl => table { First => mangie + "remmo";
+                                 Second => mangie + "reste";
+                                 Third => mangie + "rebbero"}};
 }

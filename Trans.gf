@@ -54,6 +54,8 @@ abstract Trans = {
       Negative : AbsVP_ -> AbsVP;
       Present : AbsVP__ -> AbsVP_;
       Past : AbsVP__ -> AbsVP_;
+      Future : AbsVP__ -> AbsVP_;
+      Cond : AbsVP__ -> AbsVP_;
     
       AuxBe : AbsVP__ -> AbsV';
       AuxHave : AbsVP__ -> AbsV';

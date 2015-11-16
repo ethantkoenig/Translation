@@ -42,6 +42,8 @@ concrete TransEng of Trans = open ResEng in {
     Negative = negative;
     Present = present;
     Past = past;
+    Future = future;
+    Cond = cond;
     AuxBe = auxBe;   
     AuxHave = auxHave;
 
