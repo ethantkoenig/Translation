@@ -22,7 +22,7 @@ abstract Trans = {
       AbsVP__; {- Tense -}
     AbsV';
     AbsV AbsArgType;
-    AbsAux;
+    -- AbsAux;
 
     -- AbsAdjP;
     -- AbsAdj;
@@ -35,7 +35,7 @@ abstract Trans = {
       MakeN' : AbsN -> AbsN';
       MakeVP__ : AbsV' -> AbsVP__;
       MakeV' : (a: AbsArgType) -> AbsV a -> AbsArgStructure a -> AbsV';
-      AddAux : AbsAux -> AbsVP__ -> AbsV'; -- TODO name
+      -- AddAux : AbsAux -> AbsVP__ -> AbsV'; -- TODO name
       -- MakeAdjP : AbsAdj -> AbsAdjP;
 
     {- ARGUMENT TYPES -}
@@ -54,6 +54,9 @@ abstract Trans = {
       Negative : AbsVP_ -> AbsVP;
       Present : AbsVP__ -> AbsVP_;
       Past : AbsVP__ -> AbsVP_;
+    
+      AuxBe : AbsVP__ -> AbsV';
+      AuxHave : AbsVP__ -> AbsV';
 
     {- LEXICAL RULES -}
       {- Adjectives -}
@@ -68,5 +71,5 @@ abstract Trans = {
       {- Verbs -}
       Sleep : AbsV Intrans;
       See, Meet : AbsV Trans;
-      AuxHave, AuxBe : AbsAux;
+      -- AuxHave, AuxBe : AbsAux;
 }

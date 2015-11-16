@@ -4,7 +4,7 @@ concrete TransEng of Trans = open ResEng in {
   param
     ArgType = In | Tr;
   lincat
-    AbsArgType = {at : ArgType};
+    AbsArgType = {a : ArgType};
     AbsArgStructure = ArgStructure;
   
     AbsS = S;
@@ -18,7 +18,7 @@ concrete TransEng of Trans = open ResEng in {
     AbsVP__ = VP__;
     AbsV' = V';
     AbsV = V;
-    AbsAux = Aux;
+    -- AbsAux = Aux;
   lin
     {- GRAMMATICAL RULES -}
     MakeS = mkS;
@@ -26,11 +26,11 @@ concrete TransEng of Trans = open ResEng in {
     MakeN' = mkN';
     MakeVP__ = mkVP__;
     MakeV' _ v args = mkV' v args;
-    AddAux = addAux;
+    -- AddAux = addAux;
     
     {- ARGUMENT TYPES -}
-    Intrans = {at = In};
-    Trans = {at = Tr};
+    Intrans = {a = In};
+    Trans = {a = Tr};
 
     IntransArg = mkArg_;
     TransArg = mkArg_NP;
@@ -41,7 +41,10 @@ concrete TransEng of Trans = open ResEng in {
     Positive = positive;
     Negative = negative;
     Present = present;
-    Past = past;    
+    Past = past;
+    AuxBe = auxBe;   
+    AuxHave = auxHave;
+
 
     {- LEXICAL RULES -}
     A = a;
@@ -53,11 +56,9 @@ concrete TransEng of Trans = open ResEng in {
     Student = mkN_ "student";  
     Woman = mkN_ "woman" "women";
 
-    Sleep = mkV "sleep";
+    Sleep = mkV "sleep" "slept";
     See = mkV "see" "seeing" "seen" "see" "see" "sees" "saw" "saw";
     Meet = mkV "meet" "met";
 
-    AuxHave = have;
-    AuxBe = be;
 }
   

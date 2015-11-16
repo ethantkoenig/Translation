@@ -4,7 +4,7 @@ resource ResEng = {
     Person = First | Second | Third;
     Polarity = Pos | Neg;
     Tense = Pres | Past;
-    AuxType = Be | Have;
+    Aux = Be | Have | Do | NonAux;
   oper
     {- TYPES -}
 
@@ -15,10 +15,8 @@ resource ResEng = {
 
     D : Type = {s : Number => Str};
 
-    VType : Type = {auxtype : AuxType; inf : Str; pres : Str; past : Str;
+    V : Type = {auxtype : Aux; inf : Str; pres : Str; past : Str;
                     conj : Tense => Number => Person => Str};
-    V : Type = VType;
-    Aux : Type = VType;
     V' : Type = {head : V; suffix : Str};
     VP__ : Type = V';
     VP_ : Type = {t : Tense; head : V; suffix : Str};
@@ -73,8 +71,8 @@ resource ResEng = {
     mkD : Str -> Str -> D =
       \this, those -> {s = table {Sg => this; Pl => those}};
 
-     _mkV_helper : (a: AuxType) -> (be, being, been, am, are, is, was, were : Str)
-                               -> VType =
+     _mkV_helper : (a: Aux) -> (be, being, been, am, are, is, was, were : Str)
+                            -> V =
       \a, be, being, been, am, are, is, was, were ->
           {auxtype = a; inf = be; pres = being; past = been;
            conj = table 
@@ -93,25 +91,25 @@ resource ResEng = {
                                   {First | Second | Third => were}}}};
 
     _mkV = overload {
-      _mkV : (a : AuxType) -> (walk : Str) -> VType =
+      _mkV : (a : Aux) -> (walk : Str) -> V =
         \a, walk -> _mkV_helper a walk (append_ing walk) (append_ed walk)
                                   walk walk (append_s walk) (append_ed walk) 
                                   (append_ed walk); 
             
-      _mkV : (a : AuxType) -> (buy, bought : Str) -> VType =
+      _mkV : (a : Aux) -> (buy, bought : Str) -> V =
         \a, buy, bought -> _mkV_helper a buy (append_ing buy) bought buy buy 
                                          (append_s buy) bought bought;
 
-      _mkV : (a : AuxType) -> (be, being, been, am, are, is, was, were : Str)
-                           -> VType = _mkV_helper
+      _mkV : (a : Aux) -> (be, being, been, am, are, is, was, were : Str)
+                           -> V = _mkV_helper
       };
 
     mkV = overload {
-      mkV : (walk : Str) -> VType =
+      mkV : (walk : Str) -> V =
         \walk -> _mkV NonAux walk;
-      mkV : (buy, bought : Str) -> VType =
+      mkV : (buy, bought : Str) -> V =
         \buy, bought -> _mkV NonAux buy bought;
-      mkV : (be, being, been, am, are, is, was, were : Str) -> VType = 
+      mkV : (be, being, been, am, are, is, was, were : Str) -> V = 
         \be, being ,been, am, are, is, was, were -> 
           _mkV NonAux be being been am are is was were;       
       };
@@ -153,13 +151,19 @@ resource ResEng = {
     mkV' : V -> ArgStructure -> V' =
       \v, as -> {head = v; suffix = as.np1};
 
+    {-
     addAux : Aux -> VP__ -> V' =
-      \a, vp -> case a.auxtype of
-                {Be => {head = a; suffix = vp.head.pres ++ vp.suffix};
-                 Do => {head = a; suffix = vp.head.inf ++ vp.suffix};
-                 Have => {head = a; suffix = vp.head.past ++ vp.suffix};
-                 NonAux => {head = a; suffix = ""} {- can't happen -}
-                };
+      \a, vp -> case a of
+                {Be => {head = be; suffix = vp.head.pres ++ vp.suffix};
+                 Have => {head = have; suffix = vp.head.past ++ vp.suffix};
+                 _ => {head = vp.head; suffix = ""}
+                };-}
+
+    auxBe : VP__ -> V' =
+      \vp -> {head = be; suffix = vp.head.pres ++ vp.suffix};
+
+    auxHave : VP__ -> V' =
+      \vp -> {head = have; suffix = vp.head.past ++ vp.suffix};
 
     mkVP__ : V' -> VP__ = \v' -> v';
 
@@ -171,7 +175,7 @@ resource ResEng = {
     a : D = {s = table {_ => "a"}};
     the : D = {s = table {_ => "the"}};
 
-    be : Aux = _mkV Be "be" "being" "been" "am" "are" "is" "was" "were";
-    do : Aux = _mkV Do "do" "did";
-    have : Aux = _mkV Have "have" "having" "had" "have" "have" "has" "had" "had";
+    be : V = _mkV Be "be" "being" "been" "am" "are" "is" "was" "were";
+    do : V = _mkV Do "do" "did";
+    have : V = _mkV Have "have" "having" "had" "have" "have" "has" "had" "had";
 }
