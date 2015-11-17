@@ -1,11 +1,13 @@
-incomplete concrete TransI of Trans = 
-    open Concepts, Syntax, Lexicon in {
+--# -path=.:../trans:alltenses
+
+concrete TransEng of Trans = open ResEng in {
   param
     ArgType = In | Tr;
   lincat
     AbsArgType = {a : ArgType};
     AbsArgStructure = ArgStructure;
   
+    AbsS = S;
     AbsNP = NP;
     AbsD = D;
     AbsN' = N';
@@ -16,15 +18,24 @@ incomplete concrete TransI of Trans =
     AbsVP__ = VP__;
     AbsV' = V';
     AbsV = V;
+    -- AbsAux = Aux;
   lin
+    {- GRAMMATICAL RULES -}
+    MakeS = mkS;
     MakeNP = mkNP;
     MakeN' = mkN';
     MakeVP__ = mkVP__;
     MakeV' _ v args = mkV' v args;
-
+    -- AddAux = addAux;
+    
+    {- ARGUMENT TYPES -}
     Intrans = {a = In};
     Trans = {a = Tr};
 
+    IntransArg = mkArg_;
+    TransArg = mkArg_NP;
+
+    {- FEATURE FILLING RULES -}
     Singular = singular;
     Plural = plural;
     Positive = positive;
@@ -36,18 +47,20 @@ incomplete concrete TransI of Trans =
     AuxBe = auxBe;   
     AuxHave = auxHave;
 
-    IntransArg = mkArg_;
-    TransArg = mkArg_NP;
 
-    a = detLexicon ! A;
-    the = detLexicon ! The;
-  
-    boy = nounLexicon ! Boy;
-    hunger = nounLexicon ! Hunger;
-    name = nounLexicon ! Name;
-    student = nounLexicon ! Student;
+    {- LEXICAL RULES -}
+    A = a;
+    The = the;
 
-    sleep = verbLexicon ! Sleep;
-    see = verbLexicon ! See;
-    meet = verbLexicon ! Meet;
+    Ball = mkN_ "ball";
+    Boy = mkN_ "boy";
+    Name = mkN_ "name";
+    Student = mkN_ "student";  
+    Woman = mkN_ "woman" "women";
+
+    Sleep = mkV "sleep" "slept";
+    See = mkV "see" "seeing" "seen" "see" "see" "sees" "saw" "saw";
+    Meet = mkV "meet" "met";
+
 }
+  
