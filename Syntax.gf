@@ -38,4 +38,6 @@ interface Syntax = {
 
     auxBe : VP__ -> V';
     auxHave : VP__ -> V';
-}  
+
+}
+  

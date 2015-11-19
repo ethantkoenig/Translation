@@ -1,33 +1,29 @@
 instance SyntaxIta of Syntax = 
-    open Concepts, Maybe, MorphIta, Prelude in {
+    open MorphIta in {
   param
     Polarity = Pos | Neg;
     Tense = Pres | Past | Fut | Cond;
   oper
     {- TYPES -}
-    N_ : Type = {c: NounConcept; g : Gender; i : NounInitial ; s : Number => Str};
-    N : Type = {c : NounConcept; g : Gender; n : Number; i : NounInitial; s : Str};
-    N' : Type = {c : NounConcept; g : Gender; n : Number; i : NounInitial; s : Str};
-    NP : Type = {c : NounConcept; g : Gender; n : Number; p : Person; s : Str};
+    N_ : Type = {g : Gender; i : NounInitial ; s : Number => Str};
+    N : Type = {g : Gender; n : Number; i : NounInitial; s : Str};
+    N' : Type = {g : Gender; n : Number; i : NounInitial; s : Str};
+    NP : Type = {g : Gender; n : Number; p : Person; s : Str};
 
     D : Type = {s : Number => Gender => NounInitial => Str};
 
-    {- all of the "acutal" content of a verb -}
-    Vcore : Type = {c : VerbConcept; aux : Aux; inf : Str; presPart : Str;
+    V : Type = {aux : Aux; inf : Str; presPart : Str;
                 pastPart : Number => Gender => Str;
                 conj : Tense => Number => Person => Str};
-
-    V : Type = {self: Vcore; map : ArgStructure => {v : Vcore; args : ArgStructure}};
-
-    V' : Type = {head : Vcore; prefix : Str; g : Gender; n : Number; 
+    V' : Type = {head : V; prefix : Str; g : Gender; n : Number; 
                  p : Person; suffix : Str};
     VP__ : Type = V';
-    VP_ : Type = {t : Tense; head : Vcore; prefix : Str; g : Gender; n : Number; 
+    VP_ : Type = {t : Tense; head : V; prefix : Str; g : Gender; n : Number; 
                   p : Person; suffix : Str};
     VP : Type = {s : Str}; 
 
     ArgStructure : Type = {subj : Str; g : Gender; n : Number; 
-                           p : Person; np1 : Str}; -- TODO incomplete
+                    p : Person; np1 : Str}; -- TODO incomplete
 
     {- ARGUMENT FUNCTIONS -}
     mkArg_ : NP -> ArgStructure = 
@@ -38,77 +34,56 @@ instance SyntaxIta of Syntax =
     
     {- LEXICAL FUNCTIONS -}
       {- NOUNS -}
-    _constructN_ : (c : NounConcept) -> (gnd : Gender) -> (uomo, uomini : Str) -> N_ =
-      \c, gnd, uomo, uomini -> {c = c; g = gnd; i = nounInitial uomo;
+    _constructN_ : (gnd : Gender) -> (uomo, uomini : Str) -> N_ =
+      \gnd, uomo, uomini -> {g = gnd; i = nounInitial uomo;
                              s = table {Sg => uomo; Pl => uomini}};
 
     mkN_ = overload {
-      mkN_ : (c : NounConcept) -> (gatto : Str) -> N_ =
-        \c, gatto -> _constructN_ c (inferGender gatto) gatto (pluralize gatto);
+      mkN_ : (gatto : Str) -> N_ =
+        \gatto -> _constructN_ (inferGender gatto) gatto (pluralize gatto);
 
-      mkN_ : (c : NounConcept) -> (gnd : Gender) -> (gatto : Str) -> N_ =
-        \c, gnd, gatto -> _constructN_ c gnd gatto (pluralize gatto);
+      mkN_ : (gnd : Gender) -> (gatto : Str) -> N_ =
+        \gnd, gatto -> _constructN_ gnd gatto (pluralize gatto);
 
-      mkN_ : (c : NounConcept) -> (gnd : Gender) -> (uomo, uomini : Str) -> N_ =
-        _constructN_;
+      mkN_ : (gnd : Gender) -> (uomo, uomini : Str) -> N_ = _constructN_;
     };
 
       {- VERBS -}
-    _constructVcore : (c : VerbConcept) -> (aux : Aux) 
-                      -> (avere, avendo, avuto : Str)
-                      -> (presConj : Number => Person => Str) 
-                      -> (av : Str) -> Vcore =
-        \c, aux, avere, avendo, avuto, presConj, av ->
+    _constructV : (aux : Aux) -> (avere, avendo, avuto : Str)
+              -> (presConj : Number => Person => Str) -> (av : Str) -> V =
+        \aux, avere, avendo, avuto, presConj, av ->
           let futConj : Number => Person => Str = futureConjugate av in
           let condConj : Number => Person => Str = condConjugate av in
-          {c = c; aux = aux; inf = avere;
-           presPart = avendo; pastPart = pastParticiples aux avuto;
+          {aux = aux;
+           inf = avere; presPart = avendo; pastPart = pastParticiples aux avuto;
            conj = table {Pres => presConj; Fut => futConj;
                          Cond => condConj; Past => \\_, _ => ""}};
 
-    _constructV : (c : VerbConcept) -> (aux : Aux) -> (avere, avendo, avuto : Str)
-                  -> (presConj : Number => Person => Str) -> (av : Str) 
-                  -> (map : ArgStructure => {v : Maybe V; args : ArgStructure}) -> V =
-      \c, aux, avere, avendo, avuto, presConj, av, map ->
-        let core : Vcore = _constructVcore c aux avere avendo avuto presConj av in
-        let map' : ArgStructure => {v : Vcore; args : ArgStructure} =
-          \\a => let r : {v : Maybe V; args : ArgStructure} = map ! a in
-                 case exists V r.v of {
-                   True => {v = (fromJust V r.v).self; args = a};
-                   False => {v = core; args = a}
-                 }
-        in {self = core; map = map'};
-
-
     mkV = overload {
-      mkV : (c : VerbConcept) -> (aux : Aux) -> (mangiare : Str) 
-            -> (map : ArgStructure => {v : Maybe V; args : ArgStructure})-> V =
-        \c, aux, mangiare, map -> 
-          let pres : Str = presParticiple mangiare in
-          let past : Str = pastParticiple mangiare in
-          let presConj : Number => Person => Str = presConjugate mangiare in
-          let stm : Str = stem mangiare in
-          _constructV c aux mangiare pres past presConj stm map;
+      mkV : (aux : Aux) -> (mangiare : Str) -> V =
+        \aux, mangiare -> let pres : Str = presParticiple mangiare in
+                        let past : Str = pastParticiple mangiare in
+                        let presConj : Number => Person => Str = presConjugate mangiare in
+                        let stm : Str = stem mangiare in
+                        _constructV aux mangiare pres past presConj stm;
 
-      mkV : (c : VerbConcept) -> (aux : Aux) 
-            -> (avere, avendo, avuto, ho, hai,
-                ha, abbiamo, avete, hanno, av : Str)
-            -> (map : ArgStructure => {v : Maybe V; args : ArgStructure}) -> V =
-        \c, aux, avere, avendo, avuto, ho, hai, ha, abbiamo, avete, hanno, av, map ->
+      mkV : (aux : Aux) -> (avere, avendo, avuto, ho, hai, 
+                            ha, abbiamo, avete, hanno, av : Str) -> V =
+        \aux, avere, avendo, avuto, ho, hai, ha, abbiamo, avete, hanno, av ->
           let presConj : Number => Person => Str =
             table {Sg => table {First => ho; Second => hai; Third => ha};
                    Pl => table {First => abbiamo; Second => avete; Third => hanno}} in
-          _constructV c aux avere avendo avuto presConj av map;
+          _constructV aux avere avendo avuto presConj av;
     };
 
 
     {- FEATURE FUNCTIONS -}
 
     singular : N_ -> N =
-      \gatto -> {c = gatto.c; g = gatto.g; i = gatto.i; n = Sg; s = gatto.s ! Sg};
+      \gatto -> {g = gatto.g; i = gatto.i; n = Sg; s = gatto.s ! Sg};
 
     plural : N_ -> N =
-      \gatto -> {c = gatto.c; g = gatto.g; i = gatto.i; n = Pl; s = gatto.s ! Pl};
+      \gatto -> {g = gatto.g; i = gatto.i; n = Pl; s = gatto.s ! Pl};
 
     present : VP__ -> VP_ =
       \vp -> {t = Pres; prefix = vp.prefix; g = vp.g; n = vp.n; p = vp.p;
@@ -116,7 +91,7 @@ instance SyntaxIta of Syntax =
     
     past : VP__ -> VP_ =
       \vp -> {t = Pres; prefix = vp.prefix; g = vp.g; n = vp.n; p = vp.p;
-              head = case vp.head.aux of {Avere => avere.self; Essere => essere.self}; 
+              head = case vp.head.aux of {Avere => avere; Essere => essere}; 
               suffix = vp.head.pastPart ! vp.n ! vp.g ++ vp.suffix};
 
     future : VP__ -> VP_ = 
@@ -137,22 +112,19 @@ instance SyntaxIta of Syntax =
     mkN' : N -> N' = \n -> n;
 
     mkNP : D -> N' -> NP =
-      \il, gatto -> {c = gatto.c; g = gatto.g; n = gatto.n; p = Third;
+      \il, gatto -> {g = gatto.g; n = gatto.n; p = Third;
                      s = (il.s ! gatto.n ! gatto.g ! gatto.i) ++ gatto.s};
 
-    -- TODO this is where we need to check for idiomatics
     mkV' : V -> ArgStructure -> V' =
-      \v, args -> let new : {v : Vcore; args : ArgStructure} = v.map ! args in
-                  let args : ArgStructure = new.args in
-                  {head = new.v; prefix = args.subj; g = args.g; n = args.n;
+      \v, args -> {head = v; prefix = args.subj; g = args.g; n = args.n;
                    p = args.p; suffix = args.np1};
 
     auxBe : VP__ -> V' =
-      \vp -> {head = stare.self; prefix = vp.prefix; g = vp.g; n = vp.n; p = vp.p;
+      \vp -> {head = stare; prefix = vp.prefix; g = vp.g; n = vp.n; p = vp.p;
               suffix = vp.head.presPart ++ vp.suffix}; 
 
     auxHave : VP__ -> V' =
-      \vp -> {head = case vp.head.aux of {Avere => avere.self; Essere => essere.self};
+      \vp -> {head = case vp.head.aux of {Avere => avere; Essere => essere};
               prefix = vp.prefix; g = vp.g; n = vp.n; p = vp.p;
               suffix = vp.head.pastPart ! vp.n ! vp.g ++ vp.suffix};
 
@@ -176,18 +148,14 @@ instance SyntaxIta of Syntax =
                                 Masc => table {Con => "dei"; Vow | Complex => "degli"};
                                 Fem => table {_ => "delle"}}}};
 
-
   
-    identity : ArgStructure => {v : Maybe V; args : ArgStructure} =
-      \\a => {v = Nothing' V; args = a};
+    essere : V = mkV Essere "essere" "essendo" "stato" "sono" "sei" "e'" 
+                              "siamo" "siete" "sono" "sa";
 
-    essere : V = mkV ArbitraryVerb Essere "essere" "essendo" "stato" "sono"
-                     "sei" "e'" "siamo" "siete" "sono" "sa" identity;
+    avere : V = mkV Avere "avere" "avendo" "avuto" "ho" "hai" "ha" "abbiamo"
+                            "avete" "hanno" "av";
 
-    avere : V = mkV ArbitraryVerb Avere "avere" "avendo" "avuto" "ho" "hai"
-                    "ha" "abbiamo" "avete" "hanno" "av" identity;
-
-    stare : V = mkV ArbitraryVerb Essere "stare" "stando" "stato" "sto" "stai" "sta" "stiamo"
-                    "state" "stanno" "sta" identity;
+    stare : V = mkV Essere "stare" "stando" "stato" "sto" "stai" "sta" "stiamo"
+                           "state" "stanno" "sta";
 
 }   
