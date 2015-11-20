@@ -65,6 +65,8 @@ abstract Trans = {
       {- Nouns -}
       Boy, Hunger, Name, Student : AbsN_;
 
+      I, You, He, She, We, Yall, They : AbsNP;
+
       {- Verbs -}
       Sleep : AbsV ArgVoid;
       Have, Meet, See : AbsV ArgNP;

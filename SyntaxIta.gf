@@ -164,6 +164,15 @@ instance SyntaxIta of Syntax =
 
     voidD : D = {s = \\_, _, _ => ""};
 
+
+    i : NP = {g = Masc; n = Sg; p = First; s = ""};
+    you : NP = {g = Masc; n = Sg; p = Second; s = ""};
+    he : NP = {g = Masc; n = Sg; p = Third; s = ""};
+    she : NP = {g = Fem; n = Sg; p = Third; s = ""};
+    we : NP = {g = Masc; n = Pl; p = First; s = ""};
+    yall : NP = {g = Masc; n = Pl; p = Second; s = ""};
+    they : NP = {g = Masc; n = Pl; p = Third; s = ""};
+
   
     essere : V = mkV Essere "essere" "essendo" "stato" "sono" "sei" "e'" 
                               "siamo" "siete" "sono" "sa";

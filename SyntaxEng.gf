@@ -197,6 +197,14 @@ instance SyntaxEng of Syntax = open Utils in {
     definite : D = {s = \\_ => "the"};
     voidD : D = {s = \\_ => ""};
 
+    i : NP = {n = Sg; p = First; s = "I"};
+    you : NP = {n = Sg; p = Second; s = "you"};
+    he : NP = {n = Sg; p = Third; s = "he"};
+    she : NP = {n = Sg; p = Third; s = "she"};
+    we : NP = {n = Pl; p = First; s = "we"};
+    yall : NP = {n = Pl; p = Second; s = "you"};
+    they : NP = {n = Pl; p = Third; s = "they"};
+
     be' : V = _mkV True "be" "being" "been" "am" "are" "is" "was" "were";
     _do : V = _mkV True "do" "did";
     _have : V = _mkV True "have" "having" "had" "have" "have" "has" "had" "had";

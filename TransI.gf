@@ -56,6 +56,14 @@ incomplete concrete TransI of Trans =
     Name = name;
     Student = student;
 
+    I = i;
+    You = you;
+    He = he;
+    She = she;
+    We = we;
+    Yall = yall;
+    They = they; 
+
     Be = be;
     Have = have;
     Meet = meet;

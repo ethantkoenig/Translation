@@ -33,20 +33,17 @@ interface Syntax = {
     mkArgNP : NP -> NP -> ArgStructure;
     mkArgAdj : NP -> Adj -> ArgStructure;
 
-    singular : N_ -> N;
-    plural : N_ -> N;
-    present : VP__ -> VP_;
-    past : VP__ -> VP_;
-    future : VP__ -> VP_;
-    cond : VP__ -> VP_;
-    positive : VP_ -> VP;
-    negative : VP_ -> VP;
+    singular, plural : N_ -> N;
+    present, past, cond, future : VP__ -> VP_;
+    positive, negative : VP_ -> VP;
 
-    auxBe : VP__ -> V';
-    auxHave : VP__ -> V';
+    auxBe, auxHave : VP__ -> V';
 
     {- FUNCTIONAL WORDS -}
-    indefinite : D;
+    indefinite, definite, voidD : D;
     definite : D;
     voidD : D;
+
+    i, you, he, she, we, yall, they : NP;
+
 }  
