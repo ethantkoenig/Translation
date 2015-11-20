@@ -1,5 +1,5 @@
 instance LexiconIta of Lexicon =
-    open SyntaxIta, MorphIta {-- TODO don't want to open MorphIta here -} in {
+    open SyntaxIta, Utils, UtilsIta in {
   oper
     fast = mkAdj "veloce";
     hungry = mkAdj "affamato";

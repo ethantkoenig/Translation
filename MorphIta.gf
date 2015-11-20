@@ -1,11 +1,7 @@
-resource MorphIta = {
+resource MorphIta = open Utils, UtilsIta in {
   param
-    Number = Sg | Pl;
-    Person = First | Second | Third;
-    Gender = Masc | Fem;
     {- Complex includes impure s, self-geminating consonants, complex clusters -}
     NounInitial = Con | Vow | Complex;
-    Aux = Avere | Essere;
   oper
     {- GENERAL FUNCTIONS -}
     pluralize : (gatto : Str) -> Str =

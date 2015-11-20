@@ -47,8 +47,9 @@ incomplete concrete TransI of Trans =
     Hungry = hungry;
     Tall = tall;
 
-    A = a;
-    The = the;
+    A = indefinite;
+    The = definite;
+    VoidD = voidD;
   
     Boy = boy;
     Hunger = hunger;

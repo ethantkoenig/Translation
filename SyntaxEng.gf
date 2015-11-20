@@ -1,7 +1,6 @@
-instance SyntaxEng of Syntax = {
+instance SyntaxEng of Syntax = open Utils in {
   param
     Number = Sg | Pl;
-    Person = First | Second | Third;
     Polarity = Pos | Neg;
     Tense = Pres | Past;
     Bool = True | False;
@@ -197,8 +196,9 @@ instance SyntaxEng of Syntax = {
 
   
     {- FUNCTIONAL WORDS -}
-    a : D = {s = table {_ => "a"}};
-    the : D = {s = table {_ => "the"}};
+    indefinite : D = {s = table {_ => "a"}}; -- TODO
+    definite : D = {s = \\_ => "the"};
+    voidD : D = {s = \\_ => ""};
 
     be' : V = _mkV True "be" "being" "been" "am" "are" "is" "was" "were";
     _do : V = _mkV True "do" "did";

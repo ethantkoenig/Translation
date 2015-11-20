@@ -1,5 +1,5 @@
 instance SyntaxIta of Syntax = 
-    open MorphIta in {
+    open MorphIta, Utils, UtilsIta in {
   param
     Polarity = Pos | Neg;
     Tense = Pres | Past | Fut | Cond;
@@ -146,7 +146,7 @@ instance SyntaxIta of Syntax =
 
     {- FUNCTIONAL WORDS -}
 
-    the : D = {s = table {
+    definite : D = {s = table {
                         Sg => table {
                                 Masc => table {Con => "il"; Vow => "l'"; Complex => "lo"};
                                 Fem => table {Con | Complex => "la"; Vow => "l'"}};
@@ -154,13 +154,15 @@ instance SyntaxIta of Syntax =
                                 Masc => table {Con => "i"; Vow | Complex => "gli"};
                                 Fem => table {_ => "le"}}}};
 
-    a : D = {s = table {
+    indefinite : D = {s = table {
                         Sg => table {
                                 Masc => table {Con => "un"; Vow => "un'"; Complex => "uno"};
                                 Fem => table {Con | Complex => "una"; Vow => "un'"}};
                         Pl => table {
                                 Masc => table {Con => "dei"; Vow | Complex => "degli"};
                                 Fem => table {_ => "delle"}}}};
+
+    voidD : D = {s = \\_, _, _ => ""};
 
   
     essere : V = mkV Essere "essere" "essendo" "stato" "sono" "sei" "e'" 

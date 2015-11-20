@@ -46,8 +46,8 @@ interface Syntax = {
     auxHave : VP__ -> V';
 
     {- FUNCTIONAL WORDS -}
-    a : D;
-    the : D;
-    
+    indefinite : D;
+    definite : D;
+    voidD : D;
 
 }  

@@ -60,7 +60,7 @@ abstract Trans = {
       Fast, Hungry, Tall : AbsAdj;
 
       {- Determiners -}
-      A, The : AbsD;
+      A, The, VoidD : AbsD;
 
       {- Nouns -}
       Boy, Hunger, Name, Student : AbsN_;
