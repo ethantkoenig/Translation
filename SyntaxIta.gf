@@ -164,7 +164,7 @@ instance SyntaxIta of Syntax =
 
     voidD : D = {s = \\_, _, _ => ""};
 
-
+    -- TODO does not work for pronouns in object position 
     i : NP = {g = Masc; n = Sg; p = First; s = ""};
     you : NP = {g = Masc; n = Sg; p = Second; s = ""};
     he : NP = {g = Masc; n = Sg; p = Third; s = ""};
