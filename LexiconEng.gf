@@ -1,5 +1,5 @@
 instance LexiconEng of Lexicon = 
-    open Concepts, SyntaxEng in {
+    open SyntaxEng in {
   oper
     fast = mkAdj "fast";
     hungry = mkAdj "hungry";
@@ -11,7 +11,7 @@ instance LexiconEng of Lexicon =
     student = mkN_ "student";
 
     -- be = mkV "be" "being" "been" "am" "are" "is" "was" "were";
-    be = SyntaxEng.be;
+    be = be';
     have = mkV "have" "having" "had" "have" "have" "has" "had" "had";
     meet = mkV "meet" "met";    
     see = mkV "see" "seeing" "seen" "see" "see" "sees" "saw" "saw";

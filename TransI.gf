@@ -1,5 +1,5 @@
 incomplete concrete TransI of Trans = 
-    open Concepts, Syntax, Lexicon in {
+    open Syntax, Lexicon in {
   param
     ArgType = ArVoid | ArNP | ArAdj;
   lincat

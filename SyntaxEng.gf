@@ -74,6 +74,8 @@ instance SyntaxEng of Syntax = {
       {- Nouns with irregular plural forms -}
       mkN_ : Str -> Str -> N_ =
         \dog, dogs -> {s = table { Sg => dog; Pl => dogs}};
+
+      
     };
 
     mkD : Str -> Str -> D =
@@ -184,7 +186,7 @@ instance SyntaxEng of Syntax = {
                 };-}
 
     auxBe : VP__ -> V' =
-      \vp -> {head = be; prefix = vp.prefix; n = vp.n; p = vp.p;
+      \vp -> {head = be'; prefix = vp.prefix; n = vp.n; p = vp.p;
               suffix = vp.head.pres ++ vp.suffix}; -- TODO change pres to presPart
 
     auxHave : VP__ -> V' =
@@ -198,7 +200,7 @@ instance SyntaxEng of Syntax = {
     a : D = {s = table {_ => "a"}};
     the : D = {s = table {_ => "the"}};
 
-    be : V = _mkV True "be" "being" "been" "am" "are" "is" "was" "were";
+    be' : V = _mkV True "be" "being" "been" "am" "are" "is" "was" "were";
     _do : V = _mkV True "do" "did";
     _have : V = _mkV True "have" "having" "had" "have" "have" "has" "had" "had";
     _will : V = _modal "will";
