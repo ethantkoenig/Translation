@@ -49,5 +49,4 @@ interface Syntax = {
     indefinite : D;
     definite : D;
     voidD : D;
-
 }  

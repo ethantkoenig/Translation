@@ -25,7 +25,7 @@ instance SyntaxIta of Syntax =
     Adj : Type = {s : Number => Gender => Str};
 
     ArgStructure : Type = {subj : Str; g : Gender; n : Number; 
-                    p : Person; np1 : Str; adj1 : Str};
+                           p : Person; np1 : Str; adj1 : Str};
 
     {- ARGUMENT FUNCTIONS -}
     mkArgVoid : NP -> ArgStructure = 

@@ -1,9 +1,6 @@
 instance SyntaxEng of Syntax = open Utils in {
   param
-    Number = Sg | Pl;
-    Polarity = Pos | Neg;
     Tense = Pres | Past;
-    Bool = True | False;
   oper
     {- TYPES -}
 
