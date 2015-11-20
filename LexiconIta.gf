@@ -1,18 +1,21 @@
 instance LexiconIta of Lexicon =
     open Concepts, SyntaxIta, MorphIta {-- TODO don't want to open MorphIta here -} in {
   oper
-    detLexicon = table {A => indDet; The => defDet};
-    
-    nounLexicon = table {
-                    Boy => mkN_ "ragazzo";
-                    Hunger => mkN_ Fem "fame";
-                    Name => mkN_ "name";
-                    Student => mkN_ "studente"
-                  };
+    fast = mkAdj "veloce";
+    hungry = mkAdj "affamato";
+    tall = mkAdj "alto";
 
-    verbLexicon = table {
-                    Sleep => mkV Avere "dormire";
-                    See => mkV Avere "vedere";
-                    Meet => mkV Avere "incontrare"
-                  };
+    boy = mkN_ "ragazzo";
+    hunger = mkN_ Fem "fame";
+    name = mkN_ "nome";
+    student = mkN_ "studente";
+
+    -- TODO un-ASCII-ify
+    be = mkV Essere "essere" "essendo" "stato" "sono" "sei" "e'"
+                    "siamo" "siete" "sono" "sa";
+    have = mkV Avere "avere" "avendo" "avuto" "ho" "hai" "ha" 
+                     "abbiamo" "avete" "hanno" "av";
+    meet = mkV Avere "incontrare";
+    see = mkV Avere "vedere";
+    sleep = mkV Avere "dormire";
 }

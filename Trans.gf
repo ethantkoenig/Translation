@@ -22,25 +22,25 @@ abstract Trans = {
     AbsV AbsArgType;
 
     -- AbsAdjP;
-    -- AbsAdj;
+    AbsAdj;
 
   fun
     {- GRAMMATICAL RULES -}
       MakeNP : AbsD -> AbsN' -> AbsNP;
-      -- AjnN' : AbsN' -> AbsAdj -> AbsN';
+      AdjoinN' : AbsN' -> AbsAdj -> AbsN';
       MakeN' : AbsN -> AbsN';
       MakeVP__ : AbsV' -> AbsVP__;
       MakeV' : (a: AbsArgType) -> AbsV a -> AbsArgStructure a -> AbsV';
       -- MakeAdjP : AbsAdj -> AbsAdjP;
 
     {- ARGUMENT TYPES -}
-      Intrans : AbsArgType;
-      Trans : AbsArgType;
-      -- Arg_AdjP : ArgType;  
+      ArgVoid : AbsArgType;
+      ArgNP : AbsArgType;
+      ArgAdj : AbsArgType;  
   
-      IntransArg : AbsNP -> AbsArgStructure Intrans;
-      TransArg : AbsNP -> AbsNP -> AbsArgStructure Trans;
-      -- MakeArg_AdjP : AbsAdjP -> ArgStructure Arg_AdjP
+      MakeArgVoid : AbsNP -> AbsArgStructure ArgVoid;
+      MakeArgNP : AbsNP -> AbsNP -> AbsArgStructure ArgNP;
+      MakeArgAdj : AbsNP -> AbsAdj -> AbsArgStructure ArgAdj;
 
     {- FEATURE FILLING RULES -}
       Singular : AbsN_ -> AbsN;
@@ -57,16 +57,17 @@ abstract Trans = {
 
     {- LEXICAL RULES -}
       {- Adjectives -}
-      -- Fast, Tall : AbsAdj;
+      Fast, Hungry, Tall : AbsAdj;
 
       {- Determiners -}
-      the, a : AbsD;
+      A, The : AbsD;
 
       {- Nouns -}
-      boy, hunger, name, student : AbsN_;
+      Boy, Hunger, Name, Student : AbsN_;
 
       {- Verbs -}
-      sleep : AbsV Intrans;
-      see, meet : AbsV Trans;
-      -- AuxHave, AuxBe : AbsAux;
+      Sleep : AbsV ArgVoid;
+      Have, Meet, See : AbsV ArgNP;
+      Be : AbsV ArgAdj;
+
 }

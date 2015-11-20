@@ -1,11 +1,12 @@
 incomplete concrete TransI of Trans = 
     open Concepts, Syntax, Lexicon in {
   param
-    ArgType = In | Tr;
+    ArgType = ArVoid | ArNP | ArAdj;
   lincat
     AbsArgType = {a : ArgType};
     AbsArgStructure = ArgStructure;
   
+    AbsAdj = Adj;
     AbsNP = NP;
     AbsD = D;
     AbsN' = N';
@@ -19,11 +20,13 @@ incomplete concrete TransI of Trans =
   lin
     MakeNP = mkNP;
     MakeN' = mkN';
+    AdjoinN' = adjN';
     MakeVP__ = mkVP__;
     MakeV' _ v args = mkV' v args;
 
-    Intrans = {a = In};
-    Trans = {a = Tr};
+    ArgVoid = {a = ArVoid};
+    ArgNP = {a = ArNP};
+    ArgAdj = {a = ArAdj};
 
     Singular = singular;
     Plural = plural;
@@ -36,18 +39,25 @@ incomplete concrete TransI of Trans =
     AuxBe = auxBe;   
     AuxHave = auxHave;
 
-    IntransArg = mkArg_;
-    TransArg = mkArg_NP;
+    MakeArgVoid = mkArgVoid;
+    MakeArgNP = mkArgNP;
+    MakeArgAdj = mkArgAdj;
 
-    a = detLexicon ! A;
-    the = detLexicon ! The;
+    Fast = fast;
+    Hungry = hungry;
+    Tall = tall;
+
+    A = a;
+    The = the;
   
-    boy = nounLexicon ! Boy;
-    hunger = nounLexicon ! Hunger;
-    name = nounLexicon ! Name;
-    student = nounLexicon ! Student;
+    Boy = boy;
+    Hunger = hunger;
+    Name = name;
+    Student = student;
 
-    sleep = verbLexicon ! Sleep;
-    see = verbLexicon ! See;
-    meet = verbLexicon ! Meet;
+    Be = be;
+    Have = have;
+    Meet = meet;
+    See = see;
+    Sleep = sleep;
 }

@@ -22,15 +22,21 @@ instance SyntaxIta of Syntax =
                   p : Person; suffix : Str};
     VP : Type = {s : Str}; 
 
+    Adj : Type = {s : Number => Gender => Str};
+
     ArgStructure : Type = {subj : Str; g : Gender; n : Number; 
-                    p : Person; np1 : Str}; -- TODO incomplete
+                    p : Person; np1 : Str; adj1 : Str};
 
     {- ARGUMENT FUNCTIONS -}
-    mkArg_ : NP -> ArgStructure = 
-      \sb -> {subj = sb.s; g = sb.g; n = sb.n; p = sb.p; np1 = ""};
-    mkArg_NP : NP -> NP -> ArgStructure =
-      \sb, np -> {subj = sb.s; g = sb.g; n = sb.n; p = sb.p; np1 = np.s};
+    mkArgVoid : NP -> ArgStructure = 
+      \sb -> {subj = sb.s; g = sb.g; n = sb.n; p = sb.p; np1 = ""; adj1 = ""};
 
+    mkArgNP : NP -> NP -> ArgStructure =
+      \sb, np -> {subj = sb.s; g = sb.g; n = sb.n; p = sb.p; np1 = np.s; adj1 = ""};
+
+    mkArgAdj : NP -> Adj -> ArgStructure = 
+      \sb, ad -> {subj = sb.s; g = sb.g; n = sb.n;
+                  p = sb.p; np1 = ""; adj1 = ad.s ! sb.n ! sb.g};
     
     {- LEXICAL FUNCTIONS -}
       {- NOUNS -}
@@ -77,6 +83,10 @@ instance SyntaxIta of Syntax =
     };
 
 
+    mkAdj : (rapido : Str) -> Adj = 
+      \rapido -> {s = adjectiveForms rapido};
+
+
     {- FEATURE FUNCTIONS -}
 
     singular : N_ -> N =
@@ -111,13 +121,17 @@ instance SyntaxIta of Syntax =
     {- GRAMMATICAL FUNCTIONS -}
     mkN' : N -> N' = \n -> n;
 
+    -- TODO handle preceding adjectives
+    adjN' : N' -> Adj -> N' =
+      \n, a -> {g = n.g; i = n.i; n = n.n; s = n.s ++ a.s ! n.n ! n.g};
+
     mkNP : D -> N' -> NP =
       \il, gatto -> {g = gatto.g; n = gatto.n; p = Third;
                      s = (il.s ! gatto.n ! gatto.g ! gatto.i) ++ gatto.s};
 
     mkV' : V -> ArgStructure -> V' =
       \v, args -> {head = v; prefix = args.subj; g = args.g; n = args.n;
-                   p = args.p; suffix = args.np1};
+                   p = args.p; suffix = args.np1 ++ args.adj1};
 
     auxBe : VP__ -> V' =
       \vp -> {head = stare; prefix = vp.prefix; g = vp.g; n = vp.n; p = vp.p;
@@ -132,7 +146,7 @@ instance SyntaxIta of Syntax =
 
     {- FUNCTIONAL WORDS -}
 
-    defDet : D = {s = table {
+    the : D = {s = table {
                         Sg => table {
                                 Masc => table {Con => "il"; Vow => "l'"; Complex => "lo"};
                                 Fem => table {Con | Complex => "la"; Vow => "l'"}};
@@ -140,7 +154,7 @@ instance SyntaxIta of Syntax =
                                 Masc => table {Con => "i"; Vow | Complex => "gli"};
                                 Fem => table {_ => "le"}}}};
 
-    indDet : D = {s = table {
+    a : D = {s = table {
                         Sg => table {
                                 Masc => table {Con => "un"; Vow => "un'"; Complex => "uno"};
                                 Fem => table {Con | Complex => "una"; Vow => "un'"}};

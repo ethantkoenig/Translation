@@ -1,7 +1,17 @@
-interface Lexicon = open Concepts, Syntax in {
+interface Lexicon = open Syntax in {
   oper
-    detLexicon : DetConcept => D;
-    nounLexicon : NounConcept => N_;
-    -- adjLexicon : AdjConcept => Adj;
-    verbLexicon : VerbConcept => V;
+    fast : Adj;
+    hungry : Adj;
+    tall : Adj;
+
+    boy : N_;
+    hunger : N_;
+    name : N_;
+    student : N_;
+  
+    be : V;
+    have : V;
+    meet : V;
+    see : V;
+    sleep : V;
 }

@@ -14,18 +14,24 @@ interface Syntax = {
     VP_ : Type;
     VP : Type;
 
+    Adj : Type;
+
     ArgStructure : Type;
 
     {- FUNCTIONS -}
 
+    {- Lexical functions are intentionally omitted because they vary from
+     - language to language -}
     mkNP : D -> N' -> NP;
     mkN' : N -> N';
+    adjN' : N' -> Adj -> N';
 
     mkVP__ : V' -> VP__;
     mkV' : V -> ArgStructure -> V';
 
-    mkArg_ : NP -> ArgStructure;
-    mkArg_NP : NP -> NP -> ArgStructure;
+    mkArgVoid : NP -> ArgStructure;
+    mkArgNP : NP -> NP -> ArgStructure;
+    mkArgAdj : NP -> Adj -> ArgStructure;
 
     singular : N_ -> N;
     plural : N_ -> N;
@@ -39,5 +45,9 @@ interface Syntax = {
     auxBe : VP__ -> V';
     auxHave : VP__ -> V';
 
-}
-  
+    {- FUNCTIONAL WORDS -}
+    a : D;
+    the : D;
+    
+
+}  

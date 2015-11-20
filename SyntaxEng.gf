@@ -8,6 +8,8 @@ instance SyntaxEng of Syntax = {
   oper
     {- TYPES -}
 
+    Adj : Type = {s : Str};
+
     N_ : Type = {s : Number => Str};
     N : Type = {n : Number; s : Str};
     N' : Type = {n : Number; s : Str};
@@ -26,13 +28,16 @@ instance SyntaxEng of Syntax = {
     -- Adj : Type = {s : Str};
     -- AdjP : Type = {s : Str};
 
-    ArgStructure : Type = {subj : Str; n : Number; p : Person; np1 : Str}; -- TODO incomplete
+    ArgStructure : Type = {subj : Str; n : Number; p : Person;
+                           np1 : Str; adj1 : Str}; 
 
     {- ARGUMENT FUNCTIONS -}
-    mkArg_ : NP -> ArgStructure = 
-      \sb -> {subj = sb.s; n = sb.n; p = sb.p; np1 = ""};
-    mkArg_NP : NP -> NP -> ArgStructure =
-      \sb, np -> {subj = sb.s; n = sb.n; p = sb.p; np1 = np.s};
+    mkArgVoid : NP -> ArgStructure = 
+      \sb -> {subj = sb.s; n = sb.n; p = sb.p; np1 = ""; adj1 = ""};
+    mkArgNP : NP -> NP -> ArgStructure =
+      \sb, np -> {subj = sb.s; n = sb.n; p = sb.p; np1 = np.s; adj1 = ""};
+    mkArgAdj : NP -> Adj -> ArgStructure =
+      \sb, ad -> {subj = sb.s; n = sb.n; p = sb.p; np1 = ""; adj1 = ad.s};
 
     {- INFLECTIONAL FUNCTIONS -}
     append_s : Str -> Str =
@@ -57,6 +62,9 @@ instance SyntaxEng of Syntax = {
                };
 
     {- LEXICAL FUNCTIONS -}
+
+    mkAdj : (happy : Str) -> Adj =
+      \happy -> {s = happy};
 
     mkN_ = overload {
       {- Nouns with regular plural forms -}
@@ -135,18 +143,18 @@ instance SyntaxEng of Syntax = {
 
     future : VP__ -> VP_ =
       \vp -> {t = Pres; prefix = vp.prefix; n = vp.n; p = vp.p;
-              head = will; suffix = vp.head.inf ++ vp.suffix};
+              head = _will; suffix = vp.head.inf ++ vp.suffix};
 
     cond : VP__ -> VP_ =
       \vp -> {t = Pres; prefix = vp.prefix; n = vp.n; p = vp.p;
-              head = would; suffix =vp.head.inf ++ vp.suffix}; 
+              head = _would; suffix =vp.head.inf ++ vp.suffix}; 
 
     positive : VP_ -> VP =
       \vp -> {s = vp.prefix ++ vp.head.conj ! vp.t ! vp.n ! vp.p ++ vp.suffix};
 
     negative : VP_ -> VP =
       \vp -> case vp.head.aux of
-             {False => {s = vp.prefix ++ do.conj ! vp.t ! vp.n ! vp.p ++ "not" 
+             {False => {s = vp.prefix ++ _do.conj ! vp.t ! vp.n ! vp.p ++ "not" 
                             ++ (vp.head.inf) ++ vp.suffix};
               True => {s = vp.prefix ++ vp.head.conj ! vp.t ! vp.n ! vp.p ++ "not" ++ vp.suffix}
              };  
@@ -154,15 +162,18 @@ instance SyntaxEng of Syntax = {
     {- GRAMMATICAL FUNCTIONS -}
     mkN' : N -> N' = \n -> n;
 
-    --adjN' : N' -> Adj -> N' =
-    --  \dog, fast -> {n = dog.n; s = fast.s ++ dog.s};
+    adjN' : N' -> Adj -> N' =
+      \dog, fast -> {n = dog.n; s = fast.s ++ dog.s};
+
+
 
     mkNP : D -> N' -> NP =
       \the, dog -> {n = dog.n; p = Third; s = the.s ! (dog.n) ++ dog.s };
 
   
     mkV' : V -> ArgStructure -> V' =
-      \v, as -> {prefix = as.subj; n = as.n; p = as.p; head = v; suffix = as.np1};
+      \v, as -> {prefix = as.subj; n = as.n; p = as.p; head = v;
+                 suffix = as.np1 ++ as.adj1};
 
     {-
     addAux : Aux -> VP__ -> V' =
@@ -177,7 +188,7 @@ instance SyntaxEng of Syntax = {
               suffix = vp.head.pres ++ vp.suffix}; -- TODO change pres to presPart
 
     auxHave : VP__ -> V' =
-      \vp -> {head = have; prefix = vp.prefix; n = vp.n; p = vp.p;
+      \vp -> {head = _have; prefix = vp.prefix; n = vp.n; p = vp.p;
               suffix = vp.head.past ++ vp.suffix};
 
     mkVP__ : V' -> VP__ = \v' -> v';
@@ -188,8 +199,8 @@ instance SyntaxEng of Syntax = {
     the : D = {s = table {_ => "the"}};
 
     be : V = _mkV True "be" "being" "been" "am" "are" "is" "was" "were";
-    do : V = _mkV True "do" "did";
-    have : V = _mkV True "have" "having" "had" "have" "have" "has" "had" "had";
-    will : V = _modal "will";
-    would : V = _modal "would";
+    _do : V = _mkV True "do" "did";
+    _have : V = _mkV True "have" "having" "had" "have" "have" "has" "had" "had";
+    _will : V = _modal "will";
+    _would : V = _modal "would";
 }

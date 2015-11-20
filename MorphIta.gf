@@ -7,6 +7,32 @@ resource MorphIta = {
     NounInitial = Con | Vow | Complex;
     Aux = Avere | Essere;
   oper
+    {- GENERAL FUNCTIONS -}
+    pluralize : (gatto : Str) -> Str =
+      \gatto -> case gatto of {
+                  gatt + "ca" => gatt + "che";
+                  gatt + "co" => gatt + "chi";
+                  gatt + "ga" => gatt + "ghe";
+                  gatt + "go" => gatt + "ghi";
+                  gatt + "a"=> gatt + "e";
+                  gatt + "i" + ("e" | "o") => gatt + "i";
+                  gatt + ("e" | "o") => gatt + "i";
+                  _ => gatto
+                };
+
+
+    {- FUNCTIONS FOR ADJECTIVES -}
+    adjectiveForms : (rapido : Str) -> Number => Gender => Str =
+      \rapido -> case rapido of {
+                   rapid + "o" => table {Sg => table {Masc => rapid + "o";
+                                                      Fem => rapid + "a"};
+                                         Pl => table {Masc => pluralize (rapid + "o");
+                                                      Fem => pluralize (rapid + "a")}};
+                   rapid + "e" => table {Sg => \\_ => rapid + "e";
+                                         Pl => \\_ => rapid + "i"};
+                   _ => \\_, _ => rapido  
+                 };
+
     {- FUNCTIONS FOR NOUNS -}
     inferGender : (gatto : Str) -> Gender =
       \gatto -> case gatto of {
@@ -25,16 +51,7 @@ resource MorphIta = {
                   _ => Con
                 };
 
-    pluralize : (gatto : Str) -> Str =
-      \gatto -> case gatto of {
-                  gatt + "ca" => gatt + "che";
-                  gatt + "co" => gatt + "chi";
-                  gatt + "ga" => gatt + "ghe";
-                  gatt + "go" => gatt + "ghi";
-                  gatt + "a"=> gatt + "e";
-                  gatt + ("e" | "o") => gatt + "i";
-                  _ => gatto
-                };
+
 
     {- FUNCTIONS FOR VERBS -}
     

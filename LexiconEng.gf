@@ -1,18 +1,21 @@
 instance LexiconEng of Lexicon = 
     open Concepts, SyntaxEng in {
   oper
-    detLexicon = table {A => a; The => the};
+    fast = mkAdj "fast";
+    hungry = mkAdj "hungry";
+    tall = mkAdj "tall";
 
-    nounLexicon = table {
-                    Boy => mkN_ "boy";
-                    Hunger => mkN_ "hunger";
-                    Name => mkN_ "name";
-                    Student => mkN_ "student"
-                  };
+    boy = mkN_ "boy";
+    hunger = mkN_ "hunger";
+    name = mkN_ "name";
+    student = mkN_ "student";
 
-    verbLexicon = table {
-                    Sleep => mkV "sleep" "slept";
-                    See => mkV "see" "seeing" "seen" "see" "see" "sees" "saw" "saw";
-                    Meet => mkV "meet" "met"
-                  };
+    -- be = mkV "be" "being" "been" "am" "are" "is" "was" "were";
+    be = SyntaxEng.be;
+    have = mkV "have" "having" "had" "have" "have" "has" "had" "had";
+    meet = mkV "meet" "met";    
+    see = mkV "see" "seeing" "seen" "see" "see" "sees" "saw" "saw";
+    sleep = mkV "sleep" "slept";
+
+
 }
