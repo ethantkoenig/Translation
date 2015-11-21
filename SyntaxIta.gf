@@ -1,47 +1,47 @@
 instance SyntaxIta of Syntax = 
-    open MorphIta, Utils, UtilsIta in {
+    open Maybe, MorphIta, Prelude, Utils, UtilsIta in {
   param
-    Polarity = Pos | Neg;
     Tense = Pres | Past | Fut | Cond;
+    Case = Nom | Acc | Dat | Ref;
   oper
     {- TYPES -}
-    N_ : Type = {g : Gender; i : NounInitial ; s : Number => Str};
-    N : Type = {g : Gender; n : Number; i : NounInitial; s : Str};
-    N' : Type = {g : Gender; n : Number; i : NounInitial; s : Str};
-    NP : Type = {g : Gender; n : Number; p : Person; s : Str};
+    Adj : Type = {s : Number => Gender => Str};
 
     D : Type = {s : Number => Gender => NounInitial => Str};
+
+    N_ : Type = {gend : Gender; init : NounInitial ; s : Number => Str};
+    N : Type = N';
+    N' : Type = {gend : Gender; num : Number; init : NounInitial; s : Str};
+    ProNP : Type = NP;
+    NP : Type = {gend : Gender; num : Number; person : Person; 
+                 s : Case => Str; possessive : Maybe (Number => Gender => Str)};
 
     V : Type = {aux : Aux; inf : Str; presPart : Str;
                 pastPart : Number => Gender => Str;
                 conj : Tense => Number => Person => Str};
-    V' : Type = {head : V; prefix : Str; g : Gender; n : Number; 
-                 p : Person; suffix : Str};
+    V' : Type = {head : V; prefix : Str; gend : Gender; num : Number; 
+                 person : Person; suffix : Str};
     VP__ : Type = V';
-    VP_ : Type = {t : Tense; head : V; prefix : Str; g : Gender; n : Number; 
-                  p : Person; suffix : Str};
+    VP_ : Type = {tense : Tense; head : V; prefix : Str; gend : Gender;
+                  num : Number; person : Person; suffix : Str};
     VP : Type = {s : Str}; 
 
-    Adj : Type = {s : Number => Gender => Str};
-
-    ArgStructure : Type = {subj : Str; g : Gender; n : Number; 
-                           p : Person; np1 : Str; adj1 : Str};
+    ArgStructure : Type = {subj : NP; np1 : Str; adj1 : Str};
 
     {- ARGUMENT FUNCTIONS -}
     mkArgVoid : NP -> ArgStructure = 
-      \sb -> {subj = sb.s; g = sb.g; n = sb.n; p = sb.p; np1 = ""; adj1 = ""};
+      \sb -> {subj = sb; np1 = ""; adj1 = ""};
 
     mkArgNP : NP -> NP -> ArgStructure =
-      \sb, np -> {subj = sb.s; g = sb.g; n = sb.n; p = sb.p; np1 = np.s; adj1 = ""};
+      \sb, np -> {subj = sb; np1 = np.s ! Acc; adj1 = ""};
 
     mkArgAdj : NP -> Adj -> ArgStructure = 
-      \sb, ad -> {subj = sb.s; g = sb.g; n = sb.n;
-                  p = sb.p; np1 = ""; adj1 = ad.s ! sb.n ! sb.g};
+      \sb, ad -> {subj = sb; np1 = ""; adj1 = ad.s ! sb.num ! sb.gend};
     
     {- LEXICAL FUNCTIONS -}
       {- NOUNS -}
     _constructN_ : (gnd : Gender) -> (uomo, uomini : Str) -> N_ =
-      \gnd, uomo, uomini -> {g = gnd; i = nounInitial uomo;
+      \gnd, uomo, uomini -> {gend = gnd; init = nounInitial uomo;
                              s = table {Sg => uomo; Pl => uomini}};
 
     mkN_ = overload {
@@ -53,6 +53,16 @@ instance SyntaxIta of Syntax =
 
       mkN_ : (gnd : Gender) -> (uomo, uomini : Str) -> N_ = _constructN_;
     };
+
+    _mkProNP : (gend : Gender) -> (num : Number) -> (person : Person)
+               -> (lui, lo, gli, si, suo, sua, suoi, sue : Str) -> ProNP =
+      \gend, num, person, lui, lo, gli, si, suo, sua, suoi, sue ->
+        {gend = gend; num = num; person = person; isPronoun = True;
+         s = table {Nom => lui; Acc => lo; Dat => gli; Ref => si};
+         possessive = Just (Number => Gender => Str) 
+                          (table {Sg => table {Masc => suo; Fem => sua};
+                                 Pl => table {Masc => suoi; Fem => sue}})};
+        
 
       {- VERBS -}
     _constructV : (aux : Aux) -> (avere, avendo, avuto : Str)
@@ -89,58 +99,91 @@ instance SyntaxIta of Syntax =
 
     {- FEATURE FUNCTIONS -}
 
+
+    {-
+    nonreflexive : ProNP -> NP = \pr -> pr;
+
+    reflexive : ProNP -> NP =
+      \pr -> {gend = pr.gend; num = pr.num; person = pr.person; 
+              s = table {Nom => nonword; Acc => pr.s ! Ref; c => pr.s ! c}};
+    -}    
+
     singular : N_ -> N =
-      \gatto -> {g = gatto.g; i = gatto.i; n = Sg; s = gatto.s ! Sg};
+      \gatto -> {gend = gatto.gend; init = gatto.init; 
+                 num = Sg; s = gatto.s ! Sg};
 
     plural : N_ -> N =
-      \gatto -> {g = gatto.g; i = gatto.i; n = Pl; s = gatto.s ! Pl};
+      \gatto -> {gend = gatto.gend; init = gatto.init;
+                 num = Pl; s = gatto.s ! Pl};
 
     present : VP__ -> VP_ =
-      \vp -> {t = Pres; prefix = vp.prefix; g = vp.g; n = vp.n; p = vp.p;
-              head = vp.head; suffix = vp.suffix};
+      \vp -> {tense = Pres; prefix = vp.prefix; gend = vp.gend; num = vp.num;
+              person = vp.person; head = vp.head; suffix = vp.suffix};
     
     past : VP__ -> VP_ =
-      \vp -> {t = Pres; prefix = vp.prefix; g = vp.g; n = vp.n; p = vp.p;
+      \vp -> {tense = Pres; prefix = vp.prefix; gend = vp.gend; num = vp.num;
+              person = vp.person;
               head = case vp.head.aux of {Avere => avere; Essere => essere}; 
-              suffix = vp.head.pastPart ! vp.n ! vp.g ++ vp.suffix};
+              suffix = vp.head.pastPart ! vp.num ! vp.gend ++ vp.suffix};
 
     future : VP__ -> VP_ = 
-      \vp -> {t = Fut; prefix = vp.prefix; g = vp.g; n = vp.n; p = vp.p;
-              head = vp.head; suffix = vp.suffix};
+      \vp -> {tense = Fut; prefix = vp.prefix; gend = vp.gend; num = vp.num; 
+              person = vp.person; head = vp.head; suffix = vp.suffix};
 
     cond : VP__ -> VP_ =
-      \vp -> {t = Cond; prefix = vp.prefix; g = vp.g; n = vp.n; p = vp.p; 
-              head = vp.head; suffix = vp.suffix};
+      \vp -> {tense = Cond; prefix = vp.prefix; gend = vp.gend; num = vp.num;
+              person = vp.person; head = vp.head; suffix = vp.suffix};
 
     positive : VP_ -> VP =
-      \vp -> {s = vp.prefix ++ vp.head.conj ! vp.t ! vp.n ! vp.p ++ vp.suffix};
+      \vp -> {s = vp.prefix ++ vp.head.conj ! vp.tense ! vp.num ! vp.person
+                  ++ vp.suffix};
 
     negative : VP_ -> VP =
-      \vp -> {s = vp.prefix ++ "non" ++ vp.head.conj ! vp.t ! vp.n ! vp.p ++ vp.suffix};
+      \vp -> {s = vp.prefix ++ "non" ++ vp.head.conj ! vp.tense ! vp.num ! vp.person
+                  ++ vp.suffix};
 
     {- GRAMMATICAL FUNCTIONS -}
     mkN' : N -> N' = \n -> n;
 
     -- TODO handle preceding adjectives
     adjN' : N' -> Adj -> N' =
-      \n, a -> {g = n.g; i = n.i; n = n.n; s = n.s ++ a.s ! n.n ! n.g};
+      \n, a -> {gend = n.gend; init = n.init; num = n.num;
+                s = n.s ++ a.s ! n.num ! n.gend};
 
     mkNP : D -> N' -> NP =
-      \il, gatto -> {g = gatto.g; n = gatto.n; p = Third;
-                     s = (il.s ! gatto.n ! gatto.g ! gatto.i) ++ gatto.s};
+      \il, gatto -> {gend = gatto.gend; num = gatto.num; person = Third;
+                     s = \\_ => (il.s ! gatto.num ! gatto.gend ! gatto.init) ++ gatto.s;
+                     possessive = Nothing (Number => Gender => Str) (\\_, _ => "")};
+
+    npOfProNP : ProNP -> NP = \pronp -> pronp;
+
+    possessive : NP -> N' -> NP =
+      \owner, ownee -> 
+        {gend = ownee.gend; num = ownee.num; person = Third;
+         s = case isJust (Number => Gender => Str) owner.possessive of {
+               False => \\c => (definite.s ! ownee.num ! ownee.gend ! ownee.init)
+                               ++ ownee.s ++ "di" ++ owner.s ! c;
+               True => let poss : Number => Gender => Str =
+                         fromJust (Number => Gender => Str) owner.possessive in
+                       \\c => (definite.s ! ownee.num ! ownee.gend ! Con)
+                              ++ (poss ! ownee.num ! ownee.gend) ++ ownee.s
+             };
+         possessive = Nothing (Number => Gender => Str) (\\_, _ => "")};
 
     mkV' : V -> ArgStructure -> V' =
-      \v, args -> {head = v; prefix = args.subj; g = args.g; n = args.n;
-                   p = args.p; suffix = args.np1 ++ args.adj1};
+      \v, args -> let subj : NP = args.subj in
+                  {head = v; prefix = subj.s ! Nom; gend = subj.gend;
+                   num = subj.num; person = subj.person;
+                   suffix = args.np1 ++ args.adj1};
 
     auxBe : VP__ -> V' =
-      \vp -> {head = stare; prefix = vp.prefix; g = vp.g; n = vp.n; p = vp.p;
-              suffix = vp.head.presPart ++ vp.suffix}; 
+      \vp -> {head = stare; prefix = vp.prefix; gend = vp.gend; num = vp.num;
+              person = vp.person; suffix = vp.head.presPart ++ vp.suffix}; 
 
     auxHave : VP__ -> V' =
       \vp -> {head = case vp.head.aux of {Avere => avere; Essere => essere};
-              prefix = vp.prefix; g = vp.g; n = vp.n; p = vp.p;
-              suffix = vp.head.pastPart ! vp.n ! vp.g ++ vp.suffix};
+              prefix = vp.prefix; gend = vp.gend; num = vp.num; person = vp.person;
+              suffix = vp.head.pastPart ! vp.num ! vp.gend ++ vp.suffix};
 
     mkVP__ : V' -> VP__ = \v' -> v';
 
@@ -158,21 +201,19 @@ instance SyntaxIta of Syntax =
                         Sg => table {
                                 Masc => table {Con => "un"; Vow => "un'"; Complex => "uno"};
                                 Fem => table {Con | Complex => "una"; Vow => "un'"}};
-                        Pl => table {
+                        Pl => table { -- TODO plural indefinite case
                                 Masc => table {Con => "dei"; Vow | Complex => "degli"};
                                 Fem => table {_ => "delle"}}}};
 
     voidD : D = {s = \\_, _, _ => ""};
 
-    -- TODO does not work for pronouns in object position 
-    i : NP = {g = Masc; n = Sg; p = First; s = ""};
-    you : NP = {g = Masc; n = Sg; p = Second; s = ""};
-    he : NP = {g = Masc; n = Sg; p = Third; s = ""};
-    she : NP = {g = Fem; n = Sg; p = Third; s = ""};
-    we : NP = {g = Masc; n = Pl; p = First; s = ""};
-    yall : NP = {g = Masc; n = Pl; p = Second; s = ""};
-    they : NP = {g = Masc; n = Pl; p = Third; s = ""};
-
+    i : ProNP = _mkProNP Masc Sg First "" "mi" "mi" "mi" "mio" "mia" "miei" "mie"; 
+    you : ProNP = _mkProNP Masc Sg Second "" "ti" "ti" "ti" "tuo" "tua" "tuoi" "tue";
+    he : ProNP = _mkProNP Masc Sg Third "" "lo" "gli" "si" "suo" "sua" "suoi" "sue";
+    she : ProNP = _mkProNP Fem Sg Third "" "la" "le" "si" "suo" "sua" "suoi" "sue";
+    we : ProNP = _mkProNP Masc Pl First "" "ci" "ci" "ci" "nostro" "nostra" "nostri" "nostre"; 
+    yall : ProNP = _mkProNP Masc Pl Second "" "vi" "vi" "vi" "vostro" "vostra" "vostri" "vostre"; 
+    they : ProNP = _mkProNP Masc Pl Third "" "li" "loro" "si" "loro" "loro" "loro" "loro";
   
     essere : V = mkV Essere "essere" "essendo" "stato" "sono" "sei" "e'" 
                               "siamo" "siete" "sono" "sa";

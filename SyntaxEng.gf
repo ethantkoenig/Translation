@@ -1,86 +1,71 @@
-instance SyntaxEng of Syntax = open Utils in {
+instance SyntaxEng of Syntax = open MorphEng, Prelude, Utils in {
   param
     Tense = Pres | Past;
+    Case = Nom | Acc | Pos | Ref; -- TODO Ref currently not handled
   oper
     {- TYPES -}
 
     Adj : Type = {s : Str};
 
-    N_ : Type = {s : Number => Str};
-    N : Type = {n : Number; s : Str};
-    N' : Type = {n : Number; s : Str};
-    NP : Type = {n : Number; p : Person; s : Str};
+    N_ : Type = {s : Number => Case => Str};
+    N : Type = {num : Number; s : Case => Str};
+    N' : Type = N;
+    ProNP : Type = NP;
+    NP : Type = {num : Number; person : Person; s : Case => Str};
+
 
     D : Type = {s : Number => Str};
 
-    V : Type = {aux : Bool; inf : Str; pres : Str; past : Str;
+    V : Type = {aux : Bool; inf : Str; presPart : Str; pastPart : Str;
                 conj : Tense => Number => Person => Str};
-    V' : Type = {prefix : Str; n : Number; p : Person; head : V; suffix : Str};
+    V' : Type = {prefix : Str; num : Number; person : Person;
+                 head : V; suffix : Str};
     VP__ : Type = V';
-    VP_ : Type = {t : Tense; prefix : Str; n : Number; p : Person; 
+    VP_ : Type = {tense : Tense; prefix : Str; num : Number; person : Person; 
                   head : V; suffix : Str};
     VP : Type = {s : Str};
 
-    -- Adj : Type = {s : Str};
-    -- AdjP : Type = {s : Str};
-
-    ArgStructure : Type = {subj : Str; n : Number; p : Person;
-                           np1 : Str; adj1 : Str}; 
+    ArgStructure : Type = {subj : NP; np1 : Str; adj1 : Str}; 
 
     {- ARGUMENT FUNCTIONS -}
     mkArgVoid : NP -> ArgStructure = 
-      \sb -> {subj = sb.s; n = sb.n; p = sb.p; np1 = ""; adj1 = ""};
+      \sb -> {subj = sb; np1 = ""; adj1 = ""};
     mkArgNP : NP -> NP -> ArgStructure =
-      \sb, np -> {subj = sb.s; n = sb.n; p = sb.p; np1 = np.s; adj1 = ""};
+      \sb, np -> {subj = sb; np1 = np.s ! Acc; adj1 = ""};
     mkArgAdj : NP -> Adj -> ArgStructure =
-      \sb, ad -> {subj = sb.s; n = sb.n; p = sb.p; np1 = ""; adj1 = ad.s};
+      \sb, ad -> {subj = sb; np1 = ""; adj1 = ad.s};
 
-    {- INFLECTIONAL FUNCTIONS -}
-    append_s : Str -> Str =
-      \dog -> case dog of {
-                _ + ("a" | "e" | "i" | "o" | "u") + "o" => dog + "s";
-                _ + ("s" | "x" | "sh" | "o") =>  dog + "es";
-                _ + ("a" | "e" | "o" | "u" ) + "y" => dog + "s";
-                x + "y" => x + "ies";
-                _ => dog + "s"
-              };
 
-    -- TODO
-    append_ed : Str -> Str =
-      \walk -> case walk of {
-               _ => walk + "ed"
-               };
-
-    -- TODO
-    append_ing : Str -> Str =
-      \walk -> case walk of {
-               _ => walk + "ing"
-               };
 
     {- LEXICAL FUNCTIONS -}
 
     mkAdj : (happy : Str) -> Adj =
       \happy -> {s = happy};
 
-    mkN_ = overload {
-      {- Nouns with regular plural forms -}
-      mkN_ : Str -> N_ =
-        \dog -> {s = table { Sg => dog; Pl => append_s dog}};
-
-      {- Nouns with irregular plural forms -}
-      mkN_ : Str -> Str -> N_ =
-        \dog, dogs -> {s = table { Sg => dog; Pl => dogs}};
-
-      
-    };
 
     mkD : Str -> Str -> D =
       \this, those -> {s = table {Sg => this; Pl => those}};
 
-     _constructV : (aux : Bool ) -> (be, being, been, am,
+
+    _constructN_ : (dog, dogs : Str) -> N_ =
+      \dog, dogs -> {s = table { 
+                           Sg => table {Pos => addPossessive dog; _ => dog};
+                           Pl => table {Pos => addPossessive dogs; _ => dogs}}};
+
+    mkN_ = overload {
+      {- Nouns with regular plural forms -}
+      mkN_ : Str -> N_ =
+        \dog -> _constructN_ dog (append_s dog);
+
+      {- Nouns with irregular plural forms -}
+      mkN_ : Str -> Str -> N_ = _constructN_;
+    };
+
+
+    _constructV : (aux : Bool ) -> (be, being, been, am,
                                      are, is, was, were : Str) -> V =
       \aux, be, being, been, am, are, is, was, were ->
-          {aux = aux; inf = be; pres = being; past = been;
+          {aux = aux; inf = be; presPart = being; pastPart = been;
            conj = table 
                   {Pres => table
                            {Sg => table
@@ -125,69 +110,75 @@ instance SyntaxEng of Syntax = open Utils in {
       };
       
     {- FEATURE FUNCTIONS -}
+    {-
+    nonreflexive : ProNP -> Nperson = \pronp -> pronp;
+
+    reflexive : ProNP -> NP =
+      \pr -> {num = pr.num; person = pr.p; s = table {Nom | Ref => nonword; Acc => pr.s ! Ref;
+                                             c => pr.s ! c}}; -}
+
     singular : N_ -> N =
-      \dog -> {n = Sg; s = dog.s ! Sg};
+      \dog -> {num = Sg; s = dog.s ! Sg};
 
     plural : N_ -> N = 
-      \dog -> {n = Pl; s = dog.s ! Pl};
+      \dog -> {num = Pl; s = dog.s ! Pl};
 
     present : VP__ -> VP_ =
-      \vp -> {t = Pres; prefix = vp.prefix; n = vp.n; p = vp.p; 
+      \vp -> {tense = Pres; prefix = vp.prefix; num = vp.num; person = vp.person; 
               head = vp.head; suffix = vp.suffix};
     
     past : VP__ -> VP_ =
-      \vp -> {t = Past; prefix = vp.prefix; n = vp.n; p = vp.p;
-              head = vp.head; suffix = vp.suffix};
+      \vp -> {tense = Past; prefix = vp.prefix; num = vp.num;
+              person = vp.person; head = vp.head; suffix = vp.suffix};
 
     future : VP__ -> VP_ =
-      \vp -> {t = Pres; prefix = vp.prefix; n = vp.n; p = vp.p;
+      \vp -> {tense = Pres; prefix = vp.prefix; num = vp.num; person = vp.person;
               head = _will; suffix = vp.head.inf ++ vp.suffix};
 
     cond : VP__ -> VP_ =
-      \vp -> {t = Pres; prefix = vp.prefix; n = vp.n; p = vp.p;
+      \vp -> {tense = Pres; prefix = vp.prefix; num = vp.num; person = vp.person;
               head = _would; suffix =vp.head.inf ++ vp.suffix}; 
 
     positive : VP_ -> VP =
-      \vp -> {s = vp.prefix ++ vp.head.conj ! vp.t ! vp.n ! vp.p ++ vp.suffix};
+      \vp -> {s = vp.prefix ++ vp.head.conj ! vp.tense ! vp.num ! vp.person 
+                            ++ vp.suffix};
 
     negative : VP_ -> VP =
       \vp -> case vp.head.aux of
-             {False => {s = vp.prefix ++ _do.conj ! vp.t ! vp.n ! vp.p ++ "not" 
-                            ++ (vp.head.inf) ++ vp.suffix};
-              True => {s = vp.prefix ++ vp.head.conj ! vp.t ! vp.n ! vp.p ++ "not" ++ vp.suffix}
+             {False => {s = vp.prefix ++ _do.conj ! vp.tense ! vp.num ! vp.person
+                            ++ "not" ++ (vp.head.inf) ++ vp.suffix};
+              True => {s = vp.prefix ++ vp.head.conj ! vp.tense ! vp.num ! vp.person
+                           ++ "not" ++ vp.suffix}
              };  
 
     {- GRAMMATICAL FUNCTIONS -}
     mkN' : N -> N' = \n -> n;
 
     adjN' : N' -> Adj -> N' =
-      \dog, fast -> {n = dog.n; s = fast.s ++ dog.s};
-
-
+      \dog, fast -> {num = dog.num; s = \\c => fast.s ++ dog.s ! c};
 
     mkNP : D -> N' -> NP =
-      \the, dog -> {n = dog.n; p = Third; s = the.s ! (dog.n) ++ dog.s };
+      \the, dog -> {num = dog.num; person = Third; 
+                    s = \\c => the.s ! dog.num ++ dog.s ! c};
 
+    possessive : NP -> N' -> NP =
+      \np, n' -> {num = n'.num; person = Third;
+                  s = \\c => np.s ! Pos ++ n'.s ! c}; -- TODO need to think more about handling case here
+
+    npOfProNP : ProNP -> NP = \pronp -> pronp; 
   
     mkV' : V -> ArgStructure -> V' =
-      \v, as -> {prefix = as.subj; n = as.n; p = as.p; head = v;
-                 suffix = as.np1 ++ as.adj1};
-
-    {-
-    addAux : Aux -> VP__ -> V' =
-      \a, vp -> case a of
-                {Be => {head = be; suffix = vp.head.pres ++ vp.suffix};
-                 Have => {head = have; suffix = vp.head.past ++ vp.suffix};
-                 _ => {head = vp.head; suffix = ""}
-                };-}
+      \v, as -> let subj : NP = as.subj in
+                {prefix = subj.s ! Nom; num = subj.num; person = subj.person;
+                 head = v; suffix = as.np1 ++ as.adj1};
 
     auxBe : VP__ -> V' =
-      \vp -> {head = be'; prefix = vp.prefix; n = vp.n; p = vp.p;
-              suffix = vp.head.pres ++ vp.suffix}; -- TODO change pres to presPart
+      \vp -> {head = be'; prefix = vp.prefix; num = vp.num; person = vp.person;
+              suffix = vp.head.presPart ++ vp.suffix}; -- TODO change pres to presPart
 
     auxHave : VP__ -> V' =
-      \vp -> {head = _have; prefix = vp.prefix; n = vp.n; p = vp.p;
-              suffix = vp.head.past ++ vp.suffix};
+      \vp -> {head = _have; prefix = vp.prefix; num = vp.num; person = vp.person;
+              suffix = vp.head.pastPart ++ vp.suffix};
 
     mkVP__ : V' -> VP__ = \v' -> v';
 
@@ -197,13 +188,27 @@ instance SyntaxEng of Syntax = open Utils in {
     definite : D = {s = \\_ => "the"};
     voidD : D = {s = \\_ => ""};
 
-    i : NP = {n = Sg; p = First; s = "I"};
-    you : NP = {n = Sg; p = Second; s = "you"};
-    he : NP = {n = Sg; p = Third; s = "he"};
-    she : NP = {n = Sg; p = Third; s = "she"};
-    we : NP = {n = Pl; p = First; s = "we"};
-    yall : NP = {n = Pl; p = Second; s = "you"};
-    they : NP = {n = Pl; p = Third; s = "they"};
+    i : ProNP = {num = Sg; person = First; 
+                      s = table {Nom => "I"; Acc => "me";
+                                 Pos => "my"; Ref => "myself"}};
+    you : ProNP = {num = Sg; person = Second;
+                        s = table {Nom | Acc => "you"; Pos => "your";
+                                   Ref => "yourself"}};
+    he : ProNP = {num = Sg; person = Third; 
+                       s = table {Nom => "he"; Acc => "him";
+                                  Pos => "his"; Ref => "himself"}};
+    she : ProNP = {num = Sg; person = Third;
+                        s = table {Nom => "she"; Acc | Pos => "her";
+                                   Ref => "herself"}};
+    we : ProNP = {num = Pl; person = First; 
+                       s = table {Nom => "we"; Acc => "us";
+                                  Pos => "our"; Ref => "ourselves"}};
+    yall : ProNP = {num = Pl; person = Second;
+                         s = table {Nom | Acc => "you"; Pos => "your";
+                                    Ref => "yourselves"}};
+    they : ProNP = {num = Pl; person = Third;
+                         s = table {Nom => "they"; Acc => "them";
+                                    Pos => "their"; Ref => "themselves"}};
 
     be' : V = _mkV True "be" "being" "been" "am" "are" "is" "was" "were";
     _do : V = _mkV True "do" "did";

@@ -7,11 +7,15 @@ incomplete concrete TransI of Trans =
     AbsArgStructure = ArgStructure;
   
     AbsAdj = Adj;
-    AbsNP = NP;
+
     AbsD = D;
+
+    AbsNP = NP;
+    AbsProNP = ProNP;
     AbsN' = N';
     AbsN = N;
     AbsN_ = N_;
+
     AbsVP = VP;
     AbsVP_ = VP_;
     AbsVP__ = VP__;
@@ -19,6 +23,8 @@ incomplete concrete TransI of Trans =
     AbsV = V;
   lin
     MakeNP = mkNP;
+    Possesive = possessive;
+    NPofProNP = npOfProNP;
     MakeN' = mkN';
     AdjoinN' = adjN';
     MakeVP__ = mkVP__;
@@ -28,6 +34,8 @@ incomplete concrete TransI of Trans =
     ArgNP = {a = ArNP};
     ArgAdj = {a = ArAdj};
 
+    -- Nonreflexive = nonreflexive;
+    -- Reflexive = reflexive;
     Singular = singular;
     Plural = plural;
     Positive = positive;

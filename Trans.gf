@@ -9,8 +9,10 @@ abstract Trans = {
 
     {- GRAMMATICAL CATEGORIES -}
 
-    AbsNP;
     AbsD;
+
+    AbsNP;
+    AbsProNP;
     AbsN';
     AbsN;
       AbsN_; {- Number -}
@@ -27,6 +29,8 @@ abstract Trans = {
   fun
     {- GRAMMATICAL RULES -}
       MakeNP : AbsD -> AbsN' -> AbsNP;
+      NPofProNP : AbsProNP -> AbsNP;
+      Possesive : AbsNP -> AbsN' -> AbsNP;
       AdjoinN' : AbsN' -> AbsAdj -> AbsN';
       MakeN' : AbsN -> AbsN';
       MakeVP__ : AbsV' -> AbsVP__;
@@ -43,6 +47,9 @@ abstract Trans = {
       MakeArgAdj : AbsNP -> AbsAdj -> AbsArgStructure ArgAdj;
 
     {- FEATURE FILLING RULES -}
+      -- Nonreflexive : AbsProNP -> AbsNP;
+      -- Reflexive : AbsProNP -> AbsNP;
+
       Singular : AbsN_ -> AbsN;
       Plural : AbsN_ -> AbsN;
       Positive : AbsVP_ -> AbsVP;
@@ -65,7 +72,7 @@ abstract Trans = {
       {- Nouns -}
       Boy, Hunger, Name, Student : AbsN_;
 
-      I, You, He, She, We, Yall, They : AbsNP;
+      I, You, He, She, We, Yall, They : AbsProNP;
 
       {- Verbs -}
       Sleep : AbsV ArgVoid;

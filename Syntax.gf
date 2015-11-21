@@ -4,6 +4,7 @@ interface Syntax = {
     N_ : Type;
     N : Type;
     N' : Type;
+    ProNP : Type;
     NP : Type;
 
     D : Type;
@@ -23,6 +24,10 @@ interface Syntax = {
     {- Lexical functions are intentionally omitted because they vary from
      - language to language -}
     mkNP : D -> N' -> NP;
+    possessive : NP -> N' -> NP;
+    npOfProNP : ProNP -> NP;
+    -- nonreflexive : ProNP -> NP;
+    -- reflexive: ProNP -> NP;
     mkN' : N -> N';
     adjN' : N' -> Adj -> N';
 
@@ -44,6 +49,6 @@ interface Syntax = {
     definite : D;
     voidD : D;
 
-    i, you, he, she, we, yall, they : NP;
+    i, you, he, she, we, yall, they : ProNP;
 
 }  
