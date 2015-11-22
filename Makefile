@@ -1,12 +1,20 @@
+# Should only be run from its own directory
+
 all: Trans. translate
 
 
-Trans.: TransEng.gf TransIta.gf
-	gf --make --output-format=haskell TransEng.gf TransIta.gf
+Trans.: GF/TransEng.gf GF/TransIta.gf
+	cd Haskell/ &&\
+	gf --make --output-format=haskell ../GF/TransEng.gf ../GF/TransIta.gf > /dev/null &&\
+	cd ..
 
 
-translate: Translator.hs
-	ghc --make -o translate Translator.hs
+translate: Haskell/Translator.hs
+	cd Haskell/ &&\
+	ghc --make -o translate Translator.hs &&\
+	cd ..
+
 
 clean:
-	rm *.gfo *.hi *.o Trans.pgf Trans.hs translate 2> /dev/null
+	rm GF/*.gfo Haskell/*.hi Haskell/*.o Haskell/Trans.pgf Haskell/Trans.hs\
+	   Haskell/translate 2> /dev/null

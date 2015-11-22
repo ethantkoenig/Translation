@@ -208,7 +208,7 @@ instance SyntaxEng of Syntax = open MorphEng, Prelude, Utils in {
     {- named verbBe to avoid naming conflicts with Lexicon -}
     beVerb = _be;
     _be : V = _constructV True "be" "being" "been" "am" "are" "is" "was" "were";
-    _do : V = _constructV True "do" "doing" "done" "do" "do" "does" "did" "did";
+    _do : V = _constructV True "do" "doing" "done" "do" "do" "do" "did" "did";
     _have : V = _constructV True "have" "having" "had" "have" "have" "has" "had" "had";
     _will : V = _modal "will";
     _would : V = _modal "would";
