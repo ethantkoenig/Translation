@@ -60,9 +60,11 @@ incomplete concrete TransI of Trans =
     VoidD = voidD;
   
     Boy = boy;
+    Dog = dog;
     Hunger = hunger;
     Name = name;
     Student = student;
+    Woman = woman;
 
     I = i;
     You = you;

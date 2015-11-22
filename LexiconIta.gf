@@ -6,9 +6,11 @@ instance LexiconIta of Lexicon =
     tall = mkAdj "alto";
 
     boy = mkN_ "ragazzo";
+    dog = mkN_ "cane";
     hunger = mkN_ Fem "fame";
     name = mkN_ "nome";
     student = mkN_ "studente";
+    woman = mkN_ "donna";
 
     -- TODO un-ASCII-ify
     be = mkV Essere "essere" "essendo" "stato" "sono" "sei" "e'"

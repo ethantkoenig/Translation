@@ -70,7 +70,7 @@ abstract Trans = {
       A, The, VoidD : AbsD;
 
       {- Nouns -}
-      Boy, Hunger, Name, Student : AbsN_;
+      Boy, Dog, Hunger, Name, Student, Woman : AbsN_;
 
       I, You, He, She, We, Yall, They : AbsProNP;
 

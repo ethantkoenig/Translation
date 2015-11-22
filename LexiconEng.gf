@@ -6,9 +6,11 @@ instance LexiconEng of Lexicon =
     tall = mkAdj "tall";
 
     boy = mkN_ "boy";
+    dog = mkN_ "dog";
     hunger = mkN_ "hunger";
     name = mkN_ "name";
     student = mkN_ "student";
+    woman = mkN_ "woman" "women";
 
     -- be = mkV "be" "being" "been" "am" "are" "is" "was" "were";
     be = be';

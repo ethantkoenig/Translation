@@ -18,11 +18,11 @@ instance SyntaxEng of Syntax = open MorphEng, Prelude, Utils in {
 
     V : Type = {aux : Bool; inf : Str; presPart : Str; pastPart : Str;
                 conj : Tense => Number => Person => Str};
-    V' : Type = {prefix : Str; num : Number; person : Person;
-                 head : V; suffix : Str};
+    V' : Type = {preface : Str; num : Number; person : Person;
+                 head : V; postface : Str};
     VP__ : Type = V';
-    VP_ : Type = {tense : Tense; prefix : Str; num : Number; person : Person; 
-                  head : V; suffix : Str};
+    VP_ : Type = {tense : Tense; preface : Str; num : Number; person : Person; 
+                  head : V; postface : Str};
     VP : Type = {s : Str};
 
     ArgStructure : Type = {subj : NP; np1 : Str; adj1 : Str}; 
@@ -124,31 +124,31 @@ instance SyntaxEng of Syntax = open MorphEng, Prelude, Utils in {
       \dog -> {num = Pl; s = dog.s ! Pl};
 
     present : VP__ -> VP_ =
-      \vp -> {tense = Pres; prefix = vp.prefix; num = vp.num; person = vp.person; 
-              head = vp.head; suffix = vp.suffix};
+      \vp -> {tense = Pres; preface = vp.preface; num = vp.num; person = vp.person; 
+              head = vp.head; postface = vp.postface};
     
     past : VP__ -> VP_ =
-      \vp -> {tense = Past; prefix = vp.prefix; num = vp.num;
-              person = vp.person; head = vp.head; suffix = vp.suffix};
+      \vp -> {tense = Past; preface = vp.preface; num = vp.num;
+              person = vp.person; head = vp.head; postface = vp.postface};
 
     future : VP__ -> VP_ =
-      \vp -> {tense = Pres; prefix = vp.prefix; num = vp.num; person = vp.person;
-              head = _will; suffix = vp.head.inf ++ vp.suffix};
+      \vp -> {tense = Pres; preface = vp.preface; num = vp.num; person = vp.person;
+              head = _will; postface = vp.head.inf ++ vp.postface};
 
     cond : VP__ -> VP_ =
-      \vp -> {tense = Pres; prefix = vp.prefix; num = vp.num; person = vp.person;
-              head = _would; suffix =vp.head.inf ++ vp.suffix}; 
+      \vp -> {tense = Pres; preface = vp.preface; num = vp.num; person = vp.person;
+              head = _would; postface =vp.head.inf ++ vp.postface}; 
 
     positive : VP_ -> VP =
-      \vp -> {s = vp.prefix ++ vp.head.conj ! vp.tense ! vp.num ! vp.person 
-                            ++ vp.suffix};
+      \vp -> {s = vp.preface ++ vp.head.conj ! vp.tense ! vp.num ! vp.person 
+                            ++ vp.postface};
 
     negative : VP_ -> VP =
       \vp -> case vp.head.aux of
-             {False => {s = vp.prefix ++ _do.conj ! vp.tense ! vp.num ! vp.person
-                            ++ "not" ++ (vp.head.inf) ++ vp.suffix};
-              True => {s = vp.prefix ++ vp.head.conj ! vp.tense ! vp.num ! vp.person
-                           ++ "not" ++ vp.suffix}
+             {False => {s = vp.preface ++ _do.conj ! vp.tense ! vp.num ! vp.person
+                            ++ "not" ++ (vp.head.inf) ++ vp.postface};
+              True => {s = vp.preface ++ vp.head.conj ! vp.tense ! vp.num ! vp.person
+                           ++ "not" ++ vp.postface}
              };  
 
     {- GRAMMATICAL FUNCTIONS -}
@@ -169,16 +169,16 @@ instance SyntaxEng of Syntax = open MorphEng, Prelude, Utils in {
   
     mkV' : V -> ArgStructure -> V' =
       \v, as -> let subj : NP = as.subj in
-                {prefix = subj.s ! Nom; num = subj.num; person = subj.person;
-                 head = v; suffix = as.np1 ++ as.adj1};
+                {preface = subj.s ! Nom; num = subj.num; person = subj.person;
+                 head = v; postface = as.np1 ++ as.adj1};
 
     auxBe : VP__ -> V' =
-      \vp -> {head = be'; prefix = vp.prefix; num = vp.num; person = vp.person;
-              suffix = vp.head.presPart ++ vp.suffix}; -- TODO change pres to presPart
+      \vp -> {head = be'; preface = vp.preface; num = vp.num; person = vp.person;
+              postface = vp.head.presPart ++ vp.postface}; -- TODO change pres to presPart
 
     auxHave : VP__ -> V' =
-      \vp -> {head = _have; prefix = vp.prefix; num = vp.num; person = vp.person;
-              suffix = vp.head.pastPart ++ vp.suffix};
+      \vp -> {head = _have; preface = vp.preface; num = vp.num; person = vp.person;
+              postface = vp.head.pastPart ++ vp.postface};
 
     mkVP__ : V' -> VP__ = \v' -> v';
 
