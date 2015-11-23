@@ -23,7 +23,7 @@ incomplete concrete TransI of Trans =
     AbsV = V;
   lin
     MakeNP = mkNP;
-    Possesive = possessive;
+    Possessive = possessive;
     NPofProNP = npOfProNP;
     MakeN' = mkN';
     AdjoinN' = adjN';

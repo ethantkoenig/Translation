@@ -16,5 +16,4 @@ translate: Haskell/Translator.hs
 
 
 clean:
-	rm GF/*.gfo Haskell/*.hi Haskell/*.o Haskell/Trans.pgf Haskell/Trans.hs\
-	   Haskell/translate 2> /dev/null
+	rm GF/*.gfo Haskell/*.hi Haskell/*.o Haskell/translate 2> /dev/null

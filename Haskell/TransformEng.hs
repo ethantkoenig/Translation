@@ -1,46 +1,52 @@
 module TransformEng where
 
-import PGF hiding (Tree)
-import qualified PGF
+-- import PGF hiding (Tree)
+-- import qualified PGF
 
 import Trans
+import TransUtils
 
 
 {- NORMALIZE -}
 normalizeVP :: GAbsVP -> GAbsVP
-normalizeVP (GPositive vp_) = GPositive (normalizeVP_ vp_)
-normalizeVP (GNegative vp_) = GNegative (normalizeVP_ vp_)
-
+normalizeVP = transformVP normalizeVP_
 
 normalizeVP_ :: GAbsVP_ -> GAbsVP_
-normalizeVP_ (GPresent (GMakeVP__ v')) = GPresent (GMakeVP__ (normalizeV' v'))
-normalizeVP_ (GPast (GMakeVP__ v')) = GPast (GMakeVP__ (normalizeV' v'))
-normalizeVP_ (GCond (GMakeVP__ v')) = GCond (GMakeVP__ (normalizeV' v'))
-normalizeVP_ (GFuture (GMakeVP__ v')) = GFuture (GMakeVP__ (normalizeV' v'))
+normalizeVP_ = transformVP_ normalizeVP__
+
+normalizeVP__ :: GAbsVP__ -> GAbsVP__
+normalizeVP__ = transformVP__ normalizeV'
 
 
 normalizeV' :: GAbsV' -> GAbsV'
-normalizeV' (GAuxBe (GMakeVP__ v')) = GAuxBe (GMakeVP__ (normalizeV' v'))
-normalizeV' (GAuxHave (GMakeVP__ v')) = GAuxHave (GMakeVP__ (normalizeV' v'))
+normalizeV' (GAuxBe vp__) = GAuxBe (normalizeVP__ vp__)
+normalizeV' (GAuxHave vp__) = GAuxHave (normalizeVP__ vp__)
+
+normalizeV' (GMakeV' GArgNP GTake args) =
+  case n_OfDirObj args of 
+    Just GPicture -> (GMakeV' GArgNP GDo args)
+    _ -> (GMakeV' GArgNP GTake args)
 
 normalizeV' v = v -- base case
 
 
 {- UNNORMALIZE -}
 unnormalizeVP :: GAbsVP -> GAbsVP
-unnormalizeVP (GPositive vp_) = GPositive (unnormalizeVP_ vp_)
-unnormalizeVP (GNegative vp_) = GNegative (unnormalizeVP_ vp_)
-
+unnormalizeVP = transformVP unnormalizeVP_
 
 unnormalizeVP_ :: GAbsVP_ -> GAbsVP_
-unnormalizeVP_ (GPresent (GMakeVP__ v')) = GPresent (GMakeVP__ (unnormalizeV' v'))
-unnormalizeVP_ (GPast (GMakeVP__ v')) = GPast (GMakeVP__ (unnormalizeV' v'))
-unnormalizeVP_ (GCond (GMakeVP__ v')) = GCond (GMakeVP__ (unnormalizeV' v'))
-unnormalizeVP_ (GFuture (GMakeVP__ v')) = GFuture (GMakeVP__ (unnormalizeV' v'))
+unnormalizeVP_ = transformVP_ unnormalizeVP__
 
+unnormalizeVP__ :: GAbsVP__ -> GAbsVP__
+unnormalizeVP__ = transformVP__ unnormalizeV'
 
 unnormalizeV' :: GAbsV' -> GAbsV'
-unnormalizeV' (GAuxBe (GMakeVP__ v')) = GAuxBe (GMakeVP__ (unnormalizeV' v'))
-unnormalizeV' (GAuxHave (GMakeVP__ v')) = GAuxHave (GMakeVP__ (unnormalizeV' v'))
+unnormalizeV' (GAuxBe vp__) = GAuxBe (unnormalizeVP__ vp__)
+unnormalizeV' (GAuxHave vp__) = GAuxHave (unnormalizeVP__ vp__)
+
+unnormalizeV' (GMakeV' GArgNP GDo args) =
+  case n_OfDirObj args of
+    Just GPicture -> (GMakeV' GArgNP GTake args)
+    _ -> (GMakeV' GArgNP GDo args)
 
 unnormalizeV' v = v -- base case

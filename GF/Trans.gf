@@ -30,7 +30,7 @@ abstract Trans = {
     {- GRAMMATICAL RULES -}
       MakeNP : AbsD -> AbsN' -> AbsNP;
       NPofProNP : AbsProNP -> AbsNP;
-      Possesive : AbsNP -> AbsN' -> AbsNP;
+      Possessive : AbsNP -> AbsN' -> AbsNP;
       AdjoinN' : AbsN' -> AbsAdj -> AbsN';
       MakeN' : AbsN -> AbsN';
       MakeVP__ : AbsV' -> AbsVP__;

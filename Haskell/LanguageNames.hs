@@ -10,7 +10,7 @@ lcp (x:xs) (y:ys)
   | x == y = x:(lcp xs ys)
   | otherwise = ""
 
-
+{- lcp of all element of list -}
 lcpOfList :: [String] -> String
 lcpOfList [] = ""
 lcpOfList (x:xs) = foldl lcp x xs
@@ -21,6 +21,5 @@ lcpOfList (x:xs) = foldl lcp x xs
  - such x exists, nondeterministically picks one -}
 selectBySuffix :: Show a => [a] -> String -> Maybe a
 selectBySuffix l suffix = 
-  let names = map show l in
-  let prefix = lcpOfList names in
+  let prefix = lcpOfList (map show l) in
   find (\x -> show x == prefix ++ suffix) l
