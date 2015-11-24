@@ -1,5 +1,5 @@
 instance LexiconIta of Lexicon =
-    open SyntaxIta, Utils, UtilsIta in {
+    open Prelude, SyntaxIta, Utils, UtilsIta in {
   oper
     fast = mkAdj "veloce";
     hungry = mkAdj "affamato";
@@ -7,9 +7,9 @@ instance LexiconIta of Lexicon =
 
     boy = mkN_ "ragazzo";
     dog = mkN_ "cane";
-    hunger = mkN_ Fem "fame";
+    hunger = mkN_ True Fem "fame";
     name = mkN_ "nome";
-    picture = mkN_ Fem "foto" "foto";
+    picture = mkN_ False Fem "foto" "foto";
     student = mkN_ "studente";
     woman = mkN_ "donna";
 

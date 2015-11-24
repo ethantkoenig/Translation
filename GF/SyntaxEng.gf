@@ -7,14 +7,14 @@ instance SyntaxEng of Syntax = open MorphEng, Prelude, Utils in {
 
     Adj : Type = {s : Str};
 
-    N_ : Type = {s : Number => Case => Str};
-    N : Type = {num : Number; s : Case => Str};
+    N_ : Type = {abstractOrMass : Bool; s : Number => Case => Str};
+    N : Type = {abstractOrMass : Bool; num : Number; s : Case => Str};
     N' : Type = N;
     ProNP : Type = NP;
     NP : Type = {num : Number; person : Person; s : Case => Str};
 
-
-    D : Type = {s : Number => Str};
+    {- Bool represents whether the N' is abstractOrMass -}
+    D : Type = {s : Bool => Number => Str};
 
     V : Type = {aux : Bool; inf : Str; presPart : Str; pastPart : Str;
                 conj : Tense => Number => Person => Str};
@@ -42,25 +42,29 @@ instance SyntaxEng of Syntax = open MorphEng, Prelude, Utils in {
     mkAdj : (happy : Str) -> Adj =
       \happy -> {s = happy};
 
-
+  {- TODO
     mkD : Str -> Str -> D =
       \this, those -> {s = table {Sg => this; Pl => those}};
+    -}
 
-
-    _constructN_ : (dog, dogs : Str) -> N_ =
-      \dog, dogs -> {s = table { 
-                           Sg => table {Pos => addPossessive dog; _ => dog};
-                           Pl => table {Pos => addPossessive dogs; _ => dogs}}};
+    _constructN_ : (abstractOrMass : Bool) -> (dog, dogs : Str) -> N_ =
+      \abstractOrMass, dog, dogs -> 
+        {abstractOrMass = abstractOrMass; 
+         s = table {Sg => table {Pos => addPossessive dog; _ => dog};
+                    Pl => table {Pos => addPossessive dogs; _ => dogs}}};
 
     mkN_ = overload {
+      {- Nouns with regular plural forms, not abstract or mass -}
+      mkN_ : (dog : Str) -> N_ =
+        \dog -> _constructN_ False dog (append_s dog);
+
       {- Nouns with regular plural forms -}
-      mkN_ : Str -> N_ =
-        \dog -> _constructN_ dog (append_s dog);
+      mkN_ : (abstractOrMass : Bool) -> (dog : Str) -> N_ =
+        \abstractOrMass, dog -> _constructN_ abstractOrMass dog (append_s dog);
 
       {- Nouns with irregular plural forms -}
-      mkN_ : Str -> Str -> N_ = _constructN_;
+      mkN_ : (abstractOrMass : Bool) -> (man, men : Str) -> N_ = _constructN_;
     };
-
 
     _constructV : (aux : Bool ) -> (be, being, been, am,
                                      are, is, was, were : Str) -> V =
@@ -113,10 +117,10 @@ instance SyntaxEng of Syntax = open MorphEng, Prelude, Utils in {
                                              c => pr.s ! c}}; -}
 
     singular : N_ -> N =
-      \dog -> {num = Sg; s = dog.s ! Sg};
+      \dog -> {abstractOrMass = dog.abstractOrMass; num = Sg; s = dog.s ! Sg};
 
     plural : N_ -> N = 
-      \dog -> {num = Pl; s = dog.s ! Pl};
+      \dog -> {abstractOrMass = dog.abstractOrMass; num = Pl; s = dog.s ! Pl};
 
     present : VP__ -> VP_ =
       \vp -> {tense = Pres; preface = vp.preface; num = vp.num; person = vp.person; 
@@ -150,11 +154,12 @@ instance SyntaxEng of Syntax = open MorphEng, Prelude, Utils in {
     mkN' : N -> N' = \n -> n;
 
     adjN' : N' -> Adj -> N' =
-      \dog, fast -> {num = dog.num; s = \\c => fast.s ++ dog.s ! c};
+      \dog, fast -> {abstractOrMass = dog.abstractOrMass; 
+                     num = dog.num; s = \\c => fast.s ++ dog.s ! c};
 
     mkNP : D -> N' -> NP =
       \the, dog -> {num = dog.num; person = Third; 
-                    s = \\c => the.s ! dog.num ++ dog.s ! c};
+                    s = \\c => the.s ! dog.abstractOrMass ! dog.num ++ dog.s ! c};
 
     possessive : NP -> N' -> NP =
       \np, n' -> {num = n'.num; person = Third;
@@ -179,9 +184,10 @@ instance SyntaxEng of Syntax = open MorphEng, Prelude, Utils in {
 
   
     {- FUNCTIONAL WORDS -}
-    indefinite : D = {s = table {_ => "a"}}; -- TODO
-    definite : D = {s = \\_ => "the"};
-    voidD : D = {s = \\_ => ""};
+    indefinite : D = {s = \\_ => table {Sg => "a"; Pl => nonword}}; -- TODO a vs. an
+    definite : D = {s = \\_, _ => "the"};
+    voidD : D = {s = table {False => table{Sg => nonword; Pl => ""};
+                            True => \\_ => ""}};
 
     i : ProNP = {num = Sg; person = First; 
                       s = table {Nom => "I"; Acc => "me";

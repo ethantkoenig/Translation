@@ -7,11 +7,12 @@ instance SyntaxIta of Syntax =
     {- TYPES -}
     Adj : Type = {s : Number => Gender => Str};
 
-    D : Type = {s : Number => Gender => NounInitial => Str};
+    {- Bool represents whether the N' is abstractOrMass -}
+    D : Type = {s : Bool => Number => Gender => NounInitial => Str};
 
-    N_ : Type = {gend : Gender; init : NounInitial ; s : Number => Str};
+    N_ : Type = {abstractOrMass : Bool; gend : Gender; init : NounInitial ; s : Number => Str};
     N : Type = N';
-    N' : Type = {gend : Gender; num : Number; init : NounInitial; s : Str};
+    N' : Type = {abstractOrMass : Bool; gend : Gender; num : Number; init : NounInitial; s : Str};
     ProNP : Type = NP;
     {- the possesive field is ignored for non-pronoun NPs -}
     NP : Type = {gend : Gender; num : Number; person : Person;
@@ -44,18 +45,26 @@ instance SyntaxIta of Syntax =
 
     {- LEXICAL FUNCTIONS -}
       {- NOUNS -}
-    _constructN_ : (gnd : Gender) -> (uomo, uomini : Str) -> N_ =
-      \gnd, uomo, uomini -> {gend = gnd; init = nounInitial uomo;
-                             s = table {Sg => uomo; Pl => uomini}};
+    _constructN_ : (abstractOrMass : Bool) -> (gnd : Gender)
+                   -> (uomo, uomini : Str) -> N_ =
+      \abstractOrMass, gnd, uomo, uomini -> 
+        {abstractOrMass = abstractOrMass; gend = gnd; init = nounInitial uomo;
+         s = table {Sg => uomo; Pl => uomini}};
 
     mkN_ = overload {
       mkN_ : (gatto : Str) -> N_ =
-        \gatto -> _constructN_ (inferGender gatto) gatto (pluralize gatto);
+        \gatto -> _constructN_ False (inferGender gatto) gatto (pluralize gatto);
 
-      mkN_ : (gnd : Gender) -> (gatto : Str) -> N_ =
-        \gnd, gatto -> _constructN_ gnd gatto (pluralize gatto);
+      mkN_ : (abstractOrMass : Bool) -> (gatto : Str) -> N_ =
+        \abstractOrMass, gatto -> _constructN_ abstractOrMass (inferGender gatto)
+                                               gatto (pluralize gatto);
 
-      mkN_ : (gnd : Gender) -> (uomo, uomini : Str) -> N_ = _constructN_;
+      mkN_ : (abstractOrMass : Bool) -> (gnd : Gender) -> (gatto : Str) -> N_ =
+        \abstractOrMass, gnd, gatto -> _constructN_ abstractOrMass gnd gatto
+                                                    (pluralize gatto);
+
+      mkN_ : (abstractOrMass : Bool) -> (gnd : Gender) 
+             -> (uomo, uomini : Str) -> N_ = _constructN_;
     };
 
     _mkProNP : (gend : Gender) -> (num : Number) -> (person : Person)
@@ -120,12 +129,12 @@ instance SyntaxIta of Syntax =
     -}
 
     singular : N_ -> N =
-      \gatto -> {gend = gatto.gend; init = gatto.init;
-                 num = Sg; s = gatto.s ! Sg};
+      \gatto -> {abstractOrMass = gatto.abstractOrMass; gend = gatto.gend;
+                 init = gatto.init; num = Sg; s = gatto.s ! Sg};
 
     plural : N_ -> N =
-      \gatto -> {gend = gatto.gend; init = gatto.init;
-                 num = Pl; s = gatto.s ! Pl};
+      \gatto -> {abstractOrMass = gatto.abstractOrMass; gend = gatto.gend;
+                 init = gatto.init; num = Pl; s = gatto.s ! Pl};
 
     present : VP__ -> VP_ =
       \vp -> {tense = Pres; subj = vp.subj; preface = vp.preface;
@@ -161,12 +170,13 @@ instance SyntaxIta of Syntax =
 
     -- TODO handle preceding adjectives
     adjN' : N' -> Adj -> N' =
-      \n, a -> {gend = n.gend; init = n.init; num = n.num;
-                s = n.s ++ a.s ! n.num ! n.gend};
+      \n, a -> {abstractOrMass = n.abstractOrMass; gend = n.gend; init = n.init;
+                num = n.num; s = n.s ++ a.s ! n.num ! n.gend};
 
     mkNP : D -> N' -> NP =
       \il, gatto -> {gend = gatto.gend; num = gatto.num; person = Third;
-                     s = \\_ => (il.s ! gatto.num ! gatto.gend ! gatto.init) ++ gatto.s;
+                     s = \\_ => (il.s ! gatto.abstractOrMass ! gatto.num 
+                                      ! gatto.gend ! gatto.init) ++ gatto.s;
                      isPronoun = False; possessive = \\_, _ => nonword};
 
     npOfProNP : ProNP -> NP = \pronp -> pronp;
@@ -175,9 +185,11 @@ instance SyntaxIta of Syntax =
       \owner, ownee ->
         {gend = ownee.gend; num = ownee.num; person = Third;
          s = case owner.isPronoun of {
-               False => \\c => (definite.s ! ownee.num ! ownee.gend ! ownee.init)
+               False => \\c => (definite.s ! ownee.abstractOrMass ! ownee.num
+                                           ! ownee.gend ! ownee.init)
                                ++ ownee.s ++ "di" ++ owner.s ! c;
-               True => \\c => (definite.s ! ownee.num ! ownee.gend ! Con)
+               True => \\c => (definite.s ! ownee.abstractOrMass ! ownee.num
+                                          ! ownee.gend ! Con)
                               ++ (owner.possessive ! ownee.num ! ownee.gend)
                               ++ ownee.s
              };
@@ -200,23 +212,26 @@ instance SyntaxIta of Syntax =
 
     {- FUNCTIONAL WORDS -}
 
-    definite : D = {s = table {
-                        Sg => table {
-                                Masc => table {Con => "il"; Vow => "l'"; Complex => "lo"};
-                                Fem => table {Con | Complex => "la"; Vow => "l'"}};
-                        Pl => table {
-                                Masc => table {Con => "i"; Vow | Complex => "gli"};
-                                Fem => table {_ => "le"}}}};
+    definite : D = 
+      {s = \\_ => table {
+                    Sg => table {
+                            Masc => table {Con => "il"; Vow => "l'"; Complex => "lo"};
+                            Fem => table {Con | Complex => "la"; Vow => "l'"}};
+                    Pl => table {
+                            Masc => table {Con => "i"; Vow | Complex => "gli"};
+                            Fem => table {_ => "le"}}}};
 
-    indefinite : D = {s = table {
-                        Sg => table {
-                                Masc => table {Con => "un"; Vow => "un'"; Complex => "uno"};
-                                Fem => table {Con | Complex => "una"; Vow => "un'"}};
-                        Pl => table { -- TODO plural indefinite case
-                                Masc => table {Con => "dei"; Vow | Complex => "degli"};
-                                Fem => table {_ => "delle"}}}};
+    indefinite : D = 
+      {s = \\_ => table {
+                    Sg => table {
+                            Masc => table {Con => "un"; Vow => "un'"; Complex => "uno"};
+                            Fem => table {Con | Complex => "una"; Vow => "un'"}};
+                    Pl => \\_, _ => nonword}};
 
-    voidD : D = {s = \\_, _, _ => ""};
+    voidD : D = 
+      {s = table {
+             False => table {Sg => \\_, _ => nonword; Pl => \\_, _ => ""};
+             True => \\_, _, _ => ""}};
 
     i : ProNP = _mkProNP Masc Sg First "" "mi" "mi" "mi" "mio" "mia" "miei" "mie";
     you : ProNP = _mkProNP Masc Sg Second "" "ti" "ti" "ti" "tuo" "tua" "tuoi" "tue";

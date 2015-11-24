@@ -12,7 +12,6 @@ import qualified TreeIta (normalizeVP, unnormalizeVP)
 
 
 {- Command line arguments: <PFG file> <from language> <to language> -}
-
 main :: IO ()
 main = do
   pfgFile:from:to:_ <- getArgs
