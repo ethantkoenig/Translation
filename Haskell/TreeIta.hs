@@ -1,11 +1,10 @@
-module TransformEng where
+module TreeIta where
 
 -- import PGF hiding (Tree)
 -- import qualified PGF
 
 import Trans
 import TransUtils
-
 
 {- NORMALIZE -}
 normalizeVP :: GAbsVP -> GAbsVP
@@ -19,13 +18,12 @@ normalizeVP__ = transformVP__ normalizeV'
 
 
 normalizeV' :: GAbsV' -> GAbsV'
-normalizeV' (GAuxBe vp__) = GAuxBe (normalizeVP__ vp__)
-normalizeV' (GAuxHave vp__) = GAuxHave (normalizeVP__ vp__)
+normalizeV' (GAuxBe (GMakeVP__ v')) = GAuxBe (GMakeVP__ (normalizeV' v'))
+normalizeV' (GAuxHave (GMakeVP__ v')) = GAuxHave (GMakeVP__ (normalizeV' v'))
 
-normalizeV' (GMakeV' GArgNP GTake args) =
-  case n_OfDirObj args of 
-    Just GPicture -> (GMakeV' GArgNP GDo args)
-    _ -> (GMakeV' GArgNP GTake args)
+normalizeV' (GMakeV' GArgNP GHave 
+              (GMakeArgNP subj (GMakeNP GVoidD (GMakeN' (GSingular GHunger))))) =
+  GMakeV' GArgAdj GBe (GMakeArgAdj subj GHungry)
 
 normalizeV' v = v -- base case
 
@@ -44,9 +42,11 @@ unnormalizeV' :: GAbsV' -> GAbsV'
 unnormalizeV' (GAuxBe vp__) = GAuxBe (unnormalizeVP__ vp__)
 unnormalizeV' (GAuxHave vp__) = GAuxHave (unnormalizeVP__ vp__)
 
-unnormalizeV' (GMakeV' GArgNP GDo args) =
-  case n_OfDirObj args of
-    Just GPicture -> (GMakeV' GArgNP GTake args)
-    _ -> (GMakeV' GArgNP GDo args)
+unnormalizeV' (GMakeV' GArgAdj GBe (GMakeArgAdj subj GHungry)) =
+  let hungerNP = GMakeNP GVoidD $ GMakeN' $ GSingular GHunger in
+  GMakeV' GArgNP GHave $ GMakeArgNP subj hungerNP
 
 unnormalizeV' v = v -- base case
+    
+
+

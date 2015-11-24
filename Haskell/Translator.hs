@@ -5,8 +5,11 @@ import System.Environment (getArgs)
 
 import LanguageNames
 import Trans
-import qualified TransformIta
-import qualified TransformEng
+import qualified TextEng (toInput, toOutput)
+import qualified TextIta (toInput, toOutput)
+import qualified TreeEng (normalizeVP, unnormalizeVP)
+import qualified TreeIta (normalizeVP, unnormalizeVP)
+
 
 {- Command line arguments: <PFG file> <from language> <to language> -}
 
@@ -28,18 +31,18 @@ translate grammar from to utterance =
                  Just l -> l
                  Nothing -> error (to ++ " is not a valid language")
   in
-  let normalize = case from of
-                    "Eng" -> TransformEng.normalizeVP
-                    "Ita" -> TransformIta.normalizeVP
+  let (toInput, normalize) = case from of
+                    "Eng" -> (TextEng.toInput, TreeEng.normalizeVP)
+                    "Ita" -> (TextIta.toInput, TreeIta.normalizeVP)
                     _ -> error (from ++ " is not a valid langauge")
   in
-  let unnormalize = case to of
-                      "Eng" -> TransformEng.unnormalizeVP
-                      "Ita" -> TransformIta.unnormalizeVP
+  let (toOutput, unnormalize) = case to of
+                      "Eng" -> (TextEng.toOutput, TreeEng.unnormalizeVP)
+                      "Ita" -> (TextIta.toOutput, TreeIta.unnormalizeVP)
                       _ -> error (from ++ " is not a valid language")
   in
-  case parse grammar fromLang (startCat grammar) utterance of
+  case parse grammar fromLang (startCat grammar) $ toInput utterance of
     [] -> "NO PARSE\n"
-    trees -> unlines $ map (linearize grammar toLang 
+    trees -> unlines $ map (toOutput . linearize grammar toLang 
                               . gf . unnormalize . normalize . fg) trees
 
