@@ -2,7 +2,7 @@ instance SyntaxIta of Syntax =
     open MorphIta, Prelude, Utils, UtilsIta in {
   param
     Tense = Pres | Past | Fut | Cond;
-    Case = Nom | Acc | Dat | Ref;
+    Case = Nom | Acc | Dat;
   oper
     {- TYPES -}
     Adj : Type = {s : Number => Gender => Str};
@@ -14,10 +14,14 @@ instance SyntaxIta of Syntax =
     N : Type = N';
     N' : Type = {abstractOrMass : Bool; gend : Gender; num : Number; init : NounInitial; s : Str};
     ProNP : Type = NP;
-    {- the possesive field is ignored for non-pronoun NPs -}
+    Reflexive : Type = NP;
+    {- the possesive field is ignored for non-pronoun NPs
+     - the (Number => Person) in the type of s are to account for 
+     - reflexive pronouns, where they should be the Number and Person of the 
+     - subject NP. For all other NPs, any values can be given -}
     NP : Type = {gend : Gender; num : Number; person : Person;
-                 s : Case => Str; isPronoun : Bool;
-                 possessive : Number => Gender => Str};
+                 s : Case => Number => Person => Str;
+                 isPronoun : Bool; possessive : Number => Gender => Str}; -- TODO better way of handling possessive
 
     V : Type = {aux : Aux; inf : Str; presPart : Str;
                 pastPart : Number => Gender => Str;
@@ -34,11 +38,12 @@ instance SyntaxIta of Syntax =
     mkArgVoid : NP -> ArgStructure =
       \sb -> {subj = sb; preface = ""; postface = ""};
 
-    mkArgNP : NP -> NP -> ArgStructure =
-      \sb, np -> case np.isPronoun of {
-                   False => {subj = sb; preface = ""; postface = np.s ! Acc};
-                   True => {subj = sb; preface = np.s ! Acc; postface = ""}
-                 };
+    mkArgNP : NP -> NP -> ArgStructure = \sb, obj -> 
+      case obj.isPronoun of {
+        False => {subj = sb; preface = "";
+                  postface = obj.s ! Acc ! sb.num ! sb.person};
+        True => {subj = sb; preface = obj.s ! Acc ! sb.num ! sb.person;
+                 postface = ""}};
 
     mkArgAdj : NP -> Adj -> ArgStructure =
       \sb, ad -> {subj = sb; preface = ""; postface = ad.s ! sb.num ! sb.gend};
@@ -68,14 +73,13 @@ instance SyntaxIta of Syntax =
     };
 
     _mkProNP : (gend : Gender) -> (num : Number) -> (person : Person)
-               -> (lui, lo, gli, si, suo, sua, suoi, sue : Str) -> ProNP =
+               -> (lui, lo, gli, si, suo, sua, suoi, sue : Str) -> ProNP = -- TODO useless argument si
       \gend, num, person, lui, lo, gli, si, suo, sua, suoi, sue ->
         {gend = gend; num = num; person = person; isPronoun = True;
-         s = table {Nom => lui; Acc => lo; Dat => gli; Ref => si};
+         s = table {Nom => \\_, _ => lui; Acc => \\_, _ => lo; Dat => \\_, _ => gli};
          isPronoun = True;
          possessive = table {Sg => table {Masc => suo; Fem => sua};
                              Pl => table {Masc => suoi; Fem => sue}}};
-
 
       {- VERBS -}
     _constructV : (aux : Aux) -> (avere, avendo, avuto : Str)
@@ -128,6 +132,15 @@ instance SyntaxIta of Syntax =
               s = table {Nom => nonword; Acc => pr.s ! Ref; c => pr.s ! c}};
     -}
 
+    reflexive : Reflexive =
+      {gend = Masc; num = Sg; person = Third; 
+       isPronoun = True; possessive = \\_, _ => nonword;
+       s = table {
+             Acc => table {
+               Sg => table {First => "mi"; Second => "ti"; Third => "si"};
+               Pl => table {First => "ci"; Second => "vi"; Third => "si"}};
+             Nom | Dat => \\_, _ => nonword}};
+
     singular : N_ -> N =
       \gatto -> {abstractOrMass = gatto.abstractOrMass; gend = gatto.gend;
                  init = gatto.init; num = Sg; s = gatto.s ! Sg};
@@ -155,13 +168,13 @@ instance SyntaxIta of Syntax =
 
     positive : VP_ -> VP =
       \vp -> let subj : NP = vp.subj in
-             {s = subj.s ! Nom ++ vp.preface
+             {s = subj.s ! Nom ! subj.num ! subj.person ++ vp.preface -- TODO deafult values
                   ++ vp.head.conj ! vp.tense ! subj.num ! subj.person
                   ++ vp.postface};
 
     negative : VP_ -> VP =
       \vp -> let subj : NP = vp.subj in
-             {s = subj.s ! Nom ++ "non" ++ vp.preface
+             {s = subj.s ! Nom ! subj.num ! subj.person ++ "non" ++ vp.preface
                   ++ vp.head.conj ! vp.tense ! subj.num ! subj.person
                   ++ vp.postface};
 
@@ -173,27 +186,27 @@ instance SyntaxIta of Syntax =
       \n, a -> {abstractOrMass = n.abstractOrMass; gend = n.gend; init = n.init;
                 num = n.num; s = n.s ++ a.s ! n.num ! n.gend};
 
-    mkNP : D -> N' -> NP =
-      \il, gatto -> {gend = gatto.gend; num = gatto.num; person = Third;
-                     s = \\_ => (il.s ! gatto.abstractOrMass ! gatto.num 
-                                      ! gatto.gend ! gatto.init) ++ gatto.s;
-                     isPronoun = False; possessive = \\_, _ => nonword};
+    mkNP : D -> N' -> NP = \il, gatto -> 
+      {gend = gatto.gend; num = gatto.num; person = Third;
+       s = \\_, _, _ => (il.s ! gatto.abstractOrMass ! gatto.num 
+                                 ! gatto.gend ! gatto.init) ++ gatto.s;
+       isPronoun = False; possessive = \\_, _ => nonword};
 
     npOfProNP : ProNP -> NP = \pronp -> pronp;
 
-    possessive : NP -> N' -> NP =
-      \owner, ownee ->
-        {gend = ownee.gend; num = ownee.num; person = Third;
-         s = case owner.isPronoun of {
-               False => \\c => (definite.s ! ownee.abstractOrMass ! ownee.num
-                                           ! ownee.gend ! ownee.init)
-                               ++ ownee.s ++ "di" ++ owner.s ! c;
-               True => \\c => (definite.s ! ownee.abstractOrMass ! ownee.num
-                                          ! ownee.gend ! Con)
-                              ++ (owner.possessive ! ownee.num ! ownee.gend)
-                              ++ ownee.s
-             };
-         isPronoun = False; possessive = \\_, _ => nonword};
+    npOfReflexive : Reflexive -> NP = \refl -> refl;
+
+    possessive : NP -> N' -> NP = \owner, ownee ->
+      {gend = ownee.gend; num = ownee.num; person = Third;
+       s = case owner.isPronoun of {
+         False => \\c, _, _ => 
+           definite.s ! ownee.abstractOrMass ! ownee.num ! ownee.gend ! ownee.init
+           ++ ownee.s ++ "di" ++ owner.s ! c ! owner.num ! owner.person; -- TODO use default talbe arguments for clarity
+         True => \\c, _, _ => 
+           definite.s ! ownee.abstractOrMass ! ownee.num ! ownee.gend ! Con
+           ++ (owner.possessive ! ownee.num ! ownee.gend) ++ ownee.s
+           };
+       isPronoun = False; possessive = \\_, _ => nonword};
 
     mkV' : V -> ArgStructure -> V' =
       \v, args -> {head = v; subj = args.subj;
@@ -214,24 +227,26 @@ instance SyntaxIta of Syntax =
 
     definite : D = 
       {s = \\_ => table {
-                    Sg => table {
-                            Masc => table {Con => "il"; Vow => "l'"; Complex => "lo"};
-                            Fem => table {Con | Complex => "la"; Vow => "l'"}};
-                    Pl => table {
-                            Masc => table {Con => "i"; Vow | Complex => "gli"};
-                            Fem => table {_ => "le"}}}};
+            Sg => table {
+                    Masc => table {Con => "il"; Vow => "l'"; Complex => "lo"};
+                    Fem => table {Con | Complex => "la"; Vow => "l'"}};
+            Pl => table {
+                    Masc => table {Con => "i"; Vow | Complex => "gli"};
+                    Fem => table {_ => "le"}}}};
 
     indefinite : D = 
       {s = \\_ => table {
-                    Sg => table {
-                            Masc => table {Con => "un"; Vow => "un'"; Complex => "uno"};
-                            Fem => table {Con | Complex => "una"; Vow => "un'"}};
-                    Pl => \\_, _ => nonword}};
+            Sg => table {
+                    Masc => table {Con => "un"; Vow => "un'"; Complex => "uno"};
+                    Fem => table {Con | Complex => "una"; Vow => "un'"}};
+            Pl => \\_, _ => nonword}};
 
     voidD : D = 
       {s = table {
              False => table {Sg => \\_, _ => nonword; Pl => \\_, _ => ""};
              True => \\_, _, _ => ""}};
+
+    
 
     i : ProNP = _mkProNP Masc Sg First "" "mi" "mi" "mi" "mio" "mia" "miei" "mie";
     you : ProNP = _mkProNP Masc Sg Second "" "ti" "ti" "ti" "tuo" "tua" "tuoi" "tue";
@@ -240,6 +255,14 @@ instance SyntaxIta of Syntax =
     we : ProNP = _mkProNP Masc Pl First "" "ci" "ci" "ci" "nostro" "nostra" "nostri" "nostre";
     yall : ProNP = _mkProNP Masc Pl Second "" "vi" "vi" "vi" "vostro" "vostra" "vostri" "vostre";
     they : ProNP = _mkProNP Masc Pl Third "" "li" "loro" "si" "loro" "loro" "loro" "loro";
+
+    proNPofNP : ProNP -> NP = \np -> 
+      case np.num of {
+        Sg => case np.person of {
+                First => i; Second => you;
+                Third => case np.gend of { Masc => he; Fem => she}};
+        Pl => case np.person of {
+                First => we; Second => yall; Third => they}};
 
     essere : V = mkV Essere "essere" "essendo" "stato" "sono" "sei" "e'"
                               "siamo" "siete" "sono" "sa";

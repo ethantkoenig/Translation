@@ -14,5 +14,8 @@ TestCases = [
 (["the pictures will be tall"], ["le foto saranno alte"]),
 (["the fast students' tall students would not be hungry"],
    ["gli studenti alti degli studenti veloci non avrebbero fame"]),
+(["the dog does not see itself"], ["il cane non si vede"]),
+(["we will take you"], ["ti prenderemo", "vi prenderemo"]),
+(["they would meet themselves"], ["si incontrerebbero"]),
 ]
 

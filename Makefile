@@ -15,5 +15,9 @@ translate: Haskell/Translator.hs
 	cd ..
 
 
+cleanGF:
+	rm GF/*.gfo 2> /dev/null
+
+
 clean:
 	rm GF/*.gfo Haskell/*.hi Haskell/*.o Haskell/translate 2> /dev/null

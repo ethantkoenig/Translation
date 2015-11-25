@@ -5,6 +5,7 @@ interface Syntax = {
     N : Type;
     N' : Type;
     ProNP : Type;
+    Reflexive : Type;
     NP : Type;
 
     D : Type;
@@ -26,6 +27,7 @@ interface Syntax = {
     mkNP : D -> N' -> NP;
     possessive : NP -> N' -> NP;
     npOfProNP : ProNP -> NP;
+    npOfReflexive : Reflexive -> NP;
     -- nonreflexive : ProNP -> NP;
     -- reflexive: ProNP -> NP;
     mkN' : N -> N';
@@ -38,6 +40,7 @@ interface Syntax = {
     mkArgNP : NP -> NP -> ArgStructure;
     mkArgAdj : NP -> Adj -> ArgStructure;
 
+    reflexive : Reflexive;
     singular, plural : N_ -> N;
     present, past, cond, future : VP__ -> VP_;
     positive, negative : VP_ -> VP;

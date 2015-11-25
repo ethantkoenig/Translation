@@ -12,6 +12,7 @@ incomplete concrete TransI of Trans =
 
     AbsNP = NP;
     AbsProNP = ProNP;
+    AbsReflexive = Reflexive;
     AbsN' = N';
     AbsN = N;
     AbsN_ = N_;
@@ -25,6 +26,7 @@ incomplete concrete TransI of Trans =
     MakeNP = mkNP;
     Possessive = possessive;
     NPofProNP = npOfProNP;
+    NPofReflexive = npOfReflexive;
     MakeN' = mkN';
     AdjoinN' = adjN';
     MakeVP__ = mkVP__;
@@ -36,6 +38,7 @@ incomplete concrete TransI of Trans =
 
     -- Nonreflexive = nonreflexive;
     -- Reflexive = reflexive;
+    Self = reflexive;
     Singular = singular;
     Plural = plural;
     Positive = positive;

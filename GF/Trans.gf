@@ -13,6 +13,7 @@ abstract Trans = {
 
     AbsNP;
     AbsProNP;
+    AbsReflexive;
     AbsN';
     AbsN;
       AbsN_; {- Number -}
@@ -30,6 +31,7 @@ abstract Trans = {
     {- GRAMMATICAL RULES -}
       MakeNP : AbsD -> AbsN' -> AbsNP;
       NPofProNP : AbsProNP -> AbsNP;
+      NPofReflexive : AbsReflexive -> AbsNP;
       Possessive : AbsNP -> AbsN' -> AbsNP;
       AdjoinN' : AbsN' -> AbsAdj -> AbsN';
       MakeN' : AbsN -> AbsN';
@@ -49,6 +51,8 @@ abstract Trans = {
     {- FEATURE FILLING RULES -}
       -- Nonreflexive : AbsProNP -> AbsNP;
       -- Reflexive : AbsProNP -> AbsNP;
+
+      Self : AbsReflexive; -- TODO name
 
       Singular : AbsN_ -> AbsN;
       Plural : AbsN_ -> AbsN;

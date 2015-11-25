@@ -1,17 +1,23 @@
-instance SyntaxEng of Syntax = open MorphEng, Prelude, Utils in {
+instance SyntaxEng of Syntax = open MorphEng, Prelude, Utils {-, UtilsEng  TODO-} in {
   param
+    Case = Nom | Acc | Pos;
+    Gender = Masc | Fem | Neut;
     Tense = Pres | Past;
-    Case = Nom | Acc | Pos | Ref; -- TODO Ref currently not handled
   oper
     {- TYPES -}
 
     Adj : Type = {s : Str};
 
-    N_ : Type = {abstractOrMass : Bool; s : Number => Case => Str};
-    N : Type = {abstractOrMass : Bool; num : Number; s : Case => Str};
+    N_ : Type = {abstractOrMass : Bool; gend : Gender; s : Number => Case => Str};
+    N : Type = {abstractOrMass : Bool; gend : Gender; num : Number; s : Case => Str};
     N' : Type = N;
     ProNP : Type = NP;
-    NP : Type = {num : Number; person : Person; s : Case => Str};
+    Reflexive : Type = NP;
+    {- the (Number => Person => Gender) in the type of s are to account for 
+     - reflexive pronouns, where they should be the Number, Person, and Gender
+     - of the subject NP. For all other NPs, any values can be given -}
+    NP : Type = {gend : Gender; num : Number; person : Person;
+                 s : Case => Number => Person => Gender => Str};
 
     {- Bool represents whether the N' is abstractOrMass -}
     D : Type = {s : Bool => Number => Str};
@@ -25,15 +31,16 @@ instance SyntaxEng of Syntax = open MorphEng, Prelude, Utils in {
                   head : V; postface : Str};
     VP : Type = {s : Str};
 
-    ArgStructure : Type = {subj : NP; np1 : Str; adj1 : Str}; 
+    ArgStructure : Type = {subj : NP; postface : Str}; 
 
     {- ARGUMENT FUNCTIONS -}
-    mkArgVoid : NP -> ArgStructure = 
-      \sb -> {subj = sb; np1 = ""; adj1 = ""};
-    mkArgNP : NP -> NP -> ArgStructure =
-      \sb, np -> {subj = sb; np1 = np.s ! Acc; adj1 = ""};
-    mkArgAdj : NP -> Adj -> ArgStructure =
-      \sb, ad -> {subj = sb; np1 = ""; adj1 = ad.s};
+    mkArgVoid : NP -> ArgStructure = \sb -> {subj = sb; postface = ""};
+    mkArgNP : NP -> NP -> ArgStructure = \sb, obj -> 
+      {subj = sb; postface = obj.s ! Acc ! sb.num ! sb.person ! sb.gend};
+
+
+    mkArgAdj : NP -> Adj -> ArgStructure = \sb, ad -> 
+      {subj = sb; postface = ad.s};
 
 
 
@@ -47,43 +54,53 @@ instance SyntaxEng of Syntax = open MorphEng, Prelude, Utils in {
       \this, those -> {s = table {Sg => this; Pl => those}};
     -}
 
-    _constructN_ : (abstractOrMass : Bool) -> (dog, dogs : Str) -> N_ =
-      \abstractOrMass, dog, dogs -> 
-        {abstractOrMass = abstractOrMass; 
-         s = table {Sg => table {Pos => addPossessive dog; _ => dog};
-                    Pl => table {Pos => addPossessive dogs; _ => dogs}}};
+    _constructN_ : (abstractOrMass : Bool) -> (gend : Gender) -> (dog, dogs : Str)
+                   -> N_ = \abstractOrMass, gend, dog, dogs -> 
+      {abstractOrMass = abstractOrMass; gend = gend;
+       s = table {Sg => table {Pos => addPossessive dog; _ => dog};
+                  Pl => table {Pos => addPossessive dogs; _ => dogs}}};
 
     mkN_ = overload {
-      {- Nouns with regular plural forms, not abstract or mass -}
-      mkN_ : (dog : Str) -> N_ =
-        \dog -> _constructN_ False dog (append_s dog);
+      {- Nouns with regular plural forms, not abstract or mass, neuter -}
+      mkN_ : (dog : Str) -> N_ = \dog ->
+        _constructN_ False Neut dog (append_s dog);
+
+      {- Nouns with regular plural forms, neuter -}
+      mkN_ : (abstractOrMass : Bool) -> (dog : Str) -> N_ = 
+             \abstractOrMass, dog ->
+        _constructN_ abstractOrMass Neut dog (append_s dog);
 
       {- Nouns with regular plural forms -}
-      mkN_ : (abstractOrMass : Bool) -> (dog : Str) -> N_ =
-        \abstractOrMass, dog -> _constructN_ abstractOrMass dog (append_s dog);
+      mkN_ : (gend : Gender) -> (dog : Str) -> N_ = \gend, dog ->
+        _constructN_ False gend dog (append_s dog);
+
+      {- Nouns with regular plural forms -}
+      mkN_ : (abstractOrMass : Bool) -> (gend : Gender) -> (dog : Str) -> N_ =
+        \abstractOrMass, gend, dog -> 
+          _constructN_ abstractOrMass gend dog (append_s dog);
 
       {- Nouns with irregular plural forms -}
-      mkN_ : (abstractOrMass : Bool) -> (man, men : Str) -> N_ = _constructN_;
+      mkN_ : (abstractOrMass : Bool) -> (gend : Gender) 
+             -> (man, men : Str) -> N_ = _constructN_;
     };
 
     _constructV : (aux : Bool ) -> (be, being, been, am,
-                                     are, is, was, were : Str) -> V =
-      \aux, be, being, been, am, are, is, was, were ->
-          {aux = aux; inf = be; presPart = being; pastPart = been;
-           conj = table 
-                  {Pres => table
-                           {Sg => table
-                                  {First => am;
-                                   Second => are;
-                                   Third => is};
-                            Pl => table
-                                  {First | Second | Third => are}};
-                   Past => table
-                           {Sg => table
-                                  {First | Third => was;
-                                   Second => were};
-                            Pl => table
-                                  {First | Second | Third => were}}}};
+                                    are, is, was, were : Str) -> V =
+                \aux, be, being, been, am, are, is, was, were ->
+      {aux = aux; inf = be; presPart = being; pastPart = been;
+       conj = table {Pres => table
+                             {Sg => table
+                                    {First => am;
+                                     Second => are;
+                                     Third => is};
+                              Pl => table
+                                    {First | Second | Third => are}};
+                     Past => table
+                             {Sg => table
+                                    {First | Third => was;
+                                     Second => were};
+                              Pl => table
+                                    {First | Second | Third => were}}}};
 
     mkV = overload {
       mkV : (walk : Str) -> V =
@@ -116,11 +133,20 @@ instance SyntaxEng of Syntax = open MorphEng, Prelude, Utils in {
       \pr -> {num = pr.num; person = pr.p; s = table {Nom | Ref => nonword; Acc => pr.s ! Ref;
                                              c => pr.s ! c}}; -}
 
-    singular : N_ -> N =
-      \dog -> {abstractOrMass = dog.abstractOrMass; num = Sg; s = dog.s ! Sg};
+    {- fields other than reflexive do not matter -}
 
-    plural : N_ -> N = 
-      \dog -> {abstractOrMass = dog.abstractOrMass; num = Pl; s = dog.s ! Pl};
+{- TODO clean up
+    reflexive : ProNP -> ProNP = \pro -> 
+      {reflexive = True; gend = pro.gend; num = pro.num; person = pro.person;
+       s = table {Acc => pro.s ! Ref; 
+                  _ => nonword}};
+-}
+
+    singular : N_ -> N = \dog -> {abstractOrMass = dog.abstractOrMass;
+                                  gend = dog.gend; num = Sg; s = dog.s ! Sg};
+
+    plural : N_ -> N =  \dog -> {abstractOrMass = dog.abstractOrMass;
+                                 gend = dog.gend; num = Pl; s = dog.s ! Pl};
 
     present : VP__ -> VP_ =
       \vp -> {tense = Pres; preface = vp.preface; num = vp.num; person = vp.person; 
@@ -154,31 +180,34 @@ instance SyntaxEng of Syntax = open MorphEng, Prelude, Utils in {
     mkN' : N -> N' = \n -> n;
 
     adjN' : N' -> Adj -> N' =
-      \dog, fast -> {abstractOrMass = dog.abstractOrMass; 
+      \dog, fast -> {abstractOrMass = dog.abstractOrMass; gend = dog.gend;
                      num = dog.num; s = \\c => fast.s ++ dog.s ! c};
 
-    mkNP : D -> N' -> NP =
-      \the, dog -> {num = dog.num; person = Third; 
-                    s = \\c => the.s ! dog.abstractOrMass ! dog.num ++ dog.s ! c};
+    mkNP : D -> N' -> NP = \the, dog -> 
+      {gend = dog.gend; num = dog.num; person = Third; reflexive = False; 
+       s = \\c, _, _, _ => the.s ! dog.abstractOrMass ! dog.num ++ dog.s ! c};
 
-    possessive : NP -> N' -> NP =
-      \np, n' -> {num = n'.num; person = Third;
-                  s = \\c => np.s ! Pos ++ n'.s ! c}; -- TODO need to think more about handling case here
+    possessive : NP -> N' -> NP = \np, n' -> 
+      {gend = n'.gend; num = n'.num; person = Third; reflexive = False; 
+       s = \\cs, nm, pr, gn => np.s ! Pos ! nm ! pr ! gn ++ n'.s ! cs}; -- TODO need to think more about handling case here
 
     npOfProNP : ProNP -> NP = \pronp -> pronp; 
+
+    npOfReflexive : Reflexive -> NP = \refl -> refl;
   
     mkV' : V -> ArgStructure -> V' =
       \v, as -> let subj : NP = as.subj in
-                {preface = subj.s ! Nom; num = subj.num; person = subj.person;
-                 head = v; postface = as.np1 ++ as.adj1};
+                {head = v; num = subj.num; person = subj.person; 
+                 preface = subj.s ! Nom ! subj.num ! subj.person ! subj.gend;
+                 postface = as.postface};
 
-    auxBe : VP__ -> V' =
-      \vp -> {head = _be; preface = vp.preface; num = vp.num; person = vp.person;
-              postface = vp.head.presPart ++ vp.postface}; -- TODO change pres to presPart
+    auxBe : VP__ -> V' = \vp -> 
+      {head = _be; num = vp.num; person = vp.person;
+       preface = vp.preface; postface = vp.head.presPart ++ vp.postface};
 
-    auxHave : VP__ -> V' =
-      \vp -> {head = _have; preface = vp.preface; num = vp.num; person = vp.person;
-              postface = vp.head.pastPart ++ vp.postface};
+    auxHave : VP__ -> V' = \vp -> 
+      {head = _have; num = vp.num; person = vp.person; preface = vp.preface;
+       postface = vp.head.pastPart ++ vp.postface};
 
     mkVP__ : V' -> VP__ = \v' -> v';
 
@@ -186,35 +215,56 @@ instance SyntaxEng of Syntax = open MorphEng, Prelude, Utils in {
     {- FUNCTIONAL WORDS -}
     indefinite : D = {s = \\_ => table {Sg => "a"; Pl => nonword}}; -- TODO a vs. an
     definite : D = {s = \\_, _ => "the"};
-    voidD : D = {s = table {False => table{Sg => nonword; Pl => ""};
+    voidD : D = {s = table {False => table {Sg => nonword; Pl => ""};
                             True => \\_ => ""}};
 
-    i : ProNP = {num = Sg; person = First; 
-                      s = table {Nom => "I"; Acc => "me";
-                                 Pos => "my"; Ref => "myself"}};
-    you : ProNP = {num = Sg; person = Second;
-                        s = table {Nom | Acc => "you"; Pos => "your";
-                                   Ref => "yourself"}};
-    he : ProNP = {num = Sg; person = Third; 
-                       s = table {Nom => "he"; Acc => "him";
-                                  Pos => "his"; Ref => "himself"}};
-    she : ProNP = {num = Sg; person = Third;
-                        s = table {Nom => "she"; Acc | Pos => "her";
-                                   Ref => "herself"}};
-    we : ProNP = {num = Pl; person = First; 
-                       s = table {Nom => "we"; Acc => "us";
-                                  Pos => "our"; Ref => "ourselves"}};
-    yall : ProNP = {num = Pl; person = Second;
-                         s = table {Nom | Acc => "you"; Pos => "your";
-                                    Ref => "yourselves"}};
-    they : ProNP = {num = Pl; person = Third;
-                         s = table {Nom => "they"; Acc => "them";
-                                    Pos => "their"; Ref => "themselves"}};
+
+    _mkProNP : (num : Number) -> (person : Person) -> (gend : Gender)
+               -> (he, him, his, himself : Str) -> ProNP = -- TODO useless himself argument
+               \num, person, gend, he, him, his, himself -> 
+      {gend = gend; num = num; person = person; reflexive = False;
+       s = table {Nom => \\_, _, _ => he;
+                  Acc => \\_, _, _ => him;
+                  Pos => \\_, _, _ => his}};
+
+     {- fields other than s do not matter -}
+    reflexive : Reflexive = 
+      {gend = Masc; num = Sg; person = Third; 
+       s = table {
+             Acc => table {
+               Sg => table {
+                 First => \\_ => "myself";
+                 Second => \\_ => "yourself";
+                 Third => table {Masc => "himself"; Fem => "herself"; 
+                                 Neut => "itself"}};
+               Pl => table {
+                 First => \\_ => "ourselves";
+                 Second => \\_ => "yourselves";
+                 Third => \\_ => "themselves"}};
+            Nom | Pos => \\_, _, _ => nonword}};    
+
+    i : ProNP = _mkProNP Sg First Masc "I" "me" "my" "myself";
+    you : ProNP = _mkProNP Sg Second Masc "you" "you" "your" "yourself";
+    he : ProNP = _mkProNP Sg Third Masc "he" "him" "his" "himself";
+    she : ProNP = _mkProNP Sg Third Fem "she" "her" "her" "herself";
+    it : ProNP = _mkProNP Sg Third Neut "it" "it" "its" "itself";
+    we : ProNP = _mkProNP Pl First Masc "we" "us" "our" "ourselves";
+    yall : ProNP = _mkProNP Pl Second Masc "you" "you" "your" "yourselves";
+    they : ProNP = _mkProNP Pl Third Masc "they" "them" "their" "themselves";
+
+    proNPofNP : NP -> ProNP = \np ->
+      case np.num of {
+        Sg => case np.person of {
+                First => i; Second => you;
+                Third => case np.gend of {
+                           Masc => he; Fem => she; Neut => it}};
+        Pl => case np.person of {
+                First => we; Second => yall; Third => they}};
 
     {- named verbBe to avoid naming conflicts with Lexicon -}
     beVerb = _be;
     _be : V = _constructV True "be" "being" "been" "am" "are" "is" "was" "were";
-    _do : V = _constructV True "do" "doing" "done" "do" "do" "do" "did" "did";
+    _do : V = _constructV True "do" "doing" "done" "do" "do" "does" "did" "did";
     _have : V = _constructV True "have" "having" "had" "have" "have" "has" "had" "had";
     _will : V = _modal "will";
     _would : V = _modal "would";

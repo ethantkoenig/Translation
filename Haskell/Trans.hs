@@ -78,6 +78,7 @@ data GAbsN' =
 data GAbsNP =
    GMakeNP GAbsD GAbsN' 
  | GNPofProNP GAbsProNP 
+ | GNPofReflexive GAbsReflexive 
  | GPossessive GAbsNP GAbsN' 
   deriving Show
 
@@ -99,6 +100,9 @@ data GAbsProNP =
  | GWe 
  | GYall 
  | GYou 
+  deriving Show
+
+data GAbsReflexive = GSelf 
   deriving Show
 
 data GAbsV =
@@ -216,12 +220,14 @@ instance Gf GAbsN' where
 instance Gf GAbsNP where
   gf (GMakeNP x1 x2) = mkApp (mkCId "MakeNP") [gf x1, gf x2]
   gf (GNPofProNP x1) = mkApp (mkCId "NPofProNP") [gf x1]
+  gf (GNPofReflexive x1) = mkApp (mkCId "NPofReflexive") [gf x1]
   gf (GPossessive x1 x2) = mkApp (mkCId "Possessive") [gf x1, gf x2]
 
   fg t =
     case unApp t of
       Just (i,[x1,x2]) | i == mkCId "MakeNP" -> GMakeNP (fg x1) (fg x2)
       Just (i,[x1]) | i == mkCId "NPofProNP" -> GNPofProNP (fg x1)
+      Just (i,[x1]) | i == mkCId "NPofReflexive" -> GNPofReflexive (fg x1)
       Just (i,[x1,x2]) | i == mkCId "Possessive" -> GPossessive (fg x1) (fg x2)
 
 
@@ -270,6 +276,16 @@ instance Gf GAbsProNP where
 
 
       _ -> error ("no AbsProNP " ++ show t)
+
+instance Gf GAbsReflexive where
+  gf GSelf = mkApp (mkCId "Self") []
+
+  fg t =
+    case unApp t of
+      Just (i,[]) | i == mkCId "Self" -> GSelf 
+
+
+      _ -> error ("no AbsReflexive " ++ show t)
 
 instance Gf GAbsV where
   gf GBe = mkApp (mkCId "Be") []
