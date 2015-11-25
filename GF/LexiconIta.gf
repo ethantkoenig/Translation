@@ -13,9 +13,18 @@ instance LexiconIta of Lexicon =
     student = mkN_ "studente";
     woman = mkN_ "donna";
 
+    alice = mkProperN Fem "Alice";
+    bob = mkProperN Masc "Bob";
+    eve = mkProperN Fem "Eve";
+    joe = mkProperN Masc "Joe";
+
     -- TODO un-ASCII-ify
     be = mkV Essere "essere" "essendo" "stato" "sono" "sei" "e'"
                     "siamo" "siete" "sono" "sa";
+    beAdj = be;
+    beNP = be;
+    callSomeone = mkV Avere "chiamare";
+    callSomeoneSomething = mkV Avere "chiamare";
     do = mkV Avere "fare" "facendo" "fatto" "faccio" "fai" "fa" "facciamo"
                    "fate" "fanno" "fa";
     have = mkV Avere "avere" "avendo" "avuto" "ho" "hai" "ha" 

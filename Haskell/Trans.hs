@@ -50,12 +50,14 @@ data GAbsAdj =
 data GAbsArgStructure =
    GMakeArgAdj GAbsNP GAbsAdj 
  | GMakeArgNP GAbsNP GAbsNP 
+ | GMakeArgNPNP GAbsNP GAbsNP GAbsNP 
  | GMakeArgVoid GAbsNP 
   deriving Show
 
 data GAbsArgType =
    GArgAdj 
  | GArgNP 
+ | GArgNPNP 
  | GArgVoid 
   deriving Show
 
@@ -78,6 +80,7 @@ data GAbsN' =
 data GAbsNP =
    GMakeNP GAbsD GAbsN' 
  | GNPofProNP GAbsProNP 
+ | GNPofProperN GAbsProperN 
  | GNPofReflexive GAbsReflexive 
  | GPossessive GAbsNP GAbsN' 
   deriving Show
@@ -102,11 +105,21 @@ data GAbsProNP =
  | GYou 
   deriving Show
 
+data GAbsProperN =
+   GAlice 
+ | GBob 
+ | GEve 
+ | GJoe 
+  deriving Show
+
 data GAbsReflexive = GSelf 
   deriving Show
 
 data GAbsV =
-   GBe 
+   GBeAdj 
+ | GBeNP 
+ | GCallSomeone 
+ | GCallSomeoneSomething 
  | GDo 
  | GHave 
  | GMeet 
@@ -154,12 +167,14 @@ instance Gf GAbsAdj where
 instance Gf GAbsArgStructure where
   gf (GMakeArgAdj x1 x2) = mkApp (mkCId "MakeArgAdj") [gf x1, gf x2]
   gf (GMakeArgNP x1 x2) = mkApp (mkCId "MakeArgNP") [gf x1, gf x2]
+  gf (GMakeArgNPNP x1 x2 x3) = mkApp (mkCId "MakeArgNPNP") [gf x1, gf x2, gf x3]
   gf (GMakeArgVoid x1) = mkApp (mkCId "MakeArgVoid") [gf x1]
 
   fg t =
     case unApp t of
       Just (i,[x1,x2]) | i == mkCId "MakeArgAdj" -> GMakeArgAdj (fg x1) (fg x2)
       Just (i,[x1,x2]) | i == mkCId "MakeArgNP" -> GMakeArgNP (fg x1) (fg x2)
+      Just (i,[x1,x2,x3]) | i == mkCId "MakeArgNPNP" -> GMakeArgNPNP (fg x1) (fg x2) (fg x3)
       Just (i,[x1]) | i == mkCId "MakeArgVoid" -> GMakeArgVoid (fg x1)
 
 
@@ -168,12 +183,14 @@ instance Gf GAbsArgStructure where
 instance Gf GAbsArgType where
   gf GArgAdj = mkApp (mkCId "ArgAdj") []
   gf GArgNP = mkApp (mkCId "ArgNP") []
+  gf GArgNPNP = mkApp (mkCId "ArgNPNP") []
   gf GArgVoid = mkApp (mkCId "ArgVoid") []
 
   fg t =
     case unApp t of
       Just (i,[]) | i == mkCId "ArgAdj" -> GArgAdj 
       Just (i,[]) | i == mkCId "ArgNP" -> GArgNP 
+      Just (i,[]) | i == mkCId "ArgNPNP" -> GArgNPNP 
       Just (i,[]) | i == mkCId "ArgVoid" -> GArgVoid 
 
 
@@ -220,6 +237,7 @@ instance Gf GAbsN' where
 instance Gf GAbsNP where
   gf (GMakeNP x1 x2) = mkApp (mkCId "MakeNP") [gf x1, gf x2]
   gf (GNPofProNP x1) = mkApp (mkCId "NPofProNP") [gf x1]
+  gf (GNPofProperN x1) = mkApp (mkCId "NPofProperN") [gf x1]
   gf (GNPofReflexive x1) = mkApp (mkCId "NPofReflexive") [gf x1]
   gf (GPossessive x1 x2) = mkApp (mkCId "Possessive") [gf x1, gf x2]
 
@@ -227,6 +245,7 @@ instance Gf GAbsNP where
     case unApp t of
       Just (i,[x1,x2]) | i == mkCId "MakeNP" -> GMakeNP (fg x1) (fg x2)
       Just (i,[x1]) | i == mkCId "NPofProNP" -> GNPofProNP (fg x1)
+      Just (i,[x1]) | i == mkCId "NPofProperN" -> GNPofProperN (fg x1)
       Just (i,[x1]) | i == mkCId "NPofReflexive" -> GNPofReflexive (fg x1)
       Just (i,[x1,x2]) | i == mkCId "Possessive" -> GPossessive (fg x1) (fg x2)
 
@@ -277,6 +296,22 @@ instance Gf GAbsProNP where
 
       _ -> error ("no AbsProNP " ++ show t)
 
+instance Gf GAbsProperN where
+  gf GAlice = mkApp (mkCId "Alice") []
+  gf GBob = mkApp (mkCId "Bob") []
+  gf GEve = mkApp (mkCId "Eve") []
+  gf GJoe = mkApp (mkCId "Joe") []
+
+  fg t =
+    case unApp t of
+      Just (i,[]) | i == mkCId "Alice" -> GAlice 
+      Just (i,[]) | i == mkCId "Bob" -> GBob 
+      Just (i,[]) | i == mkCId "Eve" -> GEve 
+      Just (i,[]) | i == mkCId "Joe" -> GJoe 
+
+
+      _ -> error ("no AbsProperN " ++ show t)
+
 instance Gf GAbsReflexive where
   gf GSelf = mkApp (mkCId "Self") []
 
@@ -288,7 +323,10 @@ instance Gf GAbsReflexive where
       _ -> error ("no AbsReflexive " ++ show t)
 
 instance Gf GAbsV where
-  gf GBe = mkApp (mkCId "Be") []
+  gf GBeAdj = mkApp (mkCId "BeAdj") []
+  gf GBeNP = mkApp (mkCId "BeNP") []
+  gf GCallSomeone = mkApp (mkCId "CallSomeone") []
+  gf GCallSomeoneSomething = mkApp (mkCId "CallSomeoneSomething") []
   gf GDo = mkApp (mkCId "Do") []
   gf GHave = mkApp (mkCId "Have") []
   gf GMeet = mkApp (mkCId "Meet") []
@@ -298,7 +336,10 @@ instance Gf GAbsV where
 
   fg t =
     case unApp t of
-      Just (i,[]) | i == mkCId "Be" -> GBe 
+      Just (i,[]) | i == mkCId "BeAdj" -> GBeAdj 
+      Just (i,[]) | i == mkCId "BeNP" -> GBeNP 
+      Just (i,[]) | i == mkCId "CallSomeone" -> GCallSomeone 
+      Just (i,[]) | i == mkCId "CallSomeoneSomething" -> GCallSomeoneSomething 
       Just (i,[]) | i == mkCId "Do" -> GDo 
       Just (i,[]) | i == mkCId "Have" -> GHave 
       Just (i,[]) | i == mkCId "Meet" -> GMeet 

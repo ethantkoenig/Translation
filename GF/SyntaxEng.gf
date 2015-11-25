@@ -13,6 +13,7 @@ instance SyntaxEng of Syntax = open MorphEng, Prelude, Utils {-, UtilsEng  TODO-
     N' : Type = N;
     ProNP : Type = NP;
     Reflexive : Type = NP;
+    ProperN : Type = NP;
     {- the (Number => Person => Gender) in the type of s are to account for 
      - reflexive pronouns, where they should be the Number, Person, and Gender
      - of the subject NP. For all other NPs, any values can be given -}
@@ -38,11 +39,12 @@ instance SyntaxEng of Syntax = open MorphEng, Prelude, Utils {-, UtilsEng  TODO-
     mkArgNP : NP -> NP -> ArgStructure = \sb, obj -> 
       {subj = sb; postface = obj.s ! Acc ! sb.num ! sb.person ! sb.gend};
 
-
     mkArgAdj : NP -> Adj -> ArgStructure = \sb, ad -> 
       {subj = sb; postface = ad.s};
 
-
+    mkArgNPNP : NP -> NP -> NP -> ArgStructure = \sb, obj1, obj2 ->
+      {subj = sb; postface = obj1.s ! Acc ! sb.num ! sb.person ! sb.gend
+                             ++ obj2.s ! Acc ! sb.num ! sb.person ! sb.gend};
 
     {- LEXICAL FUNCTIONS -}
 
@@ -83,6 +85,9 @@ instance SyntaxEng of Syntax = open MorphEng, Prelude, Utils {-, UtilsEng  TODO-
       mkN_ : (abstractOrMass : Bool) -> (gend : Gender) 
              -> (man, men : Str) -> N_ = _constructN_;
     };
+
+    mkProperN : (gend : Gender) -> (name : Str) -> ProperN = \gend, name -> 
+      {gend = gend; num = Sg; person = Third; s = \\_, _, _, _ => name}; 
 
     _constructV : (aux : Bool ) -> (be, being, been, am,
                                     are, is, was, were : Str) -> V =
@@ -192,8 +197,8 @@ instance SyntaxEng of Syntax = open MorphEng, Prelude, Utils {-, UtilsEng  TODO-
        s = \\cs, nm, pr, gn => np.s ! Pos ! nm ! pr ! gn ++ n'.s ! cs}; -- TODO need to think more about handling case here
 
     npOfProNP : ProNP -> NP = \pronp -> pronp; 
-
     npOfReflexive : Reflexive -> NP = \refl -> refl;
+    npOfProperN : ProperN -> NP = \prop -> prop;
   
     mkV' : V -> ArgStructure -> V' =
       \v, as -> let subj : NP = as.subj in

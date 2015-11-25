@@ -3,7 +3,9 @@ interface Lexicon = open Syntax in {
     fast, hungry, tall : Adj;
 
     boy, dog, hunger, name, picture, student, woman : N_;
+    
+    alice, bob, eve, joe : ProperN;
   
-    be, do, have, meet, take, see, sleep : V;
+    beAdj, beNP, callSomeone, callSomeoneSomething, do, have, meet, take, see, sleep : V;
 
 }

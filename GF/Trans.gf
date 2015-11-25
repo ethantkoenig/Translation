@@ -14,6 +14,7 @@ abstract Trans = {
     AbsNP;
     AbsProNP;
     AbsReflexive;
+    AbsProperN;
     AbsN';
     AbsN;
       AbsN_; {- Number -}
@@ -32,6 +33,7 @@ abstract Trans = {
       MakeNP : AbsD -> AbsN' -> AbsNP;
       NPofProNP : AbsProNP -> AbsNP;
       NPofReflexive : AbsReflexive -> AbsNP;
+      NPofProperN : AbsProperN -> AbsNP;
       Possessive : AbsNP -> AbsN' -> AbsNP;
       AdjoinN' : AbsN' -> AbsAdj -> AbsN';
       MakeN' : AbsN -> AbsN';
@@ -43,10 +45,13 @@ abstract Trans = {
       ArgVoid : AbsArgType;
       ArgNP : AbsArgType;
       ArgAdj : AbsArgType;  
+      ArgNPNP : AbsArgType;
   
       MakeArgVoid : AbsNP -> AbsArgStructure ArgVoid;
       MakeArgNP : AbsNP -> AbsNP -> AbsArgStructure ArgNP;
       MakeArgAdj : AbsNP -> AbsAdj -> AbsArgStructure ArgAdj;
+      MakeArgNPNP : AbsNP -> AbsNP -> AbsNP -> AbsArgStructure ArgNPNP;
+
 
     {- FEATURE FILLING RULES -}
       -- Nonreflexive : AbsProNP -> AbsNP;
@@ -77,10 +82,11 @@ abstract Trans = {
       Boy, Dog, Hunger, Name, Picture, Student, Woman : AbsN_;
 
       I, You, He, She, We, Yall, They : AbsProNP;
+      Alice, Bob, Eve, Joe : AbsProperN;
 
       {- Verbs -}
       Sleep : AbsV ArgVoid;
-      Do, Have, Meet, Take, See : AbsV ArgNP;
-      Be : AbsV ArgAdj;
-
+      BeNP, CallSomeone, Do, Have, Meet, Take, See : AbsV ArgNP;
+      BeAdj : AbsV ArgAdj;
+      CallSomeoneSomething : AbsV ArgNPNP;
 }

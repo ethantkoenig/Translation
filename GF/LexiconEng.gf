@@ -16,7 +16,15 @@ instance LexiconEng of Lexicon =
     -- TODO should eventually remove 
     -- be = mkV "be" "being" "been" "am" "are" "is" "was" "were";
 
-    be = beVerb;
+    alice = mkProperN Fem "Alice";
+    bob = mkProperN Masc "Bob";
+    eve = mkProperN Fem "Eve";
+    joe = mkProperN Masc "Joe";
+
+    beAdj = beVerb;
+    beNP = beVerb;
+    callSomeone = mkV "call";
+    callSomeoneSomething = mkV "call";
     do = mkV "do" "done" "did";
     have = mkV "have" "having" "had" "have" "have" "has" "had" "had";
     meet = mkV "meet" "met";    

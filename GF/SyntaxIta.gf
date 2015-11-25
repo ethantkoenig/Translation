@@ -15,6 +15,7 @@ instance SyntaxIta of Syntax =
     N' : Type = {abstractOrMass : Bool; gend : Gender; num : Number; init : NounInitial; s : Str};
     ProNP : Type = NP;
     Reflexive : Type = NP;
+    ProperN : Type = NP;
     {- the possesive field is ignored for non-pronoun NPs
      - the (Number => Person) in the type of s are to account for 
      - reflexive pronouns, where they should be the Number and Person of the 
@@ -48,6 +49,14 @@ instance SyntaxIta of Syntax =
     mkArgAdj : NP -> Adj -> ArgStructure =
       \sb, ad -> {subj = sb; preface = ""; postface = ad.s ! sb.num ! sb.gend};
 
+    mkArgNPNP : NP -> NP -> NP -> ArgStructure = \sb, obj1, obj2 -> 
+      case obj1.isPronoun of { -- TODO handle obj2 
+        False => {subj = sb; preface = "";
+                  postface = obj1.s ! Acc ! sb.num ! sb.person
+                             ++ obj2.s ! Acc ! sb.num ! sb.person};
+        True => {subj = sb; preface = obj1.s ! Acc ! sb.num ! sb.person;
+                 postface = obj2.s ! Acc ! sb.num ! sb.person}};
+
     {- LEXICAL FUNCTIONS -}
       {- NOUNS -}
     _constructN_ : (abstractOrMass : Bool) -> (gnd : Gender)
@@ -71,6 +80,10 @@ instance SyntaxIta of Syntax =
       mkN_ : (abstractOrMass : Bool) -> (gnd : Gender) 
              -> (uomo, uomini : Str) -> N_ = _constructN_;
     };
+
+    mkProperN : (gend : Gender) -> (name : Str) -> ProperN = \gend, name ->
+      {gend = gend; num = Sg; person = Third; isPronoun = False;
+       s = \\_, _, _ => name; possessive = \\_, _ => nonword};
 
     _mkProNP : (gend : Gender) -> (num : Number) -> (person : Person)
                -> (lui, lo, gli, si, suo, sua, suoi, sue : Str) -> ProNP = -- TODO useless argument si
@@ -193,8 +206,8 @@ instance SyntaxIta of Syntax =
        isPronoun = False; possessive = \\_, _ => nonword};
 
     npOfProNP : ProNP -> NP = \pronp -> pronp;
-
     npOfReflexive : Reflexive -> NP = \refl -> refl;
+    npOfProperN : ProperN -> NP = \prop -> prop;
 
     possessive : NP -> N' -> NP = \owner, ownee ->
       {gend = ownee.gend; num = ownee.num; person = Third;

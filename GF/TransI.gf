@@ -1,7 +1,7 @@
 incomplete concrete TransI of Trans = 
     open Syntax, Lexicon in {
   param
-    ArgType = ArVoid | ArNP | ArAdj;
+    ArgType = ArVoid | ArNP | ArAdj | ArNPNP;
   lincat
     AbsArgType = {a : ArgType};
     AbsArgStructure = ArgStructure;
@@ -13,6 +13,7 @@ incomplete concrete TransI of Trans =
     AbsNP = NP;
     AbsProNP = ProNP;
     AbsReflexive = Reflexive;
+    AbsProperN = ProperN;
     AbsN' = N';
     AbsN = N;
     AbsN_ = N_;
@@ -27,6 +28,7 @@ incomplete concrete TransI of Trans =
     Possessive = possessive;
     NPofProNP = npOfProNP;
     NPofReflexive = npOfReflexive;
+    NPofProperN = npOfProperN;
     MakeN' = mkN';
     AdjoinN' = adjN';
     MakeVP__ = mkVP__;
@@ -35,6 +37,7 @@ incomplete concrete TransI of Trans =
     ArgVoid = {a = ArVoid};
     ArgNP = {a = ArNP};
     ArgAdj = {a = ArAdj};
+    ArgNPNP = {a = ArNPNP};
 
     -- Nonreflexive = nonreflexive;
     -- Reflexive = reflexive;
@@ -53,6 +56,7 @@ incomplete concrete TransI of Trans =
     MakeArgVoid = mkArgVoid;
     MakeArgNP = mkArgNP;
     MakeArgAdj = mkArgAdj;
+    MakeArgNPNP = mkArgNPNP;
 
     Fast = fast;
     Hungry = hungry;
@@ -70,6 +74,11 @@ incomplete concrete TransI of Trans =
     Student = student;
     Woman = woman;
 
+    Alice = alice;
+    Bob = bob;
+    Eve = eve;
+    Joe = joe;
+
     I = i;
     You = you;
     He = he;
@@ -78,7 +87,10 @@ incomplete concrete TransI of Trans =
     Yall = yall;
     They = they; 
 
-    Be = be;
+    BeAdj = beAdj;
+    BeNP = beNP;
+    CallSomeone = callSomeone;
+    CallSomeoneSomething = callSomeoneSomething;
     Do = do;
     Have = have;
     Meet = meet;
