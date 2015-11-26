@@ -5,8 +5,10 @@ TestCases = [
 # UNGRAMMATICAL
 (["the women not sleep"], []),
 (["a boy sleep"], []),
+(["boy sleeps"], []),
 ([], ["i studenti dormono"]),
 ([], ["prendo"]),
+([], ["cane lo chiama"]),
 # GRAMMATICAL
 (["the boy sleeps"], ["il ragazzo dorme"]),
 (["I do not sleep"], ["non dormo"]),

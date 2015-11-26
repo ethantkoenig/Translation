@@ -1,8 +1,5 @@
-from subprocess import check_output, Popen, PIPE
-
 from testCases import TestCases
-
-NO_PARSE_STRING = "NO PARSE"
+from translate import translate
 
 # Returns : bool - whether l1 and l2 have the same contents, ignoring
 #                  multiplicity and order
@@ -10,21 +7,6 @@ NO_PARSE_STRING = "NO PARSE"
 #   l1, l2 : list
 def list_equals(l1, l2):
   return set(l1) == set(l2)
-
-# Returns : str list - list of translations
-# Arguments:
-#   fro : str
-#   to : str
-#   utterance : str
-def translate(fro, to, utterance):
-  utt = Popen(["echo", utterance], stdout = PIPE)
-  translations = check_output(["../Haskell/translate", "../Haskell/Trans.pgf",
-                               fro, to], stdin = utt.stdout)
-  translations = translations.strip()
-  translations = translations.split("\n")
-  if (NO_PARSE_STRING in translations):
-    return []
-  return translations
 
 
 def test():

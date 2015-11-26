@@ -57,6 +57,4 @@ unnormalizeV' (GMakeV' GArgNP GBeNP
     (GMakeArgNPNP subj (GNPofReflexive GSelf) name)
 
 unnormalizeV' v = v -- base case
-    
-
 
