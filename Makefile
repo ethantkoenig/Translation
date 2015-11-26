@@ -20,4 +20,4 @@ cleanGF:
 
 
 clean:
-	rm GF/*.gfo Haskell/*.hi Haskell/*.o Haskell/translate 2> /dev/null
+	rm GF/*.gfo Haskell/*.hi Haskell/*.o Haskell/translate Test/*.pyc 2> /dev/null
