@@ -1,4 +1,4 @@
-# Should only be run from its own directory
+# This Makefile should only be run from its own directory
 
 all: Trans. translate
 

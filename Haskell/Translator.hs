@@ -42,17 +42,6 @@ translate grammar from to utterance =
   in
   case parse grammar fromLang (startCat grammar) $ toInput utterance of
     [] -> "NO PARSE\n"
-    (tree:_) -> let tr = fg tree in
-                let s1 = show tr in
-                let tr' = normalize tr in
-                let s2 = show tr' in
-                let tr'' = unnormalize tr' in
-                let s3 = show tr'' in
-                let res = toOutput $ linearize grammar toLang $ gf tr'' in
-                s1 ++ "\n\n" ++ s2 ++ "\n\n" ++ s3 ++ "\n\n" ++ res ++ "\n"
-
-
-
-{-trees -> unlines $ map (toOutput . linearize grammar toLang 
-                              . gf . unnormalize . normalize . fg) trees-}
+    trees -> unlines $ map (toOutput . linearize grammar toLang 
+                              . gf . unnormalize . normalize . fg) trees
 
