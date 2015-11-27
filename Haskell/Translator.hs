@@ -38,7 +38,7 @@ translate grammar from to utterance =
   let (toOutput, unnormalize) = case to of
                       "Eng" -> (TextEng.toOutput, TreeEng.unnormalizeS)
                       "Ita" -> (TextIta.toOutput, TreeIta.unnormalizeS)
-                      _ -> error (from ++ " is not a valid language")
+                      _ -> error (to ++ " is not a valid language")
   in
   case parse grammar fromLang (startCat grammar) $ toInput utterance of
     [] -> "NO PARSE\n"
