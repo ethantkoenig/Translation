@@ -30,7 +30,8 @@ instance LexiconIta of Lexicon =
     have = mkV Avere "avere" "avendo" "avuto" "ho" "hai" "ha" 
                      "abbiamo" "avete" "hanno" "av";
     meet = mkV Avere "incontrare";
-    see = mkV Avere "vedere";
+    see = mkV Avere "vedere" "vedendo" "visto" "vedo" "vedi" "vede" "vediamo"
+                    "vedete" "vedono" "ved";
     sleep = mkV Avere "dormire";
     take = mkV Avere "prendere" "preso";
 }
