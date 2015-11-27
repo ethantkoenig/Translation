@@ -1,13 +1,14 @@
 --# -path=.:../trans:alltenses
 
 abstract Trans = {
-  flags startcat = AbsVP;
+  flags startcat = AbsS;
   cat {- Abs stands for Abstract -}
     {- ARGUMENTS -}
     AbsArgType;
     AbsArgStructure AbsArgType;
 
     {- GRAMMATICAL CATEGORIES -}
+    AbsCP;
 
     AbsD;
 
@@ -18,6 +19,8 @@ abstract Trans = {
     AbsN';
     AbsN;
       AbsN_; {- Number -}
+
+    AbsS;
 
     AbsVP; 
       AbsVP_; {- Polarity -}
@@ -35,11 +38,15 @@ abstract Trans = {
       NPofReflexive : AbsReflexive -> AbsNP;
       NPofProperN : AbsProperN -> AbsNP;
       Possessive : AbsNP -> AbsN' -> AbsNP;
-      AdjoinN' : AbsN' -> AbsAdj -> AbsN';
+      AdjoinN'Adj : AbsN' -> AbsAdj -> AbsN';
+      AdjoinN'CP : AbsN' -> AbsCP -> AbsN';
       MakeN' : AbsN -> AbsN';
       MakeVP__ : AbsV' -> AbsVP__;
       MakeV' : (a: AbsArgType) -> AbsV a -> AbsArgStructure a -> AbsV';
       -- MakeAdjP : AbsAdj -> AbsAdjP;
+  
+      MakeS : AbsVP -> AbsS;
+      MakeCP : AbsVP -> AbsCP;
 
     {- ARGUMENT TYPES -}
       ArgVoid : AbsArgType;
@@ -54,10 +61,8 @@ abstract Trans = {
 
 
     {- FEATURE FILLING RULES -}
-      -- Nonreflexive : AbsProNP -> AbsNP;
-      -- Reflexive : AbsProNP -> AbsNP;
-
-      Self : AbsReflexive; -- TODO name
+      Self : AbsReflexive; 
+      NullNP : AbsNP;
 
       Singular : AbsN_ -> AbsN;
       Plural : AbsN_ -> AbsN;

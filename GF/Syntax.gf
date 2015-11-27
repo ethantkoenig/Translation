@@ -1,39 +1,19 @@
 interface Syntax = {
   oper
-    {- TYPES -}
-    N_ : Type;
-    N : Type;
-    N' : Type;
-    ProNP : Type;
-    Reflexive : Type;
-    ProperN : Type;
-    NP : Type;
+    -- TODO order and organize
 
-    D : Type;
-
-    V : Type;
-    V' : Type;
-    VP__ : Type;
-    VP_ : Type;
-    VP : Type;
-
-    Adj : Type;
-
-    ArgStructure : Type;
-
-    {- FUNCTIONS -}
-
-    {- Lexical functions are intentionally omitted because they vary from
-     - language to language -}
     mkNP : D -> N' -> NP;
     possessive : NP -> N' -> NP;
     npOfProNP : ProNP -> NP;
     npOfReflexive : Reflexive -> NP;
     npOfProperN : ProperN -> NP;
-    -- nonreflexive : ProNP -> NP;
-    -- reflexive: ProNP -> NP;
+
     mkN' : N -> N';
-    adjN' : N' -> Adj -> N';
+    adjoinN'Adj : N' -> Adj -> N';
+    adjoinN'CP : N' -> CP -> N';
+
+    mkS : VP -> S; 
+    mkCP : VP -> CP;   
 
     mkVP__ : V' -> VP__;
     mkV' : V -> ArgStructure -> V';
@@ -43,18 +23,10 @@ interface Syntax = {
     mkArgAdj : NP -> Adj -> ArgStructure;
     mkArgNPNP : NP -> NP -> NP -> ArgStructure;
 
-    reflexive : Reflexive;
     singular, plural : N_ -> N;
     present, past, cond, future : VP__ -> VP_;
     positive, negative : VP_ -> VP;
 
     auxBe, auxHave : VP__ -> V';
-
-    {- FUNCTIONAL WORDS -}
-    indefinite, definite, voidD : D;
-    definite : D;
-    voidD : D;
-
-    i, you, he, she, we, yall, they : ProNP;
 
 }  

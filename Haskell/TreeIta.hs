@@ -7,6 +7,12 @@ import Trans
 import TransUtils
 
 {- NORMALIZE -}
+normalizeS :: GAbsS -> GAbsS
+normalizeS = transformS normalizeVP
+
+normalizeCP :: GAbsCP -> GAbsCP
+normalizeCP = transformCP normalizeVP
+
 normalizeVP :: GAbsVP -> GAbsVP
 normalizeVP = transformVP normalizeVP_
 
@@ -30,10 +36,28 @@ normalizeV' (GMakeV' GArgNPNP GCallSomeoneSomething
   GMakeV' GArgNP GBeNP 
     $ GMakeArgNP (GPossessive subj (GMakeN' (GSingular GName))) name
 
-normalizeV' v = v -- base case
+normalizeV' (GMakeV' argType verb args) = GMakeV' argType verb (normalizeArgs args)
+
+normalizeArgs :: GAbsArgStructure -> GAbsArgStructure
+normalizeArgs = transformArgs normalizeNP normalizeAdj
+
+normalizeNP :: GAbsNP -> GAbsNP
+normalizeNP = transformNP normalizeN'
+
+normalizeN' :: GAbsN' -> GAbsN'
+normalizeN' = transformN' normalizeCP
+
+normalizeAdj :: GAbsAdj -> GAbsAdj
+normalizeAdj a = a
 
 
 {- UNNORMALIZE -}
+unnormalizeS :: GAbsS -> GAbsS
+unnormalizeS (GMakeS vp) = GMakeS (unnormalizeVP vp)
+
+unnormalizeCP :: GAbsCP -> GAbsCP
+unnormalizeCP = transformCP unnormalizeVP
+
 unnormalizeVP :: GAbsVP -> GAbsVP
 unnormalizeVP = transformVP unnormalizeVP_
 
@@ -56,5 +80,17 @@ unnormalizeV' (GMakeV' GArgNP GBeNP
   GMakeV' GArgNPNP GCallSomeoneSomething
     (GMakeArgNPNP subj (GNPofReflexive GSelf) name)
 
-unnormalizeV' v = v -- base case
+unnormalizeV' (GMakeV' argType verb args) = GMakeV' argType verb (unnormalizeArgs args)
+
+unnormalizeArgs :: GAbsArgStructure -> GAbsArgStructure
+unnormalizeArgs = transformArgs unnormalizeNP unnormalizeAdj
+
+unnormalizeNP :: GAbsNP -> GAbsNP
+unnormalizeNP = transformNP unnormalizeN'
+
+unnormalizeN' :: GAbsN' -> GAbsN'
+unnormalizeN' = transformN' unnormalizeCP
+
+unnormalizeAdj :: GAbsAdj -> GAbsAdj
+unnormalizeAdj a = a
 

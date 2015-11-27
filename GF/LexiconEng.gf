@@ -1,5 +1,5 @@
 instance LexiconEng of Lexicon = 
-    open Prelude, SyntaxEng in {
+    open LexemeEng, Prelude, TypesEng, UtilsEng in {
   oper
     fast = mkAdj "fast";
     hungry = mkAdj "hungry";
@@ -12,9 +12,6 @@ instance LexiconEng of Lexicon =
     picture = mkN_ "picture";
     student = mkN_ Masc "student";
     woman = mkN_ False Fem "woman" "women";
-
-    -- TODO should eventually remove 
-    -- be = mkV "be" "being" "been" "am" "are" "is" "was" "were";
 
     alice = mkProperN Fem "Alice";
     bob = mkProperN Masc "Bob";

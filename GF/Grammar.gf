@@ -1,9 +1,1 @@
-
-
-interface Grammar = {
-
-
-
-
-
-}
+interface Grammar = Lexeme, Syntax, Types

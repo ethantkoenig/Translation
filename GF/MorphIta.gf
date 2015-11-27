@@ -1,7 +1,4 @@
 resource MorphIta = open Utils, UtilsIta in {
-  param
-    {- Complex includes impure s, self-geminating consonants, complex clusters -}
-    NounInitial = Con | Vow | Complex;
   oper
     {- GENERAL FUNCTIONS -}
     pluralize : (gatto : Str) -> Str =

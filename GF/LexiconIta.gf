@@ -1,5 +1,5 @@
 instance LexiconIta of Lexicon =
-    open Prelude, SyntaxIta, Utils, UtilsIta in {
+    open LexemeIta, Prelude, TypesIta, Utils, UtilsIta in {
   oper
     fast = mkAdj "veloce";
     hungry = mkAdj "affamato";

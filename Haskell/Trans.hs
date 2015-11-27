@@ -61,6 +61,9 @@ data GAbsArgType =
  | GArgVoid 
   deriving Show
 
+data GAbsCP = GMakeCP GAbsVP 
+  deriving Show
+
 data GAbsD =
    GA 
  | GThe 
@@ -73,7 +76,8 @@ data GAbsN =
   deriving Show
 
 data GAbsN' =
-   GAdjoinN' GAbsN' GAbsAdj 
+   GAdjoinN'Adj GAbsN' GAbsAdj 
+ | GAdjoinN'CP GAbsN' GAbsCP 
  | GMakeN' GAbsN 
   deriving Show
 
@@ -82,6 +86,7 @@ data GAbsNP =
  | GNPofProNP GAbsProNP 
  | GNPofProperN GAbsProperN 
  | GNPofReflexive GAbsReflexive 
+ | GNullNP 
  | GPossessive GAbsNP GAbsN' 
   deriving Show
 
@@ -113,6 +118,9 @@ data GAbsProperN =
   deriving Show
 
 data GAbsReflexive = GSelf 
+  deriving Show
+
+data GAbsS = GMakeS GAbsVP 
   deriving Show
 
 data GAbsV =
@@ -196,6 +204,16 @@ instance Gf GAbsArgType where
 
       _ -> error ("no AbsArgType " ++ show t)
 
+instance Gf GAbsCP where
+  gf (GMakeCP x1) = mkApp (mkCId "MakeCP") [gf x1]
+
+  fg t =
+    case unApp t of
+      Just (i,[x1]) | i == mkCId "MakeCP" -> GMakeCP (fg x1)
+
+
+      _ -> error ("no AbsCP " ++ show t)
+
 instance Gf GAbsD where
   gf GA = mkApp (mkCId "A") []
   gf GThe = mkApp (mkCId "The") []
@@ -223,12 +241,14 @@ instance Gf GAbsN where
       _ -> error ("no AbsN " ++ show t)
 
 instance Gf GAbsN' where
-  gf (GAdjoinN' x1 x2) = mkApp (mkCId "AdjoinN'") [gf x1, gf x2]
+  gf (GAdjoinN'Adj x1 x2) = mkApp (mkCId "AdjoinN'Adj") [gf x1, gf x2]
+  gf (GAdjoinN'CP x1 x2) = mkApp (mkCId "AdjoinN'CP") [gf x1, gf x2]
   gf (GMakeN' x1) = mkApp (mkCId "MakeN'") [gf x1]
 
   fg t =
     case unApp t of
-      Just (i,[x1,x2]) | i == mkCId "AdjoinN'" -> GAdjoinN' (fg x1) (fg x2)
+      Just (i,[x1,x2]) | i == mkCId "AdjoinN'Adj" -> GAdjoinN'Adj (fg x1) (fg x2)
+      Just (i,[x1,x2]) | i == mkCId "AdjoinN'CP" -> GAdjoinN'CP (fg x1) (fg x2)
       Just (i,[x1]) | i == mkCId "MakeN'" -> GMakeN' (fg x1)
 
 
@@ -239,6 +259,7 @@ instance Gf GAbsNP where
   gf (GNPofProNP x1) = mkApp (mkCId "NPofProNP") [gf x1]
   gf (GNPofProperN x1) = mkApp (mkCId "NPofProperN") [gf x1]
   gf (GNPofReflexive x1) = mkApp (mkCId "NPofReflexive") [gf x1]
+  gf GNullNP = mkApp (mkCId "NullNP") []
   gf (GPossessive x1 x2) = mkApp (mkCId "Possessive") [gf x1, gf x2]
 
   fg t =
@@ -247,6 +268,7 @@ instance Gf GAbsNP where
       Just (i,[x1]) | i == mkCId "NPofProNP" -> GNPofProNP (fg x1)
       Just (i,[x1]) | i == mkCId "NPofProperN" -> GNPofProperN (fg x1)
       Just (i,[x1]) | i == mkCId "NPofReflexive" -> GNPofReflexive (fg x1)
+      Just (i,[]) | i == mkCId "NullNP" -> GNullNP 
       Just (i,[x1,x2]) | i == mkCId "Possessive" -> GPossessive (fg x1) (fg x2)
 
 
@@ -321,6 +343,16 @@ instance Gf GAbsReflexive where
 
 
       _ -> error ("no AbsReflexive " ++ show t)
+
+instance Gf GAbsS where
+  gf (GMakeS x1) = mkApp (mkCId "MakeS") [gf x1]
+
+  fg t =
+    case unApp t of
+      Just (i,[x1]) | i == mkCId "MakeS" -> GMakeS (fg x1)
+
+
+      _ -> error ("no AbsS " ++ show t)
 
 instance Gf GAbsV where
   gf GBeAdj = mkApp (mkCId "BeAdj") []

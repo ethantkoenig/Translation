@@ -1,5 +1,5 @@
 incomplete concrete TransI of Trans = 
-    open Syntax, Lexicon in {
+    open Grammar, Lexicon in {
   param
     ArgType = ArVoid | ArNP | ArAdj | ArNPNP;
   lincat
@@ -7,6 +7,8 @@ incomplete concrete TransI of Trans =
     AbsArgStructure = ArgStructure;
   
     AbsAdj = Adj;
+
+    AbsCP = CP;
 
     AbsD = D;
 
@@ -17,6 +19,8 @@ incomplete concrete TransI of Trans =
     AbsN' = N';
     AbsN = N;
     AbsN_ = N_;
+
+    AbsS = S;
 
     AbsVP = VP;
     AbsVP_ = VP_;
@@ -30,18 +34,21 @@ incomplete concrete TransI of Trans =
     NPofReflexive = npOfReflexive;
     NPofProperN = npOfProperN;
     MakeN' = mkN';
-    AdjoinN' = adjN';
+    AdjoinN'Adj = adjoinN'Adj;
+    AdjoinN'CP = adjoinN'CP;
     MakeVP__ = mkVP__;
     MakeV' _ v args = mkV' v args;
+
+    MakeS = mkS;
+    MakeCP = mkCP;  
 
     ArgVoid = {a = ArVoid};
     ArgNP = {a = ArNP};
     ArgAdj = {a = ArAdj};
     ArgNPNP = {a = ArNPNP};
 
-    -- Nonreflexive = nonreflexive;
-    -- Reflexive = reflexive;
     Self = reflexive;
+    NullNP = nullNP;
     Singular = singular;
     Plural = plural;
     Positive = positive;

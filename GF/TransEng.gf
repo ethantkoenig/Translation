@@ -1,3 +1,3 @@
-concrete TransEng of Trans = TransI with (Syntax = SyntaxEng),
+concrete TransEng of Trans = TransI with (Grammar = GrammarEng),
                                          (Lexicon = LexiconEng);
   
