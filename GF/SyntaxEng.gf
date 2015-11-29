@@ -1,8 +1,7 @@
 instance SyntaxEng of Syntax = 
     open LexemeEng, Prelude, TypesEng, Utils, UtilsEng in {
   oper
-    {- ARGUMENT FUNCTIONS -}
-
+    {- Argument Structures -}
     _nonArgStructure : (sb : NP) -> ArgStructure = \sb -> 
       {preface = \\_, _, _ => nonword; postface = \\_, _, _ => nonword;
        subj = sb; wh = True};
@@ -38,8 +37,7 @@ instance SyntaxEng of Syntax =
         True => _nonArgStructure sb
       };
       
-    {- FEATURE FUNCTIONS -}
-
+    {- Feature Functions -}
     singular : N_ -> N = \dog -> 
       {abstractOrMass = dog.abstractOrMass; gend = dog.gend; num = Sg;
        person = Third; s = dog.s ! Sg};
@@ -81,7 +79,7 @@ instance SyntaxEng of Syntax =
                           ++ "not" ++ vp.postface ! num ! per ! gnd
              }};  
 
-    {- GRAMMATICAL FUNCTIONS -}
+    {- Grammatical Functions -}
     mkN' : N -> N' = \n -> n;
 
     adjoinN'Adj : N' -> Adj -> N' = \dog, fast ->
@@ -95,18 +93,17 @@ instance SyntaxEng of Syntax =
 
     mkNP : D -> N' -> NP = \the, dog -> 
       {gend = dog.gend; null = False; num = dog.num; person = Third; 
-       reflexive = False; wh=  False;
+       reflexive = False; wh = False;
        s = table {
              Pos => \\_, _, _ => the.s ! dog.abstractOrMass ! dog.num ++ dog.s ++ "'s";
              _ => \\_, _, _ => the.s ! dog.abstractOrMass ! dog.num ++ dog.s}};
 
--- TODO handle whose (or at least nonword)
     possessive : NP -> N' -> NP = \np, n' -> 
       {gend = n'.gend; null = False; num = n'.num; person = Third;
        reflexive = False; wh = np.wh;
        s = table {
              Pos => \\nm, pr, gn => np.s ! Pos ! nm ! pr ! gn ++ n'.s ++ "'s";
-             _ => \\nm, pr, gn => np.s ! Pos ! nm ! pr ! gn ++ n'.s}}; -- TODO need to think more about handling case here
+             _ => \\nm, pr, gn => np.s ! Pos ! nm ! pr ! gn ++ n'.s}};
 
 
     npOfProNP : ProNP -> NP = \pronp -> pronp; 

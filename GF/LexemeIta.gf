@@ -30,15 +30,17 @@ instance LexemeIta of Lexeme =
     };
 
     mkProperN : (gend : Gender) -> (name : Str) -> ProperN = \gend, name ->
-      {gend = gend; isPronoun = False; null = False; num = Sg; person = Third;
-       possessive = \\_, _ => nonword; s = \\_, _, _ => name; wh = False};
+      {gend = gend; null = False; num = Sg; person = Third;
+       possessive = \\_, _ => nonword; pronoun = False; 
+       s = \\_, _, _ => name; wh = False};
 
     _mkProNP : (gend : Gender) -> (num : Number) -> (person : Person)
                -> (lui, lo, gli, suo, sua, suoi, sue : Str) -> ProNP =
       \gend, num, person, lui, lo, gli, suo, sua, suoi, sue ->
-        {gend = gend; isPronoun = True; null = False; num = num; person = person;
+        {gend = gend; null = False; num = num; person = person;
          possessive = table {Sg => table {Masc => suo; Fem => sua};
                              Pl => table {Masc => suoi; Fem => sue}};
+         pronoun = True;
          s = table {Nom => \\_, _ => lui; Acc => \\_, _ => lo; 
                     Dat => \\_, _ => gli};
          wh = False};
@@ -112,8 +114,8 @@ instance LexemeIta of Lexeme =
     they : ProNP = _mkProNP Masc Pl Third "" "li" "si" "loro" "loro" "loro" "loro";
 
     reflexive : Reflexive =
-      {gend = Masc; null = False; num = Sg; person = Third; isPronoun = True;
-       possessive = \\_, _ => nonword; wh = False;
+      {gend = Masc; null = False; num = Sg; person = Third; 
+       possessive = \\_, _ => nonword; pronoun = True; wh = False;
        s = table {
              Acc => table {
                Sg => table {First => "mi"; Second => "ti";
@@ -122,11 +124,10 @@ instance LexemeIta of Lexeme =
                             Third => "si"}};
              Nom | Dat => \\_, _ => nonword}};
 
-    {- By setting isPronoun True, nullNP acts correctly in possessives -}
-    nullNP : NP = {gend = defaultGender; isPronoun = True; null = True; 
-                   num = defaultNumber; person = defaultPerson; 
-                   possessive = \\_, _ => "cui";
-                   s = \\_, _, _ => "che"; wh = True};
+    {- setting pronoun = True makes nullNP act correctly in possessives -}
+    nullNP : NP = {gend = defaultGender; null = True; num = defaultNumber; 
+                   person = defaultPerson; possessive = \\_, _ => "cui";
+                   pronoun = True; s = \\_, _, _ => "che"; wh = True};
 
     {- Verbs -}
     essere : V = mkV Essere "essere" "essendo" "stato" "sono" "sei" "e'"

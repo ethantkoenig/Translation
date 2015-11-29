@@ -24,8 +24,8 @@ instance TypesIta of Types = open Prelude, Utils, UtilsIta in {
                 num : Number; person : Person; s : Str};
     N' : Type = N;
     {- (Number => Person =>) in s accounts for reflexive pronouns -}
-    NP : Type = {gend : Gender; isPronoun : Bool; null : Bool; num : Number;
-                 person : Person; possessive : Number => Gender => Str;
+    NP : Type = {gend : Gender; null : Bool; num : Number; person : Person; 
+                 possessive : Number => Gender => Str; pronoun : Bool;
                  s : Case => Number => Person => Str; wh : Bool};
 
     ProNP : Type = NP;

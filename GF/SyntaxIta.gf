@@ -2,7 +2,7 @@ instance SyntaxIta of Syntax =
     open LexemeIta, {- MorphIta, -} Prelude, TypesIta, Utils, UtilsIta in {
   oper
    
-    {- ArgStructures -}
+    {- Argument Structures -}
     _nonArgStructure : (sb : NP) -> ArgStructure = \sb ->
       {preSubject = \\_, _ => nonword; postSubject = \\_, _ => nonword;
        postVerb = \\_, _, _ => nonword; subj = sb; wh = True};
@@ -12,7 +12,7 @@ instance SyntaxIta of Syntax =
       postVerb = \\_, _, _ => ""; subj = sb; wh = sb.wh};
 
     mkArgNP : NP -> NP -> ArgStructure = \sb, obj -> 
-      case <sb.wh, obj.wh, obj.isPronoun> of {
+      case <sb.wh, obj.wh, obj.pronoun> of {
         <_, False, False> => 
           {preSubject = \\_, _ => ""; postSubject = \\_, _ => "";
            postVerb = \\nm, pr, gn => obj.s ! Acc ! nm ! pr;
@@ -32,7 +32,7 @@ instance SyntaxIta of Syntax =
        subj = sb; wh = sb.wh};
 
     mkArgNPNP : NP -> NP -> NP -> ArgStructure = \sb, obj1, obj2 -> 
-      case <sb.wh, obj1.wh, obj1.isPronoun, obj2.wh> of { -- does not handle obj2 pronouns (yet)
+      case <sb.wh, obj1.wh, obj1.pronoun, obj2.wh> of { -- does not handle obj2 pronouns (yet)
         <_, False, False, False> =>
           {preSubject = \\_, _ => ""; postSubject = \\_, _ => "";
            postVerb = \\nm, pr, gn => obj1.s ! Acc ! nm ! pr
@@ -57,6 +57,7 @@ instance SyntaxIta of Syntax =
       };
 
 
+    {- Feature Functions -}
     singular : N_ -> N = \gatto -> 
       {abstractOrMass = gatto.abstractOrMass; gend = gatto.gend;
        init = gatto.init; num = Sg; person = Third; s = gatto.s ! Sg};
@@ -100,7 +101,7 @@ instance SyntaxIta of Syntax =
                            ++ vp.postVerb ! nm ! pr ! gn;
        subj = vp.subj; wh = vp.wh};
 
-    {- GRAMMATICAL FUNCTIONS -}
+    {- Grammatical Functions -}
     mkN' : N -> N' = \n -> n;
 
     -- TODO handle preceding adjectives
@@ -114,8 +115,8 @@ instance SyntaxIta of Syntax =
        s = n'.s ++ cp.s ! n'.num ! n'.person ! n'.gend};   
 
     mkNP : D -> N' -> NP = \il, gatto -> 
-      {gend = gatto.gend; isPronoun = False; null = False; num = gatto.num;
-       person = Third; possessive = \\_, _ => nonword; wh = False;
+      {gend = gatto.gend; null = False; num = gatto.num; person = Third;
+       possessive = \\_, _ => nonword; pronoun = False; wh = False;
        s = \\_, nm, pr => (il.s ! gatto.abstractOrMass ! gatto.num 
                            ! gatto.gend ! gatto.init) ++ gatto.s};
 
@@ -123,10 +124,10 @@ instance SyntaxIta of Syntax =
     npOfReflexive : Reflexive -> NP = \refl -> refl;
     npOfProperN : ProperN -> NP = \prop -> prop;
 
-    possessive : NP -> N' -> NP = \owner, ownee -> -- TODO handle "di cui"
+    possessive : NP -> N' -> NP = \owner, ownee ->
       {gend = ownee.gend; null = False; num = ownee.num; person = ownee.person;
-       isPronoun = False; possessive = \\_, _ => nonword; wh = owner.wh;
-       s = case owner.isPronoun of {
+       possessive = \\_, _ => nonword; pronoun = False; wh = owner.wh;
+       s = case owner.pronoun of {
          False => \\c, _, _ => 
            definite.s ! ownee.abstractOrMass ! ownee.num ! ownee.gend ! ownee.init
            ++ ownee.s ++ "di" ++ owner.s ! c ! defaultNumber ! defaultPerson;
@@ -171,8 +172,6 @@ instance SyntaxIta of Syntax =
           }
       };
 
-
     {- FUNCTIONAL WORDS -}
-
 
 }   
