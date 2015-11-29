@@ -31,7 +31,7 @@ instance LexemeIta of Lexeme =
 
     mkProperN : (gend : Gender) -> (name : Str) -> ProperN = \gend, name ->
       {gend = gend; isPronoun = False; null = False; num = Sg; person = Third;
-       possessive = \\_, _ => nonword; s = \\_, _, _ => name};
+       possessive = \\_, _ => nonword; s = \\_, _, _ => name; wh = False};
 
     _mkProNP : (gend : Gender) -> (num : Number) -> (person : Person)
                -> (lui, lo, gli, suo, sua, suoi, sue : Str) -> ProNP =
@@ -40,7 +40,8 @@ instance LexemeIta of Lexeme =
          possessive = table {Sg => table {Masc => suo; Fem => sua};
                              Pl => table {Masc => suoi; Fem => sue}};
          s = table {Nom => \\_, _ => lui; Acc => \\_, _ => lo; 
-                    Dat => \\_, _ => gli}};
+                    Dat => \\_, _ => gli};
+         wh = False};
 
     {- Verbs -}
     _constructV : (aux : Aux) -> (avere, avendo, avuto : Str)
@@ -112,7 +113,7 @@ instance LexemeIta of Lexeme =
 
     reflexive : Reflexive =
       {gend = Masc; null = False; num = Sg; person = Third; isPronoun = True;
-       possessive = \\_, _ => nonword;
+       possessive = \\_, _ => nonword; wh = False;
        s = table {
              Acc => table {
                Sg => table {First => "mi"; Second => "ti";
@@ -121,11 +122,11 @@ instance LexemeIta of Lexeme =
                             Third => "si"}};
              Nom | Dat => \\_, _ => nonword}};
 
-    {- By setting isPronoun True, we avoid nullNP appearing in possessives -}
+    {- By setting isPronoun True, nullNP acts correctly in possessives -}
     nullNP : NP = {gend = defaultGender; isPronoun = True; null = True; 
                    num = defaultNumber; person = defaultPerson; 
-                   possessive = \\_, _ => nonword; s = \\_, _, _ => ""}; -- TODO handle "di chi"
-
+                   possessive = \\_, _ => "cui";
+                   s = \\_, _, _ => "che"; wh = True};
 
     {- Verbs -}
     essere : V = mkV Essere "essere" "essendo" "stato" "sono" "sei" "e'"
@@ -136,6 +137,4 @@ instance LexemeIta of Lexeme =
 
     stare : V = mkV Essere "stare" "stando" "stato" "sto" "stai" "sta" "stiamo"
                            "state" "stanno" "sta";
-
-
 }

@@ -1,3 +1,5 @@
+{- Various morphological functions for Italian -}
+
 resource MorphIta = open Utils, UtilsIta in {
   oper
     {- GENERAL FUNCTIONS -}

@@ -36,7 +36,7 @@ instance LexemeEng of Lexeme = open MorphEng, Prelude, TypesEng, Utils, UtilsEng
     };
 
     mkProperN : (gend : Gender) -> (name : Str) -> ProperN = \gend, name -> 
-      {gend = gend; null = False; num = Sg; person = Third; 
+      {gend = gend; null = False; num = Sg; person = Third; wh = False; 
        s = \\_, _, _, _ => name};
 
     _mkProNP : (num : Number) -> (person : Person) -> (gend : Gender)
@@ -45,7 +45,7 @@ instance LexemeEng of Lexeme = open MorphEng, Prelude, TypesEng, Utils, UtilsEng
       {null = False; gend = gend; num = num; person = person; reflexive = False;
        s = table {Nom => \\_, _, _ => he;
                   Acc => \\_, _, _ => him;
-                  Pos => \\_, _, _ => his}};
+                  Pos => \\_, _, _ => his}; wh = False};
 
     {- Verbs -}
     _constructV : (aux : Bool ) -> (be, being, been, am,
@@ -98,7 +98,7 @@ instance LexemeEng of Lexeme = open MorphEng, Prelude, TypesEng, Utils, UtilsEng
 
      {- fields other than s do not matter -}
     reflexive : Reflexive = 
-      {null = False; gend = Masc; num = Sg; person = Third; 
+      {null = False; gend = Masc; num = Sg; person = Third; wh = False;
        s = table {
              Acc => table {
                Sg => table {
@@ -113,7 +113,10 @@ instance LexemeEng of Lexeme = open MorphEng, Prelude, TypesEng, Utils, UtilsEng
             Nom | Pos => \\_, _, _ => nonword}};
 
     nullNP : NP = {gend = defaultGender; null = True; num = defaultNumber;
-                   person = defaultPerson; s = \\_, _, _, _ => ""};   
+                   person = defaultPerson; wh = True;
+                   s = table {
+                         Pos => \\_, _, _ => "whose";
+                         Nom | Acc => \\_, _, _ => "that"}};
 
 
     {- Pronouns -}

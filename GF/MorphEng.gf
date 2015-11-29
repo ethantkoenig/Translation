@@ -1,3 +1,5 @@
+{- Various morphological functions for English -}
+
 resource MorphEng = {
   oper
     {- INFLECTIONAL FUNCTIONS -}
@@ -31,7 +33,7 @@ resource MorphEng = {
                 _ => dog + "'s"
               };
 
-    {- from ParadigmsEng.gf -}
+    {- from ParadigmsEng.gf in the Resource Library -}
     duplFinal : Str -> Str = \w -> case w of {
       _ + ("a" | "e" | "o") + ("a" | "e" | "i" | "o" | "u") + ? => w ; -- waited, needed
       _ + ("a" | "e" | "i" | "o" | "u") + 

@@ -2,9 +2,13 @@ instance TypesEng of Types = open Prelude, Utils, UtilsEng in {
   oper
     Adj : Type = {s : Str};
 
-    {- [Number => Person => Gender =>] in postface accounts for possibilty of
+
+    {- preface : text before the subject
+     - postface : text after the verb
+     - [Number => Person => Gender =>] in postface accounts for possibilty of
      - reflexives in object position -}
-    ArgStructure : Type = {null : Bool; subj : NP; 
+    ArgStructure : Type = {wh : Bool; subj : NP;
+                           preface : Number => Person => Gender => Str; 
                            postface : Number => Person => Gender => Str}; 
 
     CP : Type = VP;
@@ -17,8 +21,10 @@ instance TypesEng of Types = open Prelude, Utils, UtilsEng in {
     N : Type = {abstractOrMass : Bool; gend : Gender; num : Number; 
                 person : Person; s : Str};
     N' : Type = N;
+    {- null - whether NP is the "null WH" - e.g. the boy that [__] slept
+     - wh - whether NP is the "WH" features - e.g. the boy [whose dog] we see -}
     NP : Type = {gend : Gender; null : Bool; num : Number; person : Person;
-                 s : Case => Number => Person => Gender => Str};
+                 s : Case => Number => Person => Gender => Str; wh : Bool};
 
     ProNP : Type = NP;
     ProperN : Type = NP;
@@ -28,13 +34,15 @@ instance TypesEng of Types = open Prelude, Utils, UtilsEng in {
 
     V : Type = {aux : Bool; conj : Tense => Number => Person => Str;
                 inf : Str; presPart : Str; pastPart : Str};
-    V' : Type = {head : V; null : Bool; 
-                 preface : Number => Person => Gender => Str;
-                 postface : Number => Person => Gender => Str; subj : NP};
+    {- preface : text before the verb
+     - postface : text after verb
+     - wh : whether an argument to the verb is +WH -}
+    V' : Type = {head : V; preface : Number => Person => Gender => Str;
+                 postface : Number => Person => Gender => Str; subj : NP;
+                 wh : Bool};
     VP__ : Type = V';
-    VP_ : Type = {head : V; null : Bool; 
-                  preface : Number => Person => Gender => Str;
+    VP_ : Type = {head : V; preface : Number => Person => Gender => Str;
                   postface : Number => Person => Gender => Str;
-                  subj : NP; tense : Tense};
-    VP : Type = {null : Bool; s : Number => Person => Gender => Str; subj : NP};
+                  subj : NP; tense : Tense; wh : Bool};
+    VP : Type = {s : Number => Person => Gender => Str; subj : NP; wh : Bool};
 }
