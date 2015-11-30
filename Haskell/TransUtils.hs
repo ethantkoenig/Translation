@@ -5,8 +5,12 @@ import Trans
 
 {- transforms -}
 
-transformS :: (GAbsVP -> GAbsVP) -> GAbsS -> GAbsS
-transformS f (GMakeS vp) = GMakeS (f vp)
+transformS :: (GAbsS_ -> GAbsS_) -> GAbsS -> GAbsS
+transformS f (GDeclarative s_) = GDeclarative (f s_)
+transformS f (GInterrogative s_) = GInterrogative (f s_)
+
+transformS_ :: (GAbsVP -> GAbsVP) -> GAbsS_ -> GAbsS_
+transformS_ f (GMakeS_ vp) = GMakeS_ (f vp)
 
 transformCP :: (GAbsVP -> GAbsVP) -> GAbsCP -> GAbsCP
 transformCP f (GMakeCP vp) = GMakeCP (f vp)

@@ -120,7 +120,12 @@ data GAbsProperN =
 data GAbsReflexive = GSelf 
   deriving Show
 
-data GAbsS = GMakeS GAbsVP 
+data GAbsS =
+   GDeclarative GAbsS_ 
+ | GInterrogative GAbsS_ 
+  deriving Show
+
+data GAbsS_ = GMakeS_ GAbsVP 
   deriving Show
 
 data GAbsV =
@@ -345,14 +350,26 @@ instance Gf GAbsReflexive where
       _ -> error ("no AbsReflexive " ++ show t)
 
 instance Gf GAbsS where
-  gf (GMakeS x1) = mkApp (mkCId "MakeS") [gf x1]
+  gf (GDeclarative x1) = mkApp (mkCId "Declarative") [gf x1]
+  gf (GInterrogative x1) = mkApp (mkCId "Interrogative") [gf x1]
 
   fg t =
     case unApp t of
-      Just (i,[x1]) | i == mkCId "MakeS" -> GMakeS (fg x1)
+      Just (i,[x1]) | i == mkCId "Declarative" -> GDeclarative (fg x1)
+      Just (i,[x1]) | i == mkCId "Interrogative" -> GInterrogative (fg x1)
 
 
       _ -> error ("no AbsS " ++ show t)
+
+instance Gf GAbsS_ where
+  gf (GMakeS_ x1) = mkApp (mkCId "MakeS_") [gf x1]
+
+  fg t =
+    case unApp t of
+      Just (i,[x1]) | i == mkCId "MakeS_" -> GMakeS_ (fg x1)
+
+
+      _ -> error ("no AbsS_ " ++ show t)
 
 instance Gf GAbsV where
   gf GBeAdj = mkApp (mkCId "BeAdj") []

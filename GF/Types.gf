@@ -16,6 +16,7 @@ interface Types = {
     ProperN : Type;
     NP : Type;
   
+    S_ : Type;
     S : Type;
 
     V : Type;

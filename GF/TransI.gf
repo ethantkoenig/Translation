@@ -20,6 +20,7 @@ incomplete concrete TransI of Trans =
     AbsN = N;
     AbsN_ = N_;
 
+    AbsS_ = S_;
     AbsS = S;
 
     AbsVP = VP;
@@ -39,7 +40,7 @@ incomplete concrete TransI of Trans =
     MakeVP__ = mkVP__;
     MakeV' _ v args = mkV' v args;
 
-    MakeS = mkS;
+    MakeS_ = mkS_;
     MakeCP = mkCP;  
 
     ArgVoid = {a = ArVoid};
@@ -51,6 +52,10 @@ incomplete concrete TransI of Trans =
     NullNP = nullNP;
     Singular = singular;
     Plural = plural;
+
+    Declarative = declarative;
+    Interrogative = interrogative;
+
     Positive = positive;
     Negative = negative;
     Present = present;

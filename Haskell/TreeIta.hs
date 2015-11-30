@@ -8,8 +8,10 @@ import TransUtils
 
 {- NORMALIZE -}
 normalizeS :: GAbsS -> GAbsS
-normalizeS = transformS normalizeVP
+normalizeS = transformS normalizeS_
 
+normalizeS_ :: GAbsS_ -> GAbsS_
+normalizeS_ =transformS_ normalizeVP
 normalizeCP :: GAbsCP -> GAbsCP
 normalizeCP = transformCP normalizeVP
 
@@ -21,7 +23,6 @@ normalizeVP_ = transformVP_ normalizeVP__
 
 normalizeVP__ :: GAbsVP__ -> GAbsVP__
 normalizeVP__ = transformVP__ normalizeV'
-
 
 normalizeV' :: GAbsV' -> GAbsV'
 normalizeV' (GAuxBe (GMakeVP__ v')) = GAuxBe (GMakeVP__ (normalizeV' v'))
@@ -53,7 +54,10 @@ normalizeAdj a = a
 
 {- UNNORMALIZE -}
 unnormalizeS :: GAbsS -> GAbsS
-unnormalizeS (GMakeS vp) = GMakeS (unnormalizeVP vp)
+unnormalizeS = transformS unnormalizeS_
+
+unnormalizeS_ :: GAbsS_ -> GAbsS_
+unnormalizeS_ = transformS_ unnormalizeVP
 
 unnormalizeCP :: GAbsCP -> GAbsCP
 unnormalizeCP = transformCP unnormalizeVP

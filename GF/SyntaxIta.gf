@@ -4,53 +4,53 @@ instance SyntaxIta of Syntax =
    
     {- Argument Structures -}
     _nonArgStructure : (sb : NP) -> ArgStructure = \sb ->
-      {preSubject = \\_, _ => nonword; postSubject = \\_, _ => nonword;
+      {preSubj = \\_, _ => nonword; postSubj = \\_, _ => nonword;
        postVerb = \\_, _, _ => nonword; subj = sb; wh = True};
 
     mkArgVoid : NP -> ArgStructure = \sb -> 
-     {null = sb.null; preSubject = \\_, _ => ""; postSubject = \\_, _ => "";
+     {null = sb.null; preSubj = \\_, _ => ""; postSubj = \\_, _ => "";
       postVerb = \\_, _, _ => ""; subj = sb; wh = sb.wh};
 
     mkArgNP : NP -> NP -> ArgStructure = \sb, obj -> 
       case <sb.wh, obj.wh, obj.pronoun> of {
         <_, False, False> => 
-          {preSubject = \\_, _ => ""; postSubject = \\_, _ => "";
+          {preSubj = \\_, _ => ""; postSubj = \\_, _ => "";
            postVerb = \\nm, pr, gn => obj.s ! Acc ! nm ! pr;
            subj = sb; wh = sb.wh};
         <_, False, True>  =>
-          {preSubject = \\_, _ => ""; postSubject = obj.s ! Acc;
+          {preSubj = \\_, _ => ""; postSubj = obj.s ! Acc;
            postVerb = \\_, _, _ => ""; subj = sb; wh = sb.wh};
         <False, True, _> =>
-          {preSubject = obj.s ! Acc; postSubject = \\_, _ => "";
+          {preSubj = obj.s ! Acc; postSubj = \\_, _ => "";
            postVerb = \\_, _, _ => ""; subj = sb; wh = True};
         _ => _nonArgStructure sb
     };
 
     mkArgAdj : NP -> Adj -> ArgStructure = \sb, ad -> 
-      {preSubject = \\_, _ => ""; postSubject = \\_, _ => ""; 
+      {preSubj = \\_, _ => ""; postSubj = \\_, _ => ""; 
        postVerb = \\nm, pr, gn => ad.s ! nm ! gn; 
        subj = sb; wh = sb.wh};
 
     mkArgNPNP : NP -> NP -> NP -> ArgStructure = \sb, obj1, obj2 -> 
       case <sb.wh, obj1.wh, obj1.pronoun, obj2.wh> of { -- does not handle obj2 pronouns (yet)
         <_, False, False, False> =>
-          {preSubject = \\_, _ => ""; postSubject = \\_, _ => "";
+          {preSubj = \\_, _ => ""; postSubj = \\_, _ => "";
            postVerb = \\nm, pr, gn => obj1.s ! Acc ! nm ! pr
                                       ++ obj2.s ! Acc ! nm ! pr;
            subj = sb; wh = sb.wh};
         <False, False, False, True> =>
-          {preSubject = obj2.s ! Acc; postSubject = \\_, _ => "";
+          {preSubj = obj2.s ! Acc; postSubj = \\_, _ => "";
            postVerb = \\nm, pr, gn => obj1.s ! Acc ! nm ! pr;
            subj = sb; wh = True};
         <_, False, True, False> => 
-          {preSubject = \\_, _ => ""; postSubject = obj1.s ! Acc;
+          {preSubj = \\_, _ => ""; postSubj = obj1.s ! Acc;
            postVerb = \\nm, pr, gn => obj2.s ! Acc ! nm ! pr;
            subj = sb; wh = sb.wh};
         <False, False, True, True> => 
-          {preSubject = obj2.s ! Acc; postSubject = obj1.s ! Acc;
+          {preSubj = obj2.s ! Acc; postSubj = obj1.s ! Acc;
            postVerb = \\_, _, _ => ""; subj = sb; wh = True};
         <False, True, _, False> =>
-          {preSubject = obj1.s ! Acc; postSubject = \\_, _ => "";
+          {preSubj = obj1.s ! Acc; postSubj = \\_, _ => "";
            postVerb = \\nm, pr, gn => obj2.s ! Acc ! nm ! pr;
            subj = sb; wh = True};
         _ => _nonArgStructure sb
@@ -58,61 +58,48 @@ instance SyntaxIta of Syntax =
 
 
     {- Feature Functions -}
-    singular : N_ -> N = \gatto -> 
-      {abstractOrMass = gatto.abstractOrMass; gend = gatto.gend;
-       init = gatto.init; num = Sg; person = Third; s = gatto.s ! Sg};
+    singular : N_ -> N = \gatto -> gatto ** 
+      {num = Sg; person = Third; s = gatto.s ! Sg};
 
-    plural : N_ -> N = \gatto -> 
-      {abstractOrMass = gatto.abstractOrMass; gend = gatto.gend;
-       init = gatto.init; num = Pl; person = Third; s = gatto.s ! Pl};
+    plural : N_ -> N = \gatto -> gatto ** 
+      {num = Pl; person = Third; s = gatto.s ! Pl};
 
-    present : VP__ -> VP_ = \vp -> 
-      {head = vp.head; preSubject = vp.preSubject; postSubject = vp.postSubject;
-       postVerb = vp.postVerb; subj = vp.subj; tense = Pres; wh = vp.wh};
+    declarative : S_ -> S = \s -> 
+      let subj : NP = s.subj in
+      let s : Number => Person => Gender => Str = composeVP False s in
+      {s = s ! subj.num ! subj.person ! subj.gend};
 
-    past : VP__ -> VP_ = \vp -> 
+    interrogative : S_ -> S = \s ->       
+      let subj : NP = s.subj in
+      let s : Number => Person => Gender => Str = composeVP True s in
+      {s = s ! subj.num ! subj.person ! subj.gend};
+
+    present : VP__ -> VP_ = \vp -> vp ** {tense = Pres};
+
+    past : VP__ -> VP_ = \vp -> vp **
       {head = case vp.head.aux of {Avere => avere; Essere => essere};
-       preSubject = vp.preSubject; postSubject = vp.postSubject;
        postVerb = \\nm, pr, gn => vp.head.pastPart ! nm ! gn 
                                   ++ vp.postVerb ! nm ! pr ! gn;
-       subj = vp.subj; tense = Pres; wh = vp.wh};
+       tense = Pres};
 
-    future : VP__ -> VP_ = \vp -> 
-      {head = vp.head; preSubject = vp.preSubject; postSubject = vp.postSubject;
-       postVerb = vp.postVerb; subj = vp.subj; tense = Fut; wh = vp.wh};
+    future : VP__ -> VP_ = \vp -> vp ** {tense = Fut};
 
-    cond : VP__ -> VP_ = \vp -> 
-      {head = vp.head; preSubject = vp.preSubject; postSubject = vp.postSubject;
-       postVerb = vp.postVerb; subj = vp.subj; tense = Cond; wh = vp.wh};
+    cond : VP__ -> VP_ = \vp -> vp ** {tense = Cond};
 
-    positive : VP_ -> VP = \vp -> 
-      {s = \\nm, pr, gn => vp.preSubject ! nm ! pr 
-                           ++ vp.subj.s ! Nom ! nm ! pr 
-                           ++ vp.postSubject ! nm ! pr
-                           ++ vp.head.conj ! vp.tense ! nm ! pr
-                           ++ vp.postVerb ! nm ! pr ! gn;
-       subj = vp.subj; wh = vp.wh};
+    positive : VP_ -> VP = \vp -> vp;
 
     negative : VP_ -> VP = \vp -> 
-      {s = \\nm, pr, gn => vp.preSubject ! nm ! pr
-                           ++ vp.subj.s ! Nom ! nm ! pr  ++ "non" 
-                           ++ vp.postSubject ! nm ! pr
-                           ++ vp.head.conj ! vp.tense ! nm ! pr
-                           ++ vp.postVerb ! nm ! pr ! gn;
-       subj = vp.subj; wh = vp.wh};
+    vp ** {postSubj = \\nm, pr => "non" ++ vp.postSubj ! nm ! pr};
 
     {- Grammatical Functions -}
     mkN' : N -> N' = \n -> n;
 
     -- TODO handle preceding adjectives
-    adjoinN'Adj : N' -> Adj -> N' = \n', a -> 
-      {abstractOrMass = n'.abstractOrMass; gend = n'.gend; init = n'.init;
-       num = n'.num; person = n'.person; s = n'.s ++ a.s ! n'.num ! n'.gend};
+    adjoinN'Adj : N' -> Adj -> N' = \n', a -> n' **
+      {s = n'.s ++ a.s ! n'.num ! n'.gend};
 
-    adjoinN'CP : N' -> CP -> N' = \n', cp ->
-      {abstractOrMass = n'.abstractOrMass; gend = n'.gend; init = n'.init;
-       num = n'.num; person = n'.person;
-       s = n'.s ++ cp.s ! n'.num ! n'.person ! n'.gend};   
+    adjoinN'CP : N' -> CP -> N' = \n', cp -> n' **
+      {s = n'.s ++ cp.s ! n'.num ! n'.person ! n'.gend};   
 
     mkNP : D -> N' -> NP = \il, gatto -> 
       {gend = gatto.gend; null = False; num = gatto.num; person = Third;
@@ -136,42 +123,48 @@ instance SyntaxIta of Syntax =
            ++ (owner.possessive ! ownee.num ! ownee.gend) ++ ownee.s
            }};
 
-    mkV' : V -> ArgStructure -> V' = \v, args -> 
-      {head = v; preSubject = args.preSubject; postSubject = args.postSubject;
-       postVerb = args.postVerb; subj = args.subj; wh = args.wh};
+    mkV' : V -> ArgStructure -> V' = \v, args -> args ** {head = v};
 
-    auxBe : VP__ -> V' = \vp ->
-      {head = stare; preSubject = vp.preSubject; postSubject = vp.postSubject;
-       postVerb = \\nm, pr, gn => vp.head.presPart ++ vp.postVerb ! nm ! pr ! gn;
-       subj = vp.subj; wh = vp.wh};
+    auxBe : VP__ -> V' = \vp -> vp **
+      {head = stare; 
+       postVerb = \\nm, pr, gn => vp.head.presPart 
+                                  ++ vp.postVerb ! nm ! pr ! gn};
 
-    auxHave : VP__ -> V' = \vp -> 
+    auxHave : VP__ -> V' = \vp -> vp ** -- TODO direct object-participle agreement for avere
       {head = case vp.head.aux of {Avere => avere; Essere => essere};
-       preSubject = vp.preSubject; postSubject = vp.postSubject;
        postVerb = \\nm, pr, gn => vp.head.pastPart ! nm ! gn 
-                                  ++ vp.postVerb ! nm ! pr ! gn;
-       subj = vp.subj; wh = vp.wh};
+                                  ++ vp.postVerb ! nm ! pr ! gn};
 
     mkVP__ : V' -> VP__ = \v' -> v';
 
-    mkS : VP -> S = \vp ->
+    mkS_ : VP -> S_ = \vp ->
       case vp.wh of {
-        False => let subj : NP = vp.subj in
-                 {s = vp.s ! subj.num ! subj.person ! subj.gend};
-        True => {s = nonword}};
+        False => vp;
+        True => vp ** {postVerb = \\_, _, _ => nonword}};
 
     mkCP : VP -> CP = \vp ->
       case vp.wh of {
-        False => {s = \\_, _, _ => nonword; subj = vp.subj; wh = False};
+        False => {s = \\_, _, _ => nonword};
         True => 
           let subj : NP = vp.subj in
+          let s : Number => Person => Gender => Str = composeVP False vp in 
           case subj.null of {
-            False => {subj = subj; wh = True; 
-                      s = \\_, _, _ => vp.s ! subj.num ! subj.person ! subj.gend};                      
-            True => vp
+            False => {s = \\_, _, _ => s ! subj.num ! subj.person ! subj.gend};                      
+            True => {s = s}
           }
       };
 
-    {- FUNCTIONAL WORDS -}
-
+    {- Utility Functions -}
+    composeVP : (invert : Bool) -> VP -> Number => Person => Gender => Str =
+        \invert, vp ->
+      case invert of {
+        False => \\nm, pr, gn => 
+          vp.preSubj ! nm ! pr ++ vp.subj.s ! Nom ! nm ! pr
+          ++ vp.postSubj ! nm ! pr ++ vp.head.conj ! vp.tense ! nm ! pr
+          ++ vp.postVerb ! nm ! pr ! gn;
+        True => \\nm, pr, gn =>
+          vp.preSubj ! nm ! pr ++ vp.postSubj ! nm ! pr 
+          ++ vp.head.conj ! vp.tense ! nm ! pr ++ vp.postVerb ! nm ! pr ! gn
+          ++ vp.subj.s ! Nom ! nm ! pr
+      };
 }   

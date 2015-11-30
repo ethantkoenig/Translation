@@ -20,6 +20,7 @@ abstract Trans = {
     AbsN;
       AbsN_; {- Number -}
 
+    AbsS_; {- Declarative vs. Interrogative -}
     AbsS;
 
     AbsVP; 
@@ -45,7 +46,7 @@ abstract Trans = {
       MakeV' : (a: AbsArgType) -> AbsV a -> AbsArgStructure a -> AbsV';
       -- MakeAdjP : AbsAdj -> AbsAdjP;
   
-      MakeS : AbsVP -> AbsS;
+      MakeS_ : AbsVP -> AbsS_;
       MakeCP : AbsVP -> AbsCP;
 
     {- ARGUMENT TYPES -}
@@ -66,6 +67,10 @@ abstract Trans = {
 
       Singular : AbsN_ -> AbsN;
       Plural : AbsN_ -> AbsN;
+  
+      Declarative : AbsS_ -> AbsS;
+      Interrogative : AbsS_ -> AbsS;
+
       Positive : AbsVP_ -> AbsVP;
       Negative : AbsVP_ -> AbsVP;
       Present : AbsVP__ -> AbsVP_;

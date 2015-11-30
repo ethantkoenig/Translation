@@ -3,17 +3,17 @@ instance TypesIta of Types = open Prelude, Utils, UtilsIta in {
     Adj : Type = {s : Number => Gender => Str};
 
 
-    {- preSubject : text before subject
-     - postSubject : text between subject and verb
+    {- preSubj : text before Subj
+     - postSubj : text between Subj and verb
      - postVerb : text after verb
-     - [Number => Person =>] in postSubject/postVerb accounts for possibility of
+     - [Number => Person =>] in postSubj/postVerb accounts for possibility of
      - reflexives in object positions -}
-    ArgStructure : Type =  {preSubject : Number => Person => Str;
-                            postSubject : Number => Person => Str;
+    ArgStructure : Type =  {preSubj : Number => Person => Str;
+                            postSubj : Number => Person => Str;
                             postVerb : Number => Person => Gender => Str;
                             subj : NP; wh : Bool};
 
-    CP : Type = VP;
+    CP : Type = {s : Number => Person => Gender => Str};
 
     {- D.s : (abstractOrMass : Bool) => ... => Str -}
     D : Type = {s : Bool => Number => Gender => NounInitial => Str};
@@ -32,19 +32,20 @@ instance TypesIta of Types = open Prelude, Utils, UtilsIta in {
     ProperN : Type = NP;
     Reflexive : Type = NP;
 
+    S_ : Type = VP;
     S : Type = {s : Str};
 
     V : Type = {aux : Aux; inf : Str; presPart : Str;
                 pastPart : Number => Gender => Str;
                 conj : Tense => Number => Person => Str};
-    V' : Type = {head : V; preSubject : Number => Person => Str; 
-                 postSubject : Number => Person => Str; 
+    V' : Type = {head : V; preSubj : Number => Person => Str; 
+                 postSubj : Number => Person => Str; 
                  postVerb : Number => Person => Gender => Str; 
                  subj : NP; wh : Bool};
     VP__ : Type = V';
-    VP_ : Type = {head : V; preSubject : Number => Person => Str;
-                  postSubject : Number => Person => Str; 
+    VP_ : Type = VP;
+    VP : Type = {head : V; preSubj : Number => Person => Str;
+                  postSubj : Number => Person => Str; 
                   postVerb : Number => Person => Gender => Str; subj : NP;
                   tense : Tense; wh : Bool};
-    VP : Type = {s : Number => Person => Gender => Str; subj : NP; wh : Bool};
 }

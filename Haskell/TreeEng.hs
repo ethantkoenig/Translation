@@ -9,7 +9,10 @@ import TransUtils
 
 {- NORMALIZE -}
 normalizeS :: GAbsS -> GAbsS
-normalizeS = transformS normalizeVP
+normalizeS = transformS normalizeS_
+
+normalizeS_ :: GAbsS_ -> GAbsS_
+normalizeS_ =transformS_ normalizeVP
 
 normalizeCP :: GAbsCP -> GAbsCP
 normalizeCP = transformCP normalizeVP
@@ -49,7 +52,10 @@ normalizeAdj a = a
 
 {- UNNORMALIZE -}
 unnormalizeS :: GAbsS -> GAbsS
-unnormalizeS = transformS unnormalizeVP
+unnormalizeS = transformS unnormalizeS_
+
+unnormalizeS_ :: GAbsS_ -> GAbsS_
+unnormalizeS_ = transformS_ unnormalizeVP
 
 unnormalizeCP :: GAbsCP -> GAbsCP
 unnormalizeCP = transformCP unnormalizeVP

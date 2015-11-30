@@ -31,5 +31,6 @@ TestCases = [
 (["the students take pictures"], ["gli studenti fanno foto"]), # TODO should it be "le foto"?
 (["the boy whose dogs that sleep meet us' name is Bob"],
    ["il ragazzo i cui cani che dormono ci incontrano si chiama Bob"]),
+(["does a woman have the name"], ["ha il nome una donna"]),
 ]
 

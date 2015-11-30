@@ -46,10 +46,7 @@ resource MorphIta = open Utils, UtilsIta in {
                   _ => Con
                 };
 
-
-
-    {- FUNCTIONS FOR VERBS -}
-    
+    {- FUNCTIONS FOR VERBS -}    
     getRoot : (manigare : Str) -> Str =
       \mangiare -> case mangiare of {
                      mangi + ("are" | "ere" | "ire") => mangi;

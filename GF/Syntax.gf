@@ -12,7 +12,7 @@ interface Syntax = {
     adjoinN'Adj : N' -> Adj -> N';
     adjoinN'CP : N' -> CP -> N';
 
-    mkS : VP -> S; 
+    mkS_ : VP -> S_; 
     mkCP : VP -> CP;   
 
     mkVP__ : V' -> VP__;
@@ -24,6 +24,7 @@ interface Syntax = {
     mkArgNPNP : NP -> NP -> NP -> ArgStructure;
 
     singular, plural : N_ -> N;
+    declarative, interrogative : S_ -> S;
     present, past, cond, future : VP__ -> VP_;
     positive, negative : VP_ -> VP;
 
