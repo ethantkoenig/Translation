@@ -33,11 +33,10 @@ def translate(fro, to, utterance):
   key = get_key()
   url = URL % (key, utterance, fro, to)
   request = urlopen(url)
-  print url # TODO
   jsonTranslation = request.read()
   request.close()
   translationStruct = loads(jsonTranslation)
-  print translationStruct # TODO temp
-  assert(len(translationStruct['data']['translations']) == 1) # TODO temporary sanity check
-  translation = translationStruct['data']['translations'][0]['translatedText']
-  return [translation]
+  # translation = translationStruct['data']['translations'][0]['translatedText']
+  # return [translation]
+  return [translation["translatedText"] 
+          for translation in translationStruct["data"]["translations"]]
