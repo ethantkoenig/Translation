@@ -25,18 +25,24 @@ StrongTestCases = [
 (["my dog sees itself"], ["il mio cane si vede"]),
 (["the boy that will have a dog would not sleep"],
    ["il ragazzo che avra' un cane non dormirebbe"]),
-(["the students take pictures"], ["gli studenti fanno foto"]),
 (["the boy whose dogs that sleep meet us' name is Bob"],
    ["il ragazzo i cui cani che dormono ci incontrano si chiama Bob"]),
 (["does a woman have the name"], ["ha il nome una donna"]),
+(["would the maps not be happy"], ["non sarebbero felici le mappe"]),
+(["are the students not happy"], ["non sono felici gli studenti"]),
 ]
 
-# for each (englishs, italians) in WeakTestCases, each eng in englishs
-# should translate to the elements of italians, plus possibly some others, and
-# vice versa
+# for each (engs, itas) in WeakTestCases, each eng in engs should translate to
+# the elements of itas, plus possibly some others, and vice versa
 WeakTestCases = [
 (["i do not sleep"], ["non dormo"]),
 (["we will take you"], ["ti prenderemo", "vi prenderemo"]),
 (["they would meet themselves"], ["si incontrerebbero"]),
+(["the boy's dog that sees a student that is tall sleeps"],
+   ["il cane che vede studenti che sono felici del ragazzo dorme"]),
+(["the students take pictures"], ["gli studenti fanno foto"]),
+(["a promise does not make itself"], ["una promessa non si fa"]),
+(["will you be tall"], ["sarai alto"]),
+
 ]
 

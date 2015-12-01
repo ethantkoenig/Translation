@@ -83,20 +83,20 @@ abstract Trans = {
 
     {- LEXICAL RULES -}
       {- Adjectives -}
-      Fast, Hungry, Tall : AbsAdj;
+      Fast, Happy, Hungry, Tall : AbsAdj;
 
       {- Determiners -}
       A, The, VoidD : AbsD;
 
       {- Nouns -}
-      Boy, Dog, Hunger, Name, Picture, Student, Woman : AbsN_;
+      Boy, Dog, Hunger, Name, Map, Picture, Promise, Student, Woman : AbsN_;
 
       I, You, He, She, We, Yall, They : AbsProNP;
       Alice, Bob, Eve, Joe : AbsProperN;
 
       {- Verbs -}
       Sleep : AbsV ArgVoid;
-      BeNP, CallSomeone, Do, Have, Meet, Take, See : AbsV ArgNP;
+      BeNP, CallSomeone, Do, Have, Make, Meet, Take, See : AbsV ArgNP;
       BeAdj : AbsV ArgAdj;
       CallSomeoneSomething : AbsV ArgNPNP;
 }

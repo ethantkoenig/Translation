@@ -70,7 +70,9 @@ incomplete concrete TransI of Trans =
     MakeArgAdj = mkArgAdj;
     MakeArgNPNP = mkArgNPNP;
 
+    {- Words -}
     Fast = fast;
+    Happy = happy;
     Hungry = hungry;
     Tall = tall;
 
@@ -82,6 +84,8 @@ incomplete concrete TransI of Trans =
     Dog = dog;
     Hunger = hunger;
     Name = name;
+    Map = map;
+    Promise = promise;
     Picture = picture;
     Student = student;
     Woman = woman;
@@ -105,6 +109,7 @@ incomplete concrete TransI of Trans =
     CallSomeoneSomething = callSomeoneSomething;
     Do = do;
     Have = have;
+    Make = make;
     Meet = meet;
     See = see;
     Sleep = sleep;

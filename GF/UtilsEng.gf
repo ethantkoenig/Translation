@@ -1,6 +1,8 @@
 resource UtilsEng = {
   param
     Case = Nom | Acc | Pos;
+    {- the Gender param is to ensure that the correct reflexive pronoun of a
+     - third-person, singular NP is chosen (himself, herself, itself) -}
     Gender = Masc | Fem | Neut;
     Tense = Pres | Past;
   oper

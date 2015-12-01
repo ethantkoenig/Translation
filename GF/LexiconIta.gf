@@ -2,13 +2,16 @@ instance LexiconIta of Lexicon =
     open LexemeIta, Prelude, TypesIta, Utils, UtilsIta in {
   oper
     fast = mkAdj "veloce";
+    happy = mkAdj "felice";
     hungry = mkAdj "affamato";
     tall = mkAdj "alto";
 
     boy = mkN_ "ragazzo";
     dog = mkN_ "cane";
     hunger = mkN_ True Fem "fame";
+    map = mkN_ "mappa";
     name = mkN_ "nome";
+    promise = mkN_ "promessa";
     picture = mkN_ False Fem "foto" "foto";
     student = mkN_ "studente";
     woman = mkN_ "donna";
@@ -29,6 +32,7 @@ instance LexiconIta of Lexicon =
                    "fate" "fanno" "fa";
     have = mkV Avere "avere" "avendo" "avuto" "ho" "hai" "ha" 
                      "abbiamo" "avete" "hanno" "av";
+    make = do;
     meet = mkV Avere "incontrare";
     see = mkV Avere "vedere" "vedendo" "visto" "vedo" "vedi" "vede" "vediamo"
                     "vedete" "vedono" "ved";

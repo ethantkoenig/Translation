@@ -1,11 +1,12 @@
 interface Lexicon = open Syntax in {
   oper
-    fast, hungry, tall : Adj;
+    fast, happy, hungry, tall : Adj;
 
-    boy, dog, hunger, name, picture, student, woman : N_;
+    boy, dog, hunger, name, map, picture, promise, student, woman : N_;
     
     alice, bob, eve, joe : ProperN;
   
-    beAdj, beNP, callSomeone, callSomeoneSomething, do, have, meet, take, see, sleep : V;
+    beAdj, beNP, callSomeone, callSomeoneSomething, do, have,
+    meet, take, see, sleep : V;
 
 }

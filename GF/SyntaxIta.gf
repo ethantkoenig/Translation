@@ -84,8 +84,8 @@ instance SyntaxIta of Syntax =
 
     positive : VP_ -> VP = \vp -> vp;
 
-    negative : VP_ -> VP = \vp -> 
-    vp ** {postSubj = \\nm, pr => "non" ++ vp.postSubj ! nm ! pr};
+    negative : VP_ -> VP = \vp -> vp ** 
+      {postSubj = \\nm, pr => "non" ++ vp.postSubj ! nm ! pr};
 
     {- Grammatical Functions -}
     mkN' : N -> N' = \n -> n;
@@ -126,7 +126,7 @@ instance SyntaxIta of Syntax =
        postVerb = \\nm, pr, gn => vp.head.presPart 
                                   ++ vp.postVerb ! nm ! pr ! gn};
 
-    auxHave : VP__ -> V' = \vp -> vp ** -- TODO direct object-participle agreement for avere
+    auxHave : VP__ -> V' = \vp -> vp **
       {aux = True; head = case vp.head.aux of {Avere => avere; Essere => essere};
        postVerb = case <vp.head.aux, vp.aux, vp.obj.pronoun> of {
         <Avere, True, _> | <Avere, _, False> => 

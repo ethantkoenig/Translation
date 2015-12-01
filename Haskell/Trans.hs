@@ -43,6 +43,7 @@ instance Gf GFloat where
 
 data GAbsAdj =
    GFast 
+ | GHappy 
  | GHungry 
  | GTall 
   deriving Show
@@ -94,8 +95,10 @@ data GAbsN_ =
    GBoy 
  | GDog 
  | GHunger 
+ | GMap 
  | GName 
  | GPicture 
+ | GPromise 
  | GStudent 
  | GWoman 
   deriving Show
@@ -135,6 +138,7 @@ data GAbsV =
  | GCallSomeoneSomething 
  | GDo 
  | GHave 
+ | GMake 
  | GMeet 
  | GSee 
  | GSleep 
@@ -165,12 +169,14 @@ data GAbsVP__ = GMakeVP__ GAbsV'
 
 instance Gf GAbsAdj where
   gf GFast = mkApp (mkCId "Fast") []
+  gf GHappy = mkApp (mkCId "Happy") []
   gf GHungry = mkApp (mkCId "Hungry") []
   gf GTall = mkApp (mkCId "Tall") []
 
   fg t =
     case unApp t of
       Just (i,[]) | i == mkCId "Fast" -> GFast 
+      Just (i,[]) | i == mkCId "Happy" -> GHappy 
       Just (i,[]) | i == mkCId "Hungry" -> GHungry 
       Just (i,[]) | i == mkCId "Tall" -> GTall 
 
@@ -283,8 +289,10 @@ instance Gf GAbsN_ where
   gf GBoy = mkApp (mkCId "Boy") []
   gf GDog = mkApp (mkCId "Dog") []
   gf GHunger = mkApp (mkCId "Hunger") []
+  gf GMap = mkApp (mkCId "Map") []
   gf GName = mkApp (mkCId "Name") []
   gf GPicture = mkApp (mkCId "Picture") []
+  gf GPromise = mkApp (mkCId "Promise") []
   gf GStudent = mkApp (mkCId "Student") []
   gf GWoman = mkApp (mkCId "Woman") []
 
@@ -293,8 +301,10 @@ instance Gf GAbsN_ where
       Just (i,[]) | i == mkCId "Boy" -> GBoy 
       Just (i,[]) | i == mkCId "Dog" -> GDog 
       Just (i,[]) | i == mkCId "Hunger" -> GHunger 
+      Just (i,[]) | i == mkCId "Map" -> GMap 
       Just (i,[]) | i == mkCId "Name" -> GName 
       Just (i,[]) | i == mkCId "Picture" -> GPicture 
+      Just (i,[]) | i == mkCId "Promise" -> GPromise 
       Just (i,[]) | i == mkCId "Student" -> GStudent 
       Just (i,[]) | i == mkCId "Woman" -> GWoman 
 
@@ -378,6 +388,7 @@ instance Gf GAbsV where
   gf GCallSomeoneSomething = mkApp (mkCId "CallSomeoneSomething") []
   gf GDo = mkApp (mkCId "Do") []
   gf GHave = mkApp (mkCId "Have") []
+  gf GMake = mkApp (mkCId "Make") []
   gf GMeet = mkApp (mkCId "Meet") []
   gf GSee = mkApp (mkCId "See") []
   gf GSleep = mkApp (mkCId "Sleep") []
@@ -391,6 +402,7 @@ instance Gf GAbsV where
       Just (i,[]) | i == mkCId "CallSomeoneSomething" -> GCallSomeoneSomething 
       Just (i,[]) | i == mkCId "Do" -> GDo 
       Just (i,[]) | i == mkCId "Have" -> GHave 
+      Just (i,[]) | i == mkCId "Make" -> GMake 
       Just (i,[]) | i == mkCId "Meet" -> GMeet 
       Just (i,[]) | i == mkCId "See" -> GSee 
       Just (i,[]) | i == mkCId "Sleep" -> GSleep 
