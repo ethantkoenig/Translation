@@ -51,10 +51,10 @@ instance LexemeIta of Lexeme =
         \aux, avere, avendo, avuto, presConj, av ->
           let futConj : Number => Person => Str = futureConjugate av in
           let condConj : Number => Person => Str = condConjugate av in
-          {aux = aux;
-           inf = avere; presPart = avendo; pastPart = pastParticiples aux avuto;
+          {aux = aux; 
            conj = table {Pres => presConj; Fut => futConj;
-                         Cond => condConj; Past => \\_, _ => nonword}};
+                         Cond => condConj; Past => \\_, _ => nonword};
+           inf = avere; presPart = avendo; pastPart = pastParticiples avuto};
 
     mkV = overload {
       mkV : (aux : Aux) -> (mangiare : Str) -> V =

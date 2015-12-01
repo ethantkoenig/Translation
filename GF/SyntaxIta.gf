@@ -4,53 +4,53 @@ instance SyntaxIta of Syntax =
    
     {- Argument Structures -}
     _nonArgStructure : (sb : NP) -> ArgStructure = \sb ->
-      {preSubj = \\_, _ => nonword; postSubj = \\_, _ => nonword;
+      {obj = defaultObj; preSubj = \\_, _ => nonword; postSubj = \\_, _ => nonword;
        postVerb = \\_, _, _ => nonword; subj = sb; wh = True};
 
     mkArgVoid : NP -> ArgStructure = \sb -> 
-     {null = sb.null; preSubj = \\_, _ => ""; postSubj = \\_, _ => "";
+     {obj = defaultObj; preSubj = \\_, _ => ""; postSubj = \\_, _ => "";
       postVerb = \\_, _, _ => ""; subj = sb; wh = sb.wh};
 
     mkArgNP : NP -> NP -> ArgStructure = \sb, obj -> 
       case <sb.wh, obj.wh, obj.pronoun> of {
         <_, False, False> => 
-          {preSubj = \\_, _ => ""; postSubj = \\_, _ => "";
+          {obj = objOfNP obj; preSubj = \\_, _ => ""; postSubj = \\_, _ => "";
            postVerb = \\nm, pr, gn => obj.s ! Acc ! nm ! pr;
            subj = sb; wh = sb.wh};
         <_, False, True>  =>
-          {preSubj = \\_, _ => ""; postSubj = obj.s ! Acc;
+          {obj = objOfNP obj; preSubj = \\_, _ => ""; postSubj = obj.s ! Acc;
            postVerb = \\_, _, _ => ""; subj = sb; wh = sb.wh};
         <False, True, _> =>
-          {preSubj = obj.s ! Acc; postSubj = \\_, _ => "";
+          {obj = objOfNP obj; preSubj = obj.s ! Acc; postSubj = \\_, _ => "";
            postVerb = \\_, _, _ => ""; subj = sb; wh = True};
         _ => _nonArgStructure sb
     };
 
     mkArgAdj : NP -> Adj -> ArgStructure = \sb, ad -> 
-      {preSubj = \\_, _ => ""; postSubj = \\_, _ => ""; 
+      {obj = defaultObj; preSubj = \\_, _ => ""; postSubj = \\_, _ => ""; 
        postVerb = \\nm, pr, gn => ad.s ! nm ! gn; 
        subj = sb; wh = sb.wh};
 
     mkArgNPNP : NP -> NP -> NP -> ArgStructure = \sb, obj1, obj2 -> 
       case <sb.wh, obj1.wh, obj1.pronoun, obj2.wh> of { -- does not handle obj2 pronouns (yet)
         <_, False, False, False> =>
-          {preSubj = \\_, _ => ""; postSubj = \\_, _ => "";
+          {obj = objOfNP obj1; preSubj = \\_, _ => ""; postSubj = \\_, _ => "";
            postVerb = \\nm, pr, gn => obj1.s ! Acc ! nm ! pr
                                       ++ obj2.s ! Acc ! nm ! pr;
            subj = sb; wh = sb.wh};
         <False, False, False, True> =>
-          {preSubj = obj2.s ! Acc; postSubj = \\_, _ => "";
+          {obj = objOfNP obj1; preSubj = obj2.s ! Acc; postSubj = \\_, _ => "";
            postVerb = \\nm, pr, gn => obj1.s ! Acc ! nm ! pr;
            subj = sb; wh = True};
         <_, False, True, False> => 
-          {preSubj = \\_, _ => ""; postSubj = obj1.s ! Acc;
+          {obj = objOfNP obj1; preSubj = \\_, _ => ""; postSubj = obj1.s ! Acc;
            postVerb = \\nm, pr, gn => obj2.s ! Acc ! nm ! pr;
            subj = sb; wh = sb.wh};
         <False, False, True, True> => 
-          {preSubj = obj2.s ! Acc; postSubj = obj1.s ! Acc;
+          {obj = objOfNP obj1; preSubj = obj2.s ! Acc; postSubj = obj1.s ! Acc;
            postVerb = \\_, _, _ => ""; subj = sb; wh = True};
         <False, True, _, False> =>
-          {preSubj = obj1.s ! Acc; postSubj = \\_, _ => "";
+          {obj = objOfNP obj1; preSubj = obj1.s ! Acc; postSubj = \\_, _ => "";
            postVerb = \\nm, pr, gn => obj2.s ! Acc ! nm ! pr;
            subj = sb; wh = True};
         _ => _nonArgStructure sb
@@ -76,11 +76,7 @@ instance SyntaxIta of Syntax =
 
     present : VP__ -> VP_ = \vp -> vp ** {tense = Pres};
 
-    past : VP__ -> VP_ = \vp -> vp **
-      {head = case vp.head.aux of {Avere => avere; Essere => essere};
-       postVerb = \\nm, pr, gn => vp.head.pastPart ! nm ! gn 
-                                  ++ vp.postVerb ! nm ! pr ! gn;
-       tense = Pres};
+    past : VP__ -> VP_ = \vp -> present (auxHave vp);
 
     future : VP__ -> VP_ = \vp -> vp ** {tense = Fut};
 
@@ -123,17 +119,25 @@ instance SyntaxIta of Syntax =
            ++ (owner.possessive ! ownee.num ! ownee.gend) ++ ownee.s
            }};
 
-    mkV' : V -> ArgStructure -> V' = \v, args -> args ** {head = v};
+    mkV' : V -> ArgStructure -> V' = \v, args -> args ** {aux = False; head = v};
 
     auxBe : VP__ -> V' = \vp -> vp **
-      {head = stare; 
+      {aux = True; head = stare; 
        postVerb = \\nm, pr, gn => vp.head.presPart 
                                   ++ vp.postVerb ! nm ! pr ! gn};
 
     auxHave : VP__ -> V' = \vp -> vp ** -- TODO direct object-participle agreement for avere
-      {head = case vp.head.aux of {Avere => avere; Essere => essere};
-       postVerb = \\nm, pr, gn => vp.head.pastPart ! nm ! gn 
-                                  ++ vp.postVerb ! nm ! pr ! gn};
+      {aux = True; head = case vp.head.aux of {Avere => avere; Essere => essere};
+       postVerb = case <vp.head.aux, vp.aux, vp.obj.pronoun> of {
+        <Avere, True, _> | <Avere, _, False> => 
+          \\nm, pr, gn => vp.head.pastPart ! Sg ! Masc 
+                           ++ vp.postVerb ! nm ! pr ! gn;
+        <Avere, False, True> => 
+          \\nm, pr, gn => vp.head.pastPart ! vp.obj.num ! vp.obj.gend
+                          ++ vp.postVerb ! nm ! pr ! gn;
+        <Essere, _> => 
+          \\nm, pr, gn => vp.head.pastPart ! nm ! gn 
+                          ++ vp.postVerb ! nm ! pr ! gn}};
 
     mkVP__ : V' -> VP__ = \v' -> v';
 

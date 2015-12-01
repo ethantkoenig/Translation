@@ -3,12 +3,12 @@ instance TypesIta of Types = open Prelude, Utils, UtilsIta in {
     Adj : Type = {s : Number => Gender => Str};
 
 
-    {- preSubj : text before Subj
-     - postSubj : text between Subj and verb
-     - postVerb : text after verb
+    {- preSubj : text before subject
+     - postSubj : text between subject and first verb
+     - postVerb : text after first verb
      - [Number => Person =>] in postSubj/postVerb accounts for possibility of
      - reflexives in object positions -}
-    ArgStructure : Type =  {preSubj : Number => Person => Str;
+    ArgStructure : Type =  {obj : Obj; preSubj : Number => Person => Str;
                             postSubj : Number => Person => Str;
                             postVerb : Number => Person => Gender => Str;
                             subj : NP; wh : Bool};
@@ -28,6 +28,10 @@ instance TypesIta of Types = open Prelude, Utils, UtilsIta in {
                  possessive : Number => Gender => Str; pronoun : Bool;
                  s : Case => Number => Person => Str; wh : Bool};
 
+    {- describes the object of a VP. Accounts for direct object-
+     - past participle agreement -}
+    Obj : Type = {gend : Gender; num : Number; pronoun : Bool};
+
     ProNP : Type = NP;
     ProperN : Type = NP;
     Reflexive : Type = NP;
@@ -35,10 +39,12 @@ instance TypesIta of Types = open Prelude, Utils, UtilsIta in {
     S_ : Type = VP;
     S : Type = {s : Str};
 
+    {- aux : what the past participle requires (Avere or Essere) -}     
     V : Type = {aux : Aux; inf : Str; presPart : Str;
                 pastPart : Number => Gender => Str;
                 conj : Tense => Number => Person => Str};
-    V' : Type = {head : V; preSubj : Number => Person => Str; 
+    {- aux : whether the V* contains an auxiliary verb -}
+    V' : Type = {aux : Bool; head : V; obj : Obj; preSubj : Number => Person => Str; 
                  postSubj : Number => Person => Str; 
                  postVerb : Number => Person => Gender => Str; 
                  subj : NP; wh : Bool};
@@ -48,4 +54,12 @@ instance TypesIta of Types = open Prelude, Utils, UtilsIta in {
                   postSubj : Number => Person => Str; 
                   postVerb : Number => Person => Gender => Str; subj : NP;
                   tense : Tense; wh : Bool};
+
+    {- a default object for object-less VPs -}
+    defaultObj = {gend = Masc; num = Sg; pronoun = False};
+    
+    objOfNP : NP -> Obj = \np -> np ** 
+      {pronoun = case <np.pronoun, np.wh> of {
+                   <True, False> => True;
+                   _ => False}};
 }

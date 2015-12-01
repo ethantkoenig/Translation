@@ -42,10 +42,8 @@ instance TypesEng of Types = open Prelude, Utils, UtilsEng in {
                  postVerb : Number => Person => Gender => Str; subj : NP;
                  wh : Bool};
     VP__ : Type = V';
-    VP_ : Type = {head : V; preSubj : Number => Person => Gender => Str;
-                  postVerb : Number => Person => Gender => Str;
-                  subj : NP; tense : Tense; wh : Bool};
+    VP_ : Type = VP;
     VP : Type = {head : V; preSubj : Number => Person => Gender => Str;
-                 postSubj : Str; postVerb : Number => Person => Gender => Str;
+                 postVerb : Number => Person => Gender => Str;
                  subj : NP; tense : Tense; wh : Bool};
 }

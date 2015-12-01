@@ -120,7 +120,7 @@ instance LexemeEng of Lexeme = open MorphEng, Prelude, TypesEng, Utils, UtilsEng
 
 
     {- Pronouns -}
-    i : ProNP = _mkProNP Sg First Masc "I" "me" "my";
+    i : ProNP = _mkProNP Sg First Masc "i" "me" "my";
     you : ProNP = _mkProNP Sg Second Masc "you" "you" "your";
     he : ProNP = _mkProNP Sg Third Masc "he" "him" "his";
     she : ProNP = _mkProNP Sg Third Fem "she" "her" "her";

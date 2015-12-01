@@ -70,15 +70,15 @@ instance SyntaxEng of Syntax =
        postVerb = \\nm, pr, gn => vp.head.inf ++ vp.postVerb ! nm ! pr ! gn;
        tense = Pres};
 
-    positive : VP_ -> VP = \vp -> vp ** {postSubj = ""};
+    positive : VP_ -> VP = \vp -> vp;
 
     negative : VP_ -> VP = \vp ->
       case vp.head.aux of {
-        False => {head = _do; num = vp.num; person = vp.person;
-                  preSubj = vp.preSubj; postSubj = "not";
-                  postVerb = \\nm, pr, gn => vp.head.inf ++ vp.postVerb ! nm ! pr ! gn;
-                  subj = vp.subj; tense = vp.tense; wh = vp.wh};
-        True => vp ** {postSubj = "not"}    
+        False => vp ** 
+          {head = _do; postVerb = \\nm, pr, gn => "not" ++ vp.head.inf 
+                                                  ++ vp.postVerb ! nm ! pr ! gn};
+        True => vp ** 
+          {postVerb = \\nm, pr, gn => "not" ++ vp.postVerb ! nm ! pr ! gn}   
       };
 
     {- Grammatical Functions -}
@@ -157,16 +157,15 @@ instance SyntaxEng of Syntax =
       case invert of {
         False => \\nm, pr, gn => 
           vp.preSubj ! nm ! pr ! gn ++ vp.subj.s ! Nom ! nm ! pr ! gn
-          ++ vp.postSubj ++ vp.head.conj ! vp.tense ! nm ! pr
-          ++ vp.postVerb ! nm ! pr ! gn;
+          ++ vp.head.conj ! vp.tense ! nm ! pr ++ vp.postVerb ! nm ! pr ! gn;
         True => case vp.head.aux of {
           False => \\nm, pr, gn => 
             _do.conj ! vp.tense ! nm ! pr ++ vp.preSubj ! nm ! pr ! gn
-            ++ vp.subj.s ! Nom ! nm ! pr ! gn ++ vp.postSubj ++ vp.head.inf
+            ++ vp.subj.s ! Nom ! nm ! pr ! gn ++ vp.head.inf
             ++ vp.postVerb ! nm ! pr ! gn;
           True => \\nm, pr, gn => 
             vp.head.conj ! vp.tense ! nm ! pr ++ vp.preSubj ! nm ! pr ! gn 
-            ++ vp.subj.s ! Nom ! nm ! pr ! gn ++ vp.postSubj
+            ++ vp.subj.s ! Nom ! nm ! pr ! gn
             ++ vp.postVerb ! nm ! pr ! gn
       }};
 

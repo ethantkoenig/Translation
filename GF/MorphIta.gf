@@ -67,17 +67,16 @@ resource MorphIta = open Utils, UtilsIta in {
                      mangi + "ire" => mangi + "ito";
                      _ => ""};
 
-    pastParticiples : (aux : Aux) -> (mangiato : Str) -> Number => Gender => Str =
-      \aux, mangiato -> case aux of {
-                          Avere => \\_, _ => mangiato;
-                          Essere => let mangiat : Str = 
-                                      case mangiato of {
-                                        mangiat + ? => mangiat;
-                                        _ => ""} in
-                                    table {Sg => table {Masc => mangiat + "o";
-                                                        Fem => mangiat + "a"};
-                                           Pl => table {Masc => mangiat + "i";
-                                                        Fem => mangiat + "e"}}};
+    pastParticiples : (mangiato : Str) -> Number => Gender => Str =
+      \mangiato -> let mangiat : Str = 
+                     case mangiato of {
+                       mangiat + ? => mangiat;
+                       _ => ""} in
+                   table {Sg => table {Masc => mangiat + "o";
+                                       Fem => mangiat + "a"};
+                          Pl => table {Masc => mangiat + "i";
+                                       Fem => mangiat + "e"}};
+
 
     stem : (mangiare : Str) -> Str =
       \mangiare -> case mangiare of {
