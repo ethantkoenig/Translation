@@ -3,6 +3,10 @@ module TextIta where
 import Data.List (unwords, words)
 import Data.Map (fromList, lookup, Map)
 
+{- Each entry (x, (y, z)) in the first map signifies that if x appears in the 
+ - input, it should be replaced with y z. Similarly, the entry ((y, z), x) in
+ - the second map signifies that if y z appears in the output, it should be
+ - replaced with x -}
 contractions :: (Map String (String, String), Map (String, String) String)
 contractions = 
   let rules = [("del", ("di", "il")),

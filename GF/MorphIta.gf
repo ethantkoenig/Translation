@@ -143,9 +143,9 @@ resource MorphIta = open Utils, UtilsIta in {
 
     futureConjugate : (mangie : Str) -> Number => Person => Str =
       \mangie -> table {
-                   Sg => table { First => mangie + "ro'";
+                   Sg => table { First => mangie + "rò";
                                  Second => mangie + "rai";
-                                 Third => mangie + "ra'"};
+                                 Third => mangie + "rà"};
                    Pl => table { First => mangie + "remo";
                                  Second => mangie + "rete";
                                  Third => mangie + "ranno"}};

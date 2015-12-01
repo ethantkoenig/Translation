@@ -36,7 +36,5 @@ def translate(fro, to, utterance):
   jsonTranslation = request.read()
   request.close()
   translationStruct = loads(jsonTranslation)
-  # translation = translationStruct['data']['translations'][0]['translatedText']
-  # return [translation]
-  return [translation["translatedText"] 
+  return [translation["translatedText"].encode("utf-8")
           for translation in translationStruct["data"]["translations"]]
