@@ -35,15 +35,18 @@ instance LexemeIta of Lexeme =
        s = \\_, _, _ => name; wh = False};
 
     _mkProNP : (gend : Gender) -> (num : Number) -> (person : Person)
-               -> (lui, lo, gli, suo, sua, suoi, sue : Str) -> ProNP =
-      \gend, num, person, lui, lo, gli, suo, sua, suoi, sue ->
+               -> (lui, lo, egli, suo, sua, suoi, sue : Str) -> ProNP =
+      \gend, num, person, lui, lo, egli, suo, sua, suoi, sue ->
         {gend = gend; null = False; num = num; person = person;
          possessive = table {Sg => table {Masc => suo; Fem => sua};
                              Pl => table {Masc => suoi; Fem => sue}};
          pronoun = True;
          s = table {Nom => \\_, _ => lui; Acc => \\_, _ => lo; 
-                    Dat => \\_, _ => gli};
+                    Dis => \\_, _ => egli};
          wh = False};
+
+    mkP : Str -> P = \s -> {s = s};
+
 
     {- Verbs -}
     _constructV : (aux : Aux) -> (avere, avendo, avuto : Str)
@@ -105,13 +108,13 @@ instance LexemeIta of Lexeme =
              True => \\_, _, _ => ""}};
 
     {- Pronouns -}
-    i : ProNP = _mkProNP Masc Sg First "" "mi" "mi" "mio" "mia" "miei" "mie";
-    you : ProNP = _mkProNP Masc Sg Second "" "ti" "ti" "tuo" "tua" "tuoi" "tue";
-    he : ProNP = _mkProNP Masc Sg Third "" "lo" "gli" "suo" "sua" "suoi" "sue";
-    she : ProNP = _mkProNP Fem Sg Third "" "la" "le" "suo" "sua" "suoi" "sue";
-    we : ProNP = _mkProNP Masc Pl First "" "ci" "ci" "nostro" "nostra" "nostri" "nostre";
-    yall : ProNP = _mkProNP Masc Pl Second "" "vi" "vi" "vostro" "vostra" "vostri" "vostre";
-    they : ProNP = _mkProNP Masc Pl Third "" "li" "si" "loro" "loro" "loro" "loro";
+    i : ProNP = _mkProNP Masc Sg First "" "mi" "me" "mio" "mia" "miei" "mie";
+    you : ProNP = _mkProNP Masc Sg Second "" "ti" "te" "tuo" "tua" "tuoi" "tue";
+    he : ProNP = _mkProNP Masc Sg Third "" "lo" "lui" "suo" "sua" "suoi" "sue";
+    she : ProNP = _mkProNP Fem Sg Third "" "la" "lei" "suo" "sua" "suoi" "sue";
+    we : ProNP = _mkProNP Masc Pl First "" "ci" "noi" "nostro" "nostra" "nostri" "nostre";
+    yall : ProNP = _mkProNP Masc Pl Second "" "vi" "voi" "vostro" "vostra" "vostri" "vostre";
+    they : ProNP = _mkProNP Masc Pl Third "" "li" "loro" "loro" "loro" "loro" "loro";
 
     reflexive : Reflexive =
       {gend = Masc; null = False; num = Sg; person = Third; 
@@ -122,7 +125,12 @@ instance LexemeIta of Lexeme =
                             Third => "si"};
                Pl => table {First => "ci"; Second => "vi";
                             Third => "si"}};
-             Nom | Dat => \\_, _ => nonword}};
+             Dis => table {
+               Sg => table {First => "me"; Second => "te";
+                            Third => "se"};
+               Pl => table {First => "noi"; Second => "voi";
+                            Third => "se"}};
+             Nom => \\_, _ => nonword}};
 
     {- setting pronoun = True makes nullNP act correctly in possessives -}
     nullNP : NP = {gend = defaultGender; null = True; num = defaultNumber; 

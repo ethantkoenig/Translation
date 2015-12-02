@@ -20,6 +20,9 @@ abstract Trans = {
     AbsN;
       AbsN_; {- Number -}
 
+    AbsPP;
+    AbsP;
+
     AbsS_; {- Declarative vs. Interrogative -}
     AbsS;
 
@@ -34,6 +37,8 @@ abstract Trans = {
 
   fun
     {- GRAMMATICAL RULES -}
+      MakeCP : AbsVP -> AbsCP;
+
       MakeNP : AbsD -> AbsN' -> AbsNP;
       NPofProNP : AbsProNP -> AbsNP;
       NPofReflexive : AbsReflexive -> AbsNP;
@@ -41,19 +46,19 @@ abstract Trans = {
       Possessive : AbsNP -> AbsN' -> AbsNP;
       AdjoinN'Adj : AbsN' -> AbsAdj -> AbsN';
       AdjoinN'CP : AbsN' -> AbsCP -> AbsN';
+      AdjoinN'PP : AbsN' -> AbsPP -> AbsN';
       MakeN' : AbsN -> AbsN';
+
+      MakePP : AbsP -> AbsNP -> AbsPP;
+
       MakeVP__ : AbsV' -> AbsVP__;
-      MakeV' : (a: AbsArgType) -> AbsV a -> AbsArgStructure a -> AbsV';
-      -- MakeAdjP : AbsAdj -> AbsAdjP;
-  
+      MakeV' : (a : AbsArgType) -> AbsV a -> AbsArgStructure a -> AbsV';
+      AdjoinV'PP : AbsV' -> AbsPP -> AbsV';
+
       MakeS_ : AbsVP -> AbsS_;
-      MakeCP : AbsVP -> AbsCP;
 
     {- ARGUMENT TYPES -}
-      ArgVoid : AbsArgType;
-      ArgNP : AbsArgType;
-      ArgAdj : AbsArgType;  
-      ArgNPNP : AbsArgType;
+      ArgVoid, ArgNP, ArgAdj, ArgNPNP : AbsArgType;
   
       MakeArgVoid : AbsNP -> AbsArgStructure ArgVoid;
       MakeArgNP : AbsNP -> AbsNP -> AbsArgStructure ArgNP;
@@ -65,21 +70,14 @@ abstract Trans = {
       Self : AbsReflexive; 
       NullNP : AbsNP;
 
-      Singular : AbsN_ -> AbsN;
-      Plural : AbsN_ -> AbsN;
+      Singular, Plural : AbsN_ -> AbsN;
   
-      Declarative : AbsS_ -> AbsS;
-      Interrogative : AbsS_ -> AbsS;
+      Declarative, Interrogative : AbsS_ -> AbsS;
 
-      Positive : AbsVP_ -> AbsVP;
-      Negative : AbsVP_ -> AbsVP;
-      Present : AbsVP__ -> AbsVP_;
-      Past : AbsVP__ -> AbsVP_;
-      Future : AbsVP__ -> AbsVP_;
-      Cond : AbsVP__ -> AbsVP_;
+      Positive, Negative : AbsVP_ -> AbsVP;
+      Present, Past, Future, Cond : AbsVP__ -> AbsVP_;
     
-      AuxBe : AbsVP__ -> AbsV';
-      AuxHave : AbsVP__ -> AbsV';
+      AuxBe, AuxHave : AbsVP__ -> AbsVP__;
 
     {- LEXICAL RULES -}
       {- Adjectives -}
@@ -93,6 +91,8 @@ abstract Trans = {
 
       I, You, He, She, We, Yall, They : AbsProNP;
       Alice, Bob, Eve, Joe : AbsProperN;
+
+      Under, With : AbsP;
 
       {- Verbs -}
       Sleep : AbsV ArgVoid;

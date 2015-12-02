@@ -30,6 +30,9 @@ instance TypesEng of Types = open Prelude, Utils, UtilsEng in {
     ProperN : Type = NP;
     Reflexive : Type = NP;
 
+    P : Type = {s : Str};
+    PP : Type = {s : Number => Person => Gender => Str};
+
     S_ : Type = VP;
     S : Type = {s : Str};
 

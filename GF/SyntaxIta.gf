@@ -90,12 +90,14 @@ instance SyntaxIta of Syntax =
     {- Grammatical Functions -}
     mkN' : N -> N' = \n -> n;
 
-    -- TODO handle preceding adjectives
     adjoinN'Adj : N' -> Adj -> N' = \n', a -> n' **
       {s = n'.s ++ a.s ! n'.num ! n'.gend};
 
     adjoinN'CP : N' -> CP -> N' = \n', cp -> n' **
-      {s = n'.s ++ cp.s ! n'.num ! n'.person ! n'.gend};   
+      {s = n'.s ++ cp.s ! n'.num ! n'.person ! n'.gend};
+
+    adjoinN'PP : N' -> PP -> N' = \n', pp -> n' **
+      {s = n'.s ++ pp.s ! n'.num ! n'.person};   
 
     mkNP : D -> N' -> NP = \il, gatto -> 
       {gend = gatto.gend; null = False; num = gatto.num; person = Third;
@@ -119,14 +121,20 @@ instance SyntaxIta of Syntax =
            ++ (owner.possessive ! ownee.num ! ownee.gend) ++ ownee.s
            }};
 
+    mkPP : P -> NP -> PP = \p, np ->
+      {s = \\nm, pr => p.s ++ np.s ! Dis ! nm ! pr};
+
     mkV' : V -> ArgStructure -> V' = \v, args -> args ** {aux = False; head = v};
 
-    auxBe : VP__ -> V' = \vp -> vp **
+    adjoinV'PP : V' -> PP -> V' = \v', pp -> v' **
+      {postVerb = \\nm, pr, gn => v'.postVerb ! nm ! pr ! gn ++ pp.s ! nm ! pr};
+
+    auxBe : VP__ -> VP__ = \vp -> vp **
       {aux = True; head = stare; 
        postVerb = \\nm, pr, gn => vp.head.presPart 
                                   ++ vp.postVerb ! nm ! pr ! gn};
 
-    auxHave : VP__ -> V' = \vp -> vp **
+    auxHave : VP__ -> VP__ = \vp -> vp **
       {aux = True; head = case vp.head.aux of {Avere => avere; Essere => essere};
        postVerb = case <vp.head.aux, vp.aux, vp.obj.pronoun> of {
         <Avere, True, _> | <Avere, _, False> => 

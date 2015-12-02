@@ -1,6 +1,7 @@
 {- Various morphological functions for Italian -}
 
 resource MorphIta = open Utils, UtilsIta in {
+  flags coding = utf8;
   oper
     {- GENERAL FUNCTIONS -}
     pluralize : (gatto : Str) -> Str =

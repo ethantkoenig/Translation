@@ -36,6 +36,9 @@ instance TypesIta of Types = open Prelude, Utils, UtilsIta in {
     ProperN : Type = NP;
     Reflexive : Type = NP;
 
+    P : Type = {s : Str};
+    PP : Type = {s : Number => Person => Str};
+
     S_ : Type = VP;
     S : Type = {s : Str};
 

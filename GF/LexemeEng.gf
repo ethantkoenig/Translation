@@ -47,6 +47,10 @@ instance LexemeEng of Lexeme = open MorphEng, Prelude, TypesEng, Utils, UtilsEng
                   Acc => \\_, _, _ => him;
                   Pos => \\_, _, _ => his}; wh = False};
 
+    {- Prepositions -}
+    mkP : Str -> P = \s -> {s = s};
+
+
     {- Verbs -}
     _constructV : (aux : Bool ) -> (be, being, been, am,
                                     are, is, was, were : Str) -> V =

@@ -79,6 +79,7 @@ data GAbsN =
 data GAbsN' =
    GAdjoinN'Adj GAbsN' GAbsAdj 
  | GAdjoinN'CP GAbsN' GAbsCP 
+ | GAdjoinN'PP GAbsN' GAbsPP 
  | GMakeN' GAbsN 
   deriving Show
 
@@ -101,6 +102,14 @@ data GAbsN_ =
  | GPromise 
  | GStudent 
  | GWoman 
+  deriving Show
+
+data GAbsP =
+   GUnder 
+ | GWith 
+  deriving Show
+
+data GAbsPP = GMakePP GAbsP GAbsNP 
   deriving Show
 
 data GAbsProNP =
@@ -146,8 +155,7 @@ data GAbsV =
   deriving Show
 
 data GAbsV' =
-   GAuxBe GAbsVP__ 
- | GAuxHave GAbsVP__ 
+   GAdjoinV'PP GAbsV' GAbsPP 
  | GMakeV' GAbsArgType GAbsV GAbsArgStructure 
   deriving Show
 
@@ -163,7 +171,10 @@ data GAbsVP_ =
  | GPresent GAbsVP__ 
   deriving Show
 
-data GAbsVP__ = GMakeVP__ GAbsV' 
+data GAbsVP__ =
+   GAuxBe GAbsVP__ 
+ | GAuxHave GAbsVP__ 
+ | GMakeVP__ GAbsV' 
   deriving Show
 
 
@@ -254,12 +265,14 @@ instance Gf GAbsN where
 instance Gf GAbsN' where
   gf (GAdjoinN'Adj x1 x2) = mkApp (mkCId "AdjoinN'Adj") [gf x1, gf x2]
   gf (GAdjoinN'CP x1 x2) = mkApp (mkCId "AdjoinN'CP") [gf x1, gf x2]
+  gf (GAdjoinN'PP x1 x2) = mkApp (mkCId "AdjoinN'PP") [gf x1, gf x2]
   gf (GMakeN' x1) = mkApp (mkCId "MakeN'") [gf x1]
 
   fg t =
     case unApp t of
       Just (i,[x1,x2]) | i == mkCId "AdjoinN'Adj" -> GAdjoinN'Adj (fg x1) (fg x2)
       Just (i,[x1,x2]) | i == mkCId "AdjoinN'CP" -> GAdjoinN'CP (fg x1) (fg x2)
+      Just (i,[x1,x2]) | i == mkCId "AdjoinN'PP" -> GAdjoinN'PP (fg x1) (fg x2)
       Just (i,[x1]) | i == mkCId "MakeN'" -> GMakeN' (fg x1)
 
 
@@ -310,6 +323,28 @@ instance Gf GAbsN_ where
 
 
       _ -> error ("no AbsN_ " ++ show t)
+
+instance Gf GAbsP where
+  gf GUnder = mkApp (mkCId "Under") []
+  gf GWith = mkApp (mkCId "With") []
+
+  fg t =
+    case unApp t of
+      Just (i,[]) | i == mkCId "Under" -> GUnder 
+      Just (i,[]) | i == mkCId "With" -> GWith 
+
+
+      _ -> error ("no AbsP " ++ show t)
+
+instance Gf GAbsPP where
+  gf (GMakePP x1 x2) = mkApp (mkCId "MakePP") [gf x1, gf x2]
+
+  fg t =
+    case unApp t of
+      Just (i,[x1,x2]) | i == mkCId "MakePP" -> GMakePP (fg x1) (fg x2)
+
+
+      _ -> error ("no AbsPP " ++ show t)
 
 instance Gf GAbsProNP where
   gf GHe = mkApp (mkCId "He") []
@@ -412,14 +447,12 @@ instance Gf GAbsV where
       _ -> error ("no AbsV " ++ show t)
 
 instance Gf GAbsV' where
-  gf (GAuxBe x1) = mkApp (mkCId "AuxBe") [gf x1]
-  gf (GAuxHave x1) = mkApp (mkCId "AuxHave") [gf x1]
+  gf (GAdjoinV'PP x1 x2) = mkApp (mkCId "AdjoinV'PP") [gf x1, gf x2]
   gf (GMakeV' x1 x2 x3) = mkApp (mkCId "MakeV'") [gf x1, gf x2, gf x3]
 
   fg t =
     case unApp t of
-      Just (i,[x1]) | i == mkCId "AuxBe" -> GAuxBe (fg x1)
-      Just (i,[x1]) | i == mkCId "AuxHave" -> GAuxHave (fg x1)
+      Just (i,[x1,x2]) | i == mkCId "AdjoinV'PP" -> GAdjoinV'PP (fg x1) (fg x2)
       Just (i,[x1,x2,x3]) | i == mkCId "MakeV'" -> GMakeV' (fg x1) (fg x2) (fg x3)
 
 
@@ -454,10 +487,14 @@ instance Gf GAbsVP_ where
       _ -> error ("no AbsVP_ " ++ show t)
 
 instance Gf GAbsVP__ where
+  gf (GAuxBe x1) = mkApp (mkCId "AuxBe") [gf x1]
+  gf (GAuxHave x1) = mkApp (mkCId "AuxHave") [gf x1]
   gf (GMakeVP__ x1) = mkApp (mkCId "MakeVP__") [gf x1]
 
   fg t =
     case unApp t of
+      Just (i,[x1]) | i == mkCId "AuxBe" -> GAuxBe (fg x1)
+      Just (i,[x1]) | i == mkCId "AuxHave" -> GAuxHave (fg x1)
       Just (i,[x1]) | i == mkCId "MakeVP__" -> GMakeVP__ (fg x1)
 
 

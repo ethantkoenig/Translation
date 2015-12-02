@@ -1,5 +1,6 @@
 instance LexiconIta of Lexicon =
     open LexemeIta, Prelude, TypesIta, Utils, UtilsIta in {
+  flags coding = utf8;
   oper
     fast = mkAdj "veloce";
     happy = mkAdj "felice";
@@ -23,6 +24,9 @@ instance LexiconIta of Lexicon =
      - version to ensure a more fair comparison with other systems which do
      - not translate names -}
     joe = mkProperN Masc "Joe";
+
+    under = mkP "sotto";
+    withh = mkP "con";
 
     be = mkV Essere "essere" "essendo" "stato" "sono" "sei" "è"
                     "siamo" "siete" "sono" "sa";

@@ -1,7 +1,7 @@
 resource UtilsIta = {
   param
     Aux = Avere | Essere;
-    Case = Nom | Acc | Dat;
+    Case = Nom | Acc | Dis;
     Gender = Masc | Fem;
     {- Complex includes impure s, self-geminating consonants, complex clusters -}
     NounInitial = Con | Vow | Complex;

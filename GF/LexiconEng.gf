@@ -21,6 +21,9 @@ instance LexiconEng of Lexicon =
     eve = mkProperN Fem "Eve";
     joe = mkProperN Masc "Joe";
 
+    under = mkP "under";
+    withh = mkP "with";
+
     beAdj = beVerb;
     beNP = beVerb;
     callSomeone = mkV "call";

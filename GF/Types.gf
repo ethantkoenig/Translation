@@ -15,6 +15,9 @@ interface Types = {
     Reflexive : Type;
     ProperN : Type;
     NP : Type;
+
+    P : Type;
+    PP : Type;
   
     S_ : Type;
     S : Type;

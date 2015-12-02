@@ -27,9 +27,7 @@ normalizeVP__ :: GAbsVP__ -> GAbsVP__
 normalizeVP__ = transformVP__ normalizeV'
 
 normalizeV' :: GAbsV' -> GAbsV'
-normalizeV' (GAuxBe vp__) = GAuxBe (normalizeVP__ vp__)
-normalizeV' (GAuxHave vp__) = GAuxHave (normalizeVP__ vp__)
-
+normalizeV' (GAdjoinV'PP v' pp) = GAdjoinV'PP (normalizeV' v') (normalizePP pp)
 normalizeV' (GMakeV' GArgNP GTake args) =
   case n_OfDirObj args of 
     Just GPicture -> (GMakeV' GArgNP GDo (normalizeArgs args))
@@ -38,16 +36,16 @@ normalizeV' (GMakeV' GArgNP GTake args) =
 normalizeV' (GMakeV' argType verb args) = GMakeV' argType verb (normalizeArgs args)
 
 normalizeArgs :: GAbsArgStructure -> GAbsArgStructure
-normalizeArgs = transformArgs normalizeNP normalizeAdj
+normalizeArgs = transformArgs normalizeNP
 
 normalizeNP :: GAbsNP -> GAbsNP
 normalizeNP = transformNP normalizeN'
 
 normalizeN' :: GAbsN' -> GAbsN'
-normalizeN' = transformN' normalizeCP
+normalizeN' = transformN' normalizeCP normalizePP
 
-normalizeAdj :: GAbsAdj -> GAbsAdj
-normalizeAdj a = a
+normalizePP :: GAbsPP -> GAbsPP
+normalizePP = transformPP normalizeNP
 
 
 {- UNNORMALIZE -}
@@ -70,9 +68,7 @@ unnormalizeVP__ :: GAbsVP__ -> GAbsVP__
 unnormalizeVP__ = transformVP__ unnormalizeV'
 
 unnormalizeV' :: GAbsV' -> GAbsV'
-unnormalizeV' (GAuxBe vp__) = GAuxBe (unnormalizeVP__ vp__)
-unnormalizeV' (GAuxHave vp__) = GAuxHave (unnormalizeVP__ vp__)
-
+unnormalizeV' (GAdjoinV'PP v' pp) = GAdjoinV'PP (unnormalizeV' v') (unnormalizePP pp)
 unnormalizeV' (GMakeV' GArgNP GDo args) =
   case n_OfDirObj args of
     Just GPicture -> (GMakeV' GArgNP GTake args)
@@ -81,13 +77,13 @@ unnormalizeV' (GMakeV' GArgNP GDo args) =
 unnormalizeV' (GMakeV' argType verb args) = GMakeV' argType verb (unnormalizeArgs args)
 
 unnormalizeArgs :: GAbsArgStructure -> GAbsArgStructure
-unnormalizeArgs = transformArgs unnormalizeNP unnormalizeAdj
+unnormalizeArgs = transformArgs unnormalizeNP
 
 unnormalizeNP :: GAbsNP -> GAbsNP
 unnormalizeNP = transformNP unnormalizeN'
 
 unnormalizeN' :: GAbsN' -> GAbsN'
-unnormalizeN' = transformN' unnormalizeCP
+unnormalizeN' = transformN' unnormalizeCP unnormalizePP
 
-unnormalizeAdj :: GAbsAdj -> GAbsAdj
-unnormalizeAdj a = a
+unnormalizePP :: GAbsPP -> GAbsPP
+unnormalizePP = transformPP unnormalizeNP

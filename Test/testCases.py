@@ -32,6 +32,9 @@ StrongTestCases = [
 (["does a woman have the name"], ["ha il nome una donna"]),
 (["would the maps not be happy"], ["non sarebbero felici le mappe"]),
 (["are the students not happy"], ["non sono felici gli studenti"]),
+(["the maps under me are happy"], ["le mappe sotto me sono felici"]),
+(["the boys with the student with the map will not be having slept"],
+   ["i ragazzi con lo studente con la mappa non staranno avendo dormito"]),
 ]
 
 # for each (engs, itas) in WeakTestCases, each eng in engs should translate to
@@ -48,5 +51,7 @@ WeakTestCases = [
 (["does she have a name"], ["ha un nome"]),
 (["are you sleeping"], ["state dormando"]),
 (["our name is Alice"], ["ci chiamiamo Alice"]),
+(["would the boy with promises not be sleeping"],
+   ["non starebbe dormendo il ragazzo con promesse"]),
 ]
 

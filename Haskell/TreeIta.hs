@@ -25,9 +25,7 @@ normalizeVP__ :: GAbsVP__ -> GAbsVP__
 normalizeVP__ = transformVP__ normalizeV'
 
 normalizeV' :: GAbsV' -> GAbsV'
-normalizeV' (GAuxBe (GMakeVP__ v')) = GAuxBe (GMakeVP__ (normalizeV' v'))
-normalizeV' (GAuxHave (GMakeVP__ v')) = GAuxHave (GMakeVP__ (normalizeV' v'))
-
+normalizeV' (GAdjoinV'PP v' pp) = GAdjoinV'PP (normalizeV' v') (normalizePP pp)
 normalizeV' (GMakeV' GArgNP GHave 
               (GMakeArgNP subj (GMakeNP GVoidD (GMakeN' (GSingular GHunger))))) =
   GMakeV' GArgAdj GBeAdj (GMakeArgAdj subj GHungry)
@@ -40,17 +38,15 @@ normalizeV' (GMakeV' GArgNPNP GCallSomeoneSomething
 normalizeV' (GMakeV' argType verb args) = GMakeV' argType verb (normalizeArgs args)
 
 normalizeArgs :: GAbsArgStructure -> GAbsArgStructure
-normalizeArgs = transformArgs normalizeNP normalizeAdj
-
+normalizeArgs = transformArgs normalizeNP 
 normalizeNP :: GAbsNP -> GAbsNP
 normalizeNP = transformNP normalizeN'
 
 normalizeN' :: GAbsN' -> GAbsN'
-normalizeN' = transformN' normalizeCP
+normalizeN' = transformN' normalizeCP normalizePP
 
-normalizeAdj :: GAbsAdj -> GAbsAdj
-normalizeAdj a = a
-
+normalizePP :: GAbsPP -> GAbsPP
+normalizePP = transformPP normalizeNP
 
 {- UNNORMALIZE -}
 unnormalizeS :: GAbsS -> GAbsS
@@ -72,9 +68,7 @@ unnormalizeVP__ :: GAbsVP__ -> GAbsVP__
 unnormalizeVP__ = transformVP__ unnormalizeV'
 
 unnormalizeV' :: GAbsV' -> GAbsV'
-unnormalizeV' (GAuxBe vp__) = GAuxBe (unnormalizeVP__ vp__)
-unnormalizeV' (GAuxHave vp__) = GAuxHave (unnormalizeVP__ vp__)
-
+unnormalizeV' (GAdjoinV'PP v' pp) = GAdjoinV'PP (unnormalizeV' v') (unnormalizePP pp)
 unnormalizeV' (GMakeV' GArgAdj GBeAdj (GMakeArgAdj subj GHungry)) =
   let hungerNP = GMakeNP GVoidD $ GMakeN' $ GSingular GHunger in
   GMakeV' GArgNP GHave $ GMakeArgNP subj hungerNP
@@ -87,14 +81,14 @@ unnormalizeV' (GMakeV' GArgNP GBeNP
 unnormalizeV' (GMakeV' argType verb args) = GMakeV' argType verb (unnormalizeArgs args)
 
 unnormalizeArgs :: GAbsArgStructure -> GAbsArgStructure
-unnormalizeArgs = transformArgs unnormalizeNP unnormalizeAdj
+unnormalizeArgs = transformArgs unnormalizeNP
 
 unnormalizeNP :: GAbsNP -> GAbsNP
 unnormalizeNP = transformNP unnormalizeN'
 
 unnormalizeN' :: GAbsN' -> GAbsN'
-unnormalizeN' = transformN' unnormalizeCP
+unnormalizeN' = transformN' unnormalizeCP unnormalizePP
 
-unnormalizeAdj :: GAbsAdj -> GAbsAdj
-unnormalizeAdj a = a
+unnormalizePP :: GAbsPP -> GAbsPP
+unnormalizePP = transformPP unnormalizeNP
 

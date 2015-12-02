@@ -89,6 +89,9 @@ instance SyntaxEng of Syntax =
     adjoinN'CP : N' -> CP -> N' = \n', cp ->
       n' ** {s = n'.s ++ cp.s ! n'.num ! n'.person ! n'.gend};
 
+    adjoinN'PP : N' -> PP -> N' = \n', pp -> n' **
+      {s = n'.s ++ pp.s ! n'.num ! n'.person ! n'.gend};    
+
     mkNP : D -> N' -> NP = \the, dog -> 
       {gend = dog.gend; null = False; num = dog.num; person = Third; 
        reflexive = False; wh = False;
@@ -107,15 +110,23 @@ instance SyntaxEng of Syntax =
     npOfProNP : ProNP -> NP = \pronp -> pronp; 
     npOfReflexive : Reflexive -> NP = \refl -> refl;
     npOfProperN : ProperN -> NP = \prop -> prop;
+
+    mkPP : P -> NP -> PP = \p, np -> 
+      {s = \\nm, pr, gn => p.s ++ np.s ! Acc ! nm ! pr ! gn};
   
     mkV' : V -> ArgStructure -> V' = \v, as -> as ** {head = v};
 
-    auxBe : VP__ -> V' = \vp -> 
+    adjoinV'PP : V' -> PP -> V' = \v', pp -> v' **
+      {postVerb = \\nm, gn, pr => v'.postVerb ! nm ! gn ! pr
+                                  ++ pp.s ! nm ! gn ! pr};
+    
+
+    auxBe : VP__ -> VP__ = \vp -> 
       vp ** {head = _be; 
-             postVerb = \\nm, pr, gn => vp.head.pastPart 
+             postVerb = \\nm, pr, gn => vp.head.presPart 
                                         ++ vp.postVerb ! nm ! pr ! gn};
 
-    auxHave : VP__ -> V' = \vp -> 
+    auxHave : VP__ -> VP__ = \vp -> 
       vp ** {head = _have; 
              postVerb = \\nm, pr, gn => vp.head.pastPart 
                                         ++ vp.postVerb ! nm ! pr ! gn};

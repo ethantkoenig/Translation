@@ -28,22 +28,28 @@ transformVP_ f (GFuture vp__) = GFuture (f vp__)
 
 
 transformVP__ :: (GAbsV' -> GAbsV') -> GAbsVP__ -> GAbsVP__
+transformVP__ f (GAuxBe vp__) = GAuxBe (transformVP__ f vp__)
+transformVP__ f (GAuxHave vp__) = GAuxHave (transformVP__ f vp__)
 transformVP__ f (GMakeVP__ v') = GMakeVP__ (f v')
 
-transformArgs :: (GAbsNP -> GAbsNP) -> (GAbsAdj -> GAbsAdj)
+transformArgs :: (GAbsNP -> GAbsNP)
                    -> GAbsArgStructure -> GAbsArgStructure
-transformArgs f g (GMakeArgVoid np) = GMakeArgVoid (f np)
-transformArgs f g (GMakeArgNP np1 np2) = GMakeArgNP (f np1) (f np2)
-transformArgs f g (GMakeArgAdj np adj) = GMakeArgAdj (f np) (g adj)
-transformArgs f g (GMakeArgNPNP np1 np2 np3) = GMakeArgNPNP (f np1) (f np2) (f np3)
+transformArgs f (GMakeArgVoid np) = GMakeArgVoid (f np)
+transformArgs f (GMakeArgNP np1 np2) = GMakeArgNP (f np1) (f np2)
+transformArgs f (GMakeArgAdj np adj) = GMakeArgAdj (f np) adj
+transformArgs f (GMakeArgNPNP np1 np2 np3) = GMakeArgNPNP (f np1) (f np2) (f np3)
 
 transformNP :: (GAbsN' -> GAbsN') -> GAbsNP -> GAbsNP
 transformNP f (GMakeNP det n') = GMakeNP det (f n')
 transformNP _ np = np -- base case
 
-transformN' :: (GAbsCP -> GAbsCP) -> GAbsN' -> GAbsN'
-transformN' f (GAdjoinN'CP n' cp) = GAdjoinN'CP n' (f cp)
-transformN' _ n' = n' -- base case
+transformN' :: (GAbsCP -> GAbsCP) -> (GAbsPP -> GAbsPP) -> GAbsN' -> GAbsN'
+transformN' f _ (GAdjoinN'CP n' cp) = GAdjoinN'CP n' (f cp)
+transformN' _ f (GAdjoinN'PP n' pp) = GAdjoinN'PP n' (f pp)
+transformN' _ _ n' = n' -- base case
+
+transformPP :: (GAbsNP -> GAbsNP) -> GAbsPP -> GAbsPP
+transformPP f (GMakePP p np) = GMakePP p (f np)
 
 
 {- extractions -}

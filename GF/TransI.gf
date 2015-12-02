@@ -20,6 +20,9 @@ incomplete concrete TransI of Trans =
     AbsN = N;
     AbsN_ = N_;
 
+    AbsPP = PP;
+    AbsP = P;
+
     AbsS_ = S_;
     AbsS = S;
 
@@ -29,6 +32,8 @@ incomplete concrete TransI of Trans =
     AbsV' = V';
     AbsV = V;
   lin
+    MakeCP = mkCP; 
+
     MakeNP = mkNP;
     Possessive = possessive;
     NPofProNP = npOfProNP;
@@ -37,11 +42,17 @@ incomplete concrete TransI of Trans =
     MakeN' = mkN';
     AdjoinN'Adj = adjoinN'Adj;
     AdjoinN'CP = adjoinN'CP;
-    MakeVP__ = mkVP__;
-    MakeV' _ v args = mkV' v args;
+    AdjoinN'PP = adjoinN'PP;
+
+    MakePP = mkPP;
 
     MakeS_ = mkS_;
-    MakeCP = mkCP;  
+
+    MakeVP__ = mkVP__;
+    MakeV' _ v args = mkV' v args;
+    AdjoinV'PP = adjoinV'PP;
+
+ 
 
     ArgVoid = {a = ArVoid};
     ArgNP = {a = ArNP};
@@ -102,6 +113,9 @@ incomplete concrete TransI of Trans =
     We = we;
     Yall = yall;
     They = they; 
+
+    Under = under;
+    With = withh;
 
     BeAdj = beAdj;
     BeNP = beNP;
