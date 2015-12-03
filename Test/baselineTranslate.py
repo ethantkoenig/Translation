@@ -1,3 +1,5 @@
+# Interface for baseline (Google Translate) translation
+
 from urllib2 import urlopen
 from json import loads
 

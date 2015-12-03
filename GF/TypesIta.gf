@@ -26,11 +26,12 @@ instance TypesIta of Types = open Prelude, Utils, UtilsIta in {
     {- (Number => Person =>) in s accounts for reflexive pronouns -}
     NP : Type = {gend : Gender; null : Bool; num : Number; person : Person; 
                  possessive : Number => Gender => Str; pronoun : Bool;
-                 s : Case => Number => Person => Str; wh : Bool};
+                 reflexive : Bool; s : Case => Number => Person => Str;
+                 wh : Bool};
 
     {- describes the object of a VP. Accounts for direct object-
      - past participle agreement -}
-    Obj : Type = {gend : Gender; num : Number; pronoun : Bool};
+    Obj : Type = {gend : Gender; num : Number; pronoun : Bool; reflexive : Bool};
 
     ProNP : Type = NP;
     ProperN : Type = NP;
@@ -59,10 +60,7 @@ instance TypesIta of Types = open Prelude, Utils, UtilsIta in {
                   tense : Tense; wh : Bool};
 
     {- a default object for object-less VPs -}
-    defaultObj = {gend = Masc; num = Sg; pronoun = False};
+    defaultObj = {gend = Masc; num = Sg; pronoun = False; reflexive = False};
     
-    objOfNP : NP -> Obj = \np -> np ** 
-      {pronoun = case <np.pronoun, np.wh> of {
-                   <True, False> => True;
-                   _ => False}};
+    objOfNP : NP -> Obj = \np -> np;
 }

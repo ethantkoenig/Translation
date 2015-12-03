@@ -32,7 +32,7 @@ instance SyntaxIta of Syntax =
        subj = sb; wh = sb.wh};
 
     mkArgNPNP : NP -> NP -> NP -> ArgStructure = \sb, obj1, obj2 -> 
-      case <sb.wh, obj1.wh, obj1.pronoun, obj2.wh> of { -- does not handle obj2 pronouns (yet)
+      case <sb.wh, obj1.wh, obj1.pronoun, obj2.wh> of {
         <_, False, False, False> =>
           {obj = objOfNP obj1; preSubj = \\_, _ => ""; postSubj = \\_, _ => "";
            postVerb = \\nm, pr, gn => obj1.s ! Acc ! nm ! pr
@@ -101,9 +101,10 @@ instance SyntaxIta of Syntax =
 
     mkNP : D -> N' -> NP = \il, gatto -> 
       {gend = gatto.gend; null = False; num = gatto.num; person = Third;
-       possessive = \\_, _ => nonword; pronoun = False; wh = False;
+       possessive = \\_, _ => nonword; pronoun = False; reflexive = False;
        s = \\_, nm, pr => (il.s ! gatto.abstractOrMass ! gatto.num 
-                           ! gatto.gend ! gatto.init) ++ gatto.s};
+                           ! gatto.gend ! gatto.init) ++ gatto.s;
+       wh = False};
 
     npOfProNP : ProNP -> NP = \pronp -> pronp;
     npOfReflexive : Reflexive -> NP = \refl -> refl;
@@ -111,7 +112,7 @@ instance SyntaxIta of Syntax =
 
     possessive : NP -> N' -> NP = \owner, ownee ->
       {gend = ownee.gend; null = False; num = ownee.num; person = ownee.person;
-       possessive = \\_, _ => nonword; pronoun = False; wh = owner.wh;
+       possessive = \\_, _ => nonword; pronoun = False; reflexive = False; 
        s = case owner.pronoun of {
          False => \\c, _, _ => 
            definite.s ! ownee.abstractOrMass ! ownee.num ! ownee.gend ! ownee.init
@@ -119,7 +120,8 @@ instance SyntaxIta of Syntax =
          True => \\c, _, _ => 
            definite.s ! ownee.abstractOrMass ! ownee.num ! ownee.gend ! Con
            ++ (owner.possessive ! ownee.num ! ownee.gend) ++ ownee.s
-           }};
+           };
+       wh = owner.wh};
 
     mkPP : P -> NP -> PP = \p, np ->
       {s = \\nm, pr => p.s ++ np.s ! Dis ! nm ! pr};
@@ -134,18 +136,21 @@ instance SyntaxIta of Syntax =
        postVerb = \\nm, pr, gn => vp.head.presPart 
                                   ++ vp.postVerb ! nm ! pr ! gn};
 
-    auxHave : VP__ -> VP__ = \vp -> vp **
-      {aux = True; head = case vp.head.aux of {Avere => avere; Essere => essere};
-       postVerb = case <vp.head.aux, vp.aux, vp.obj.pronoun> of {
+    auxHave : VP__ -> VP__ = \vp -> 
+      let newAux : Aux = case <vp.head.aux, vp.obj.reflexive> of {
+         <Avere, False> => Avere;
+         _ => Essere} in 
+      vp **
+      {aux = True; head = case newAux of {Avere => avere; Essere => essere};
+       postVerb = case <newAux, vp.aux, vp.obj.pronoun> of {
         <Avere, True, _> | <Avere, _, False> => 
           \\nm, pr, gn => vp.head.pastPart ! Sg ! Masc 
                            ++ vp.postVerb ! nm ! pr ! gn;
         <Avere, False, True> => 
           \\nm, pr, gn => vp.head.pastPart ! vp.obj.num ! vp.obj.gend
                           ++ vp.postVerb ! nm ! pr ! gn;
-        <Essere, _> => 
-          \\nm, pr, gn => vp.head.pastPart ! nm ! gn 
-                          ++ vp.postVerb ! nm ! pr ! gn}};
+        <Essere, _, _> => \\nm, pr, gn => vp.head.pastPart ! nm ! gn 
+                                          ++ vp.postVerb ! nm ! pr ! gn}};
 
     mkVP__ : V' -> VP__ = \v' -> v';
 

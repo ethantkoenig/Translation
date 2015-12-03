@@ -1,3 +1,5 @@
+# Interface for system translation
+
 from subprocess import check_output, Popen, PIPE
 
 NO_PARSE_STRING = "NO PARSE"
@@ -8,6 +10,9 @@ NO_PARSE_STRING = "NO PARSE"
 #   to : str
 #   utterance : str
 def translate(fro, to, utterance):
+  if(type(utterance) != str):
+    print utterance
+    raise Exception # TODO
   utt = Popen(["echo", utterance], stdout = PIPE)
   translations = check_output(["../Haskell/translate", "../Haskell/Trans.pgf",
                                fro, to], stdin = utt.stdout)

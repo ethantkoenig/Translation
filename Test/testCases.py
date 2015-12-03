@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
 
+# A set of test cases for testing the system. These tests are not used for
+# evaluating the system.
+
 
 # for each (englishs, italians) in StrongTestCases, each eng in englishs
 # should translate to exactly the elements of italians, and vice versa
@@ -40,7 +43,7 @@ StrongTestCases = [
 # for each (engs, itas) in WeakTestCases, each eng in engs should translate to
 # the elements of itas, plus possibly some others, and vice versa
 WeakTestCases = [
-(["i do not sleep"], ["non dormo"]),
+(["I do not sleep"], ["non dormo"]),
 (["we will take yo"], ["ti prenderemo", "vi prenderemo"]),
 (["they would meet themselves"], ["si incontrerebbero"]),
 (["the boy's dog that sees a student that is tall sleeps"],
@@ -53,5 +56,8 @@ WeakTestCases = [
 (["our name is Alice"], ["ci chiamiamo Alice"]),
 (["would the boy with promises not be sleeping"],
    ["non starebbe dormendo il ragazzo con promesse"]),
+(["the woman with the student whose name is Joe would have been happy"],
+   ["la donna con lo studente che si chiama Joe sarebbe stata felice"]),
+(["we will not have seen ourselves"], ["ci non saranno visti"]),
 ]
 

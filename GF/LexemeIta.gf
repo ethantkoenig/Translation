@@ -31,7 +31,7 @@ instance LexemeIta of Lexeme =
 
     mkProperN : (gend : Gender) -> (name : Str) -> ProperN = \gend, name ->
       {gend = gend; null = False; num = Sg; person = Third;
-       possessive = \\_, _ => nonword; pronoun = False; 
+       possessive = \\_, _ => nonword; pronoun = False; reflexive = True; 
        s = \\_, _, _ => name; wh = False};
 
     _mkProNP : (gend : Gender) -> (num : Number) -> (person : Person)
@@ -40,7 +40,7 @@ instance LexemeIta of Lexeme =
         {gend = gend; null = False; num = num; person = person;
          possessive = table {Sg => table {Masc => suo; Fem => sua};
                              Pl => table {Masc => suoi; Fem => sue}};
-         pronoun = True;
+         pronoun = True; reflexive = False;
          s = table {Nom => \\_, _ => lui; Acc => \\_, _ => lo; 
                     Dis => \\_, _ => egli};
          wh = False};
@@ -118,7 +118,7 @@ instance LexemeIta of Lexeme =
 
     reflexive : Reflexive =
       {gend = Masc; null = False; num = Sg; person = Third; 
-       possessive = \\_, _ => nonword; pronoun = True; wh = False;
+       possessive = \\_, _ => nonword; pronoun = True; reflexive = True;
        s = table {
              Acc => table {
                Sg => table {First => "mi"; Second => "ti";
@@ -130,12 +130,14 @@ instance LexemeIta of Lexeme =
                             Third => "se"};
                Pl => table {First => "noi"; Second => "voi";
                             Third => "se"}};
-             Nom => \\_, _ => nonword}};
+             Nom => \\_, _ => nonword};
+        wh = False;};
 
     {- setting pronoun = True makes nullNP act correctly in possessives -}
     nullNP : NP = {gend = defaultGender; null = True; num = defaultNumber; 
                    person = defaultPerson; possessive = \\_, _ => "cui";
-                   pronoun = True; s = \\_, _, _ => "che"; wh = True};
+                   pronoun = True; reflexive = True; s = \\_, _, _ => "che";
+                   wh = True};
 
     {- Verbs -}
     essere : V = mkV Essere "essere" "essendo" "stato" "sono" "sei" "e'"
