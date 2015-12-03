@@ -87,7 +87,8 @@ abstract Trans = {
       A, The, VoidD : AbsD;
 
       {- Nouns -}
-      Boy, Dog, Hunger, Name, Map, Picture, Promise, Student, Woman : AbsN_;
+      Boy, Dog, Elephant, Hunger, Name, Map, 
+      Picture, Promise, Student, Woman       : AbsN_;
 
       I, You, He, She, We, Yall, They : AbsProNP;
       Alice, Bob, Eve, Joe : AbsProperN;

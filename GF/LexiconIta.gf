@@ -9,6 +9,7 @@ instance LexiconIta of Lexicon =
 
     boy = mkN_ "ragazzo";
     dog = mkN_ "cane";
+    elephant = mkN_ "elefante";
     hunger = mkN_ True Fem "fame";
     map = mkN_ "mappa";
     name = mkN_ "nome";

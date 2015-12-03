@@ -8,6 +8,7 @@ instance LexiconEng of Lexicon =
 
     boy = mkN_ Masc "boy";
     dog = mkN_ "dog";
+    elephant = mkN_ "elephant";
     hunger = mkN_ True "hunger";
     map  =mkN_ "map";
     name = mkN_ "name";

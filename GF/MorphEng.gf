@@ -1,6 +1,6 @@
 {- Various morphological functions for English -}
 
-resource MorphEng = {
+resource MorphEng = open UtilsEng in {
   oper
     {- INFLECTIONAL FUNCTIONS -}
     append_s : Str -> Str =
@@ -33,12 +33,16 @@ resource MorphEng = {
                 _ => dog + "'s"
               };
 
+    nounInitial : Str -> NounInitial = \dog ->
+      case dog of {
+        ("a" | "e" | "i" | "o" | "u") + _ => Vow;
+        _ => Con};
+      
     {- from ParadigmsEng.gf in the Resource Library -}
     duplFinal : Str -> Str = \w -> case w of {
       _ + ("a" | "e" | "o") + ("a" | "e" | "i" | "o" | "u") + ? => w ; -- waited, needed
       _ + ("a" | "e" | "i" | "o" | "u") + 
         c@("b"|"d"|"g"|"m"|"n"|"p"|"r"|"t") => w + c ; -- omitted, manned
       _ => w
-      } ;
-
+      };
 }

@@ -13,16 +13,16 @@ instance TypesEng of Types = open Prelude, Utils, UtilsEng in {
 
     CP : Type = {s : Number => Person => Gender => Str};
 
-    {- D.s : (abstractOrMass : Bool) => (num : Number) => Str -}
-    D : Type = {s : Bool => Number => Str};
+    {- D.s : (abstractOrMass : Bool) => .. => Str -}
+    D : Type = {s : Bool => Number => NounInitial => Str};
 
-    N_ : Type = {abstractOrMass : Bool; gend : Gender; s : Number => Str};
-    {- N.s : (isPossessive : Bool) => Str -}
-    N : Type = {abstractOrMass : Bool; gend : Gender; num : Number; 
-                person : Person; s : Str};
+    N_ : Type = {abstractOrMass : Bool; gend : Gender; 
+                 nounInitial : NounInitial; s : Number => Str};
+    N : Type = {abstractOrMass : Bool; gend : Gender; nounInitial : NounInitial;
+                num : Number; person : Person; s : Str};
     N' : Type = N;
     {- null - whether NP is the "null WH" - e.g. the boy that [__] slept
-     - wh - whether NP is the "WH" features - e.g. the boy [whose dog] we see -}
+     - wh - whether NP is a "WH" phrase - e.g. the boy [whose dog] we see -}
     NP : Type = {gend : Gender; null : Bool; num : Number; person : Person;
                  s : Case => Number => Person => Gender => Str; wh : Bool};
 

@@ -93,6 +93,7 @@ incomplete concrete TransI of Trans =
   
     Boy = boy;
     Dog = dog;
+    Elephant = elephant;
     Hunger = hunger;
     Name = name;
     Map = map;

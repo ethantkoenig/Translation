@@ -38,13 +38,11 @@ instance SyntaxEng of Syntax =
       };
       
     {- Feature Functions -}
-    singular : N_ -> N = \dog -> 
-      {abstractOrMass = dog.abstractOrMass; gend = dog.gend; num = Sg;
-       person = Third; s = dog.s ! Sg};
+    singular : N_ -> N = \dog -> dog **
+      {num = Sg; person = Third; s = dog.s ! Sg};
 
-    plural : N_ -> N = \dog -> 
-      {abstractOrMass = dog.abstractOrMass; gend = dog.gend; num = Pl;
-       person = Third; s = dog.s ! Pl};
+    plural : N_ -> N = \dog -> dog **
+      {num = Pl; person = Third; s = dog.s ! Pl};
 
     declarative : S_ -> S = \s ->
       let subj : NP = s.subj in
@@ -93,11 +91,11 @@ instance SyntaxEng of Syntax =
       {s = n'.s ++ pp.s ! n'.num ! n'.person ! n'.gend};    
 
     mkNP : D -> N' -> NP = \the, dog -> 
-      {gend = dog.gend; null = False; num = dog.num; person = Third; 
-       reflexive = False; wh = False;
-       s = table {
-             Pos => \\_, _, _ => the.s ! dog.abstractOrMass ! dog.num ++ dog.s ++ "'s";
-             _ => \\_, _, _ => the.s ! dog.abstractOrMass ! dog.num ++ dog.s}};
+      let theStr : Str = the.s ! dog.abstractOrMass ! dog.num ! dog.nounInitial
+      in {gend = dog.gend; null = False; num = dog.num; person = Third; 
+          reflexive = False; wh = False;
+          s = table {Pos => \\_, _, _ => theStr ++ dog.s ++ "'s";
+                     _ => \\_, _, _ => theStr ++ dog.s}};
 
     possessive : NP -> N' -> NP = \np, n' -> 
       {gend = n'.gend; null = False; num = n'.num; person = Third;

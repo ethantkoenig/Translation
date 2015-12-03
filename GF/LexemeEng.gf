@@ -1,4 +1,5 @@
-instance LexemeEng of Lexeme = open MorphEng, Prelude, TypesEng, Utils, UtilsEng in {
+instance LexemeEng of Lexeme = 
+    open MorphEng, Prelude, TypesEng, Utils, UtilsEng in {
   oper
     {- LEXICAL FUNCTIONS -}
     {- Adjectives -}
@@ -6,10 +7,11 @@ instance LexemeEng of Lexeme = open MorphEng, Prelude, TypesEng, Utils, UtilsEng
       \happy -> {s = happy};
 
     {- Nouns -}
-    _constructN_ : (abstractOrMass : Bool) -> (gend : Gender) -> (dog, dogs : Str)
-                   -> N_ = \abstractOrMass, gend, dog, dogs -> 
-      {abstractOrMass = abstractOrMass; gend = gend;
-       s = table {Sg => dog; Pl => dogs}};
+    _constructN_ : (abstractOrMass : Bool) -> (gend : Gender)
+                     -> (dog, dogs : Str) -> N_ = 
+                   \abstractOrMass, gend, dog, dogs -> 
+      {abstractOrMass = abstractOrMass; gend = gend; 
+       nounInitial = nounInitial dog; s = table {Sg => dog; Pl => dogs}};
 
     mkN_ = overload {
       {- nouns with regular plural forms, not abstract or mass, neuter -}
@@ -94,13 +96,17 @@ instance LexemeEng of Lexeme = open MorphEng, Prelude, TypesEng, Utils, UtilsEng
 
     {- LEXEMES -}
     {- Determiners -}
-    indefinite : D = {s = \\_ => table {Sg => "a"; Pl => nonword}}; -- TODO a vs. an
-    definite : D = {s = \\_, _ => "the"};
-    voidD : D = {s = table {False => table {Sg => nonword; Pl => ""};
-                            True => \\_ => ""}};
+    indefinite : D = {s = \\_ => table {Sg => table { Con => "a"; Vow => "an"};
+                                        Pl => \\_ => nonword}};
+
+    definite : D = {s = \\_, _, _ => "the"};
+
+    voidD : D = {s = table {False => table {Sg => \\_ => nonword; 
+                                            Pl => \\_ => ""};
+                            True => \\_, _ => ""}};
 
 
-     {- fields other than s do not matter -}
+    {- fields other than s do not matter -}
     reflexive : Reflexive = 
       {null = False; gend = Masc; num = Sg; person = Third; wh = False;
        s = table {
@@ -115,6 +121,7 @@ instance LexemeEng of Lexeme = open MorphEng, Prelude, TypesEng, Utils, UtilsEng
                  Second => \\_ => "yourselves";
                  Third => \\_ => "themselves"}};
             Nom | Pos => \\_, _, _ => nonword}};
+
 
     nullNP : NP = {gend = defaultGender; null = True; num = defaultNumber;
                    person = defaultPerson; wh = True;
