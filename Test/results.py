@@ -32,15 +32,17 @@ def persistResults(translate, instances, outputFilename):
 #   line : str
 def parseLine(line):
   try:
-    line = line.strip()
-    [src, refs, cands] = line.split(" | ")
-    return (src, refs.split(" , "), cands.split(" , "))
+    line = line.replace("\n", "")
+    [src, refsStr, candsStr] = line.split(" | ")
+    refs = [ref for ref in refsStr.split(" , ") if ref != ""]
+    cands = [cand for cand in candsStr.split(" , ") if cand != ""]
+    return (src, refs, cands)
   except:
-    raise ValueError ("line %s is mal-formatted" % line)    
+    raise ValueError ("mal-formatted line:%s" % line)    
 
 
-# Return : (str, str list, str list) - list of (source, references, candidates)
-#                                      stored in a persisted results file
+# Return : (str, str list, str list) list - (source, references, candidates)
+#                                           stored in a persisted results file
 #
 # Arguments:
 #   filename : str

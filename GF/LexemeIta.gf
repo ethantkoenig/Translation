@@ -98,7 +98,7 @@ instance LexemeIta of Lexeme =
     indefinite : D = 
       {s = \\_ => table {
             Sg => table {
-                    Masc => table {Con => "un"; Vow => "un'"; Complex => "uno"};
+                    Masc => table {Con | Vow => "un"; Complex => "uno"};
                     Fem => table {Con | Complex => "una"; Vow => "un'"}};
             Pl => \\_, _ => nonword}};
 
@@ -136,7 +136,7 @@ instance LexemeIta of Lexeme =
     {- setting pronoun = True makes nullNP act correctly in possessives -}
     nullNP : NP = {gend = defaultGender; null = True; num = defaultNumber; 
                    person = defaultPerson; possessive = \\_, _ => "cui";
-                   pronoun = True; reflexive = True; s = \\_, _, _ => "che";
+                   pronoun = True; reflexive = False; s = \\_, _, _ => "che";
                    wh = True};
 
     {- Verbs -}

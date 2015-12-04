@@ -20,6 +20,20 @@ def get_key():
   fl.close()
   return key
 
+# Removes &..; sequences from translation. These sometimes appear when Google
+# Translate doesn't know how to handle quotes.
+#
+# translation : str
+def sanitize(translation):
+  ampersandIndex = translation.find("&")
+  if(ampersandIndex == -1):
+    return translation.lower()
+  semicolonIndex = translation.find(";")
+  if(semicolonIndex <= ampersandIndex):
+    raise ValueError ("malformatted translation: %s" % translation)
+  return translation[:ampersandIndex].lower() \
+         + sanitize(translation[semicolonIndex + 1 :])
+
 
 # Returns : str list - list of translations
 # Arguments:
@@ -38,5 +52,5 @@ def translate(fro, to, utterance):
   jsonTranslation = request.read()
   request.close()
   translationStruct = loads(jsonTranslation)
-  return [translation["translatedText"].encode("utf-8")
+  return [sanitize(translation["translatedText"].encode("utf-8"))
           for translation in translationStruct["data"]["translations"]]

@@ -5,7 +5,7 @@ interface Lexicon = open Syntax in {
     boy, dog, elephant, hunger, name, map, 
     picture, promise, student, woman       : N_;
     
-    alice, bob, eve, joe : ProperN;
+    alice, bob, emma, joe : ProperN;
 
     under, withh : P; {- with is a keyword in GF, so use withh instead -}
   

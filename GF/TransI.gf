@@ -104,7 +104,7 @@ incomplete concrete TransI of Trans =
 
     Alice = alice;
     Bob = bob;
-    Eve = eve;
+    Emma = emma;
     Joe = joe;
 
     I = i;

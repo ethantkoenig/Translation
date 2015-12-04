@@ -19,7 +19,7 @@ instance LexiconEng of Lexicon =
 
     alice = mkProperN Fem "Alice";
     bob = mkProperN Masc "Bob";
-    eve = mkProperN Fem "Eve";
+    emma = mkProperN Fem "Emma";
     joe = mkProperN Masc "Joe";
 
     under = mkP "under";

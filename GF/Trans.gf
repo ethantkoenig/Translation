@@ -91,7 +91,7 @@ abstract Trans = {
       Picture, Promise, Student, Woman       : AbsN_;
 
       I, You, He, She, We, Yall, They : AbsProNP;
-      Alice, Bob, Eve, Joe : AbsProperN;
+      Alice, Bob, Emma, Joe : AbsProperN;
 
       Under, With : AbsP;
 

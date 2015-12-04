@@ -20,10 +20,10 @@ instance LexiconIta of Lexicon =
 
     alice = mkProperN Fem "Alice";
     bob = mkProperN Masc "Bob";
-    eve = mkProperN Fem "Eve";
-    {- As much as I would like to write Giuseppe for Joe, I use the English
-     - version to ensure a more fair comparison with other systems which do
-     - not translate names -}
+    emma = mkProperN Fem "Emma";
+    {- As much as I would like to write Giuseppe, I use the English version to
+     - ensure a more fair comparison with other systems which do not translate
+     - names -}
     joe = mkProperN Masc "Joe";
 
     under = mkP "sotto";

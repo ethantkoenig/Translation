@@ -13,24 +13,24 @@ def main():
   semiIE = eC.SemiItaToEng
 
   ## System ##
-  transEI = lambda x : tr.translate("Eng", "Ita", x)
-  persistResults(transEI, nonSemiEI, "Results/System/NonSemiEngToItaResults.txt")
-  persistResults(transEI, semiEI, "Results/System/SemiEngToItaResults.txt")
-  transIE = lambda x : tr.translate("Ita", "Eng", x)
-  persistResults(transIE, nonSemiIE, "Results/System/NonSemiItaToEngResults.txt")
-  persistResults(transIE, semiIE, "Results/System/SemiItaToEngResults.txt")
+  sysEI = lambda x : tr.translate("Eng", "Ita", x)
+  persistResults(sysEI, nonSemiEI, "Results/System/NonSemiEngToIta.txt")
+  persistResults(sysEI, semiEI, "Results/System/SemiEngToIta.txt")
+  sysIE = lambda x : tr.translate("Ita", "Eng", x)
+  persistResults(sysIE, nonSemiIE, "Results/System/NonSemiItaToEng.txt")
+  persistResults(sysIE, semiIE, "Results/System/SemiItaToEng.txt")
+
+  raise Exception # TODO
 
   ## Baseline ##  
-  baseEI = lambda x : [x] # bT.translate("Eng", "Ita", x)
-  persistResults(baseEI, nonSemiEI, "Results/Baseline/NonSemiEngToItaResults.txt")
-  persistResults(baseEI, semiEI, "Results/Baseline/SemiEngToItaResults.txt")
-  baseIE = lambda x : [x] # bT.translate("Ita", "Eng", x)
-  persistResults(baseIE, nonSemiIE, "Results/Baseline/NonSemiItaToEngResults.txt")
-  persistResults(baseIE, semiIE, "Results/Baseline/SemiItaToEngResults.txt")
+  baseEI = lambda x : bT.translate("Eng", "Ita", x)
+  persistResults(baseEI, nonSemiEI, "Results/Baseline/NonSemiEngToIta.txt")
+  persistResults(baseEI, semiEI, "Results/Baseline/SemiEngToIta.txt")
+  baseIE = lambda x : bT.translate("Ita", "Eng", x)
+  persistResults(baseIE, nonSemiIE, "Results/Baseline/NonSemiItaToEng.txt")
+  persistResults(baseIE, semiIE, "Results/Baseline/SemiItaToEng.txt")
+
 
 if(__name__ == "__main__"):
   main()
-  
-  
 
-  

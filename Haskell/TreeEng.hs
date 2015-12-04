@@ -6,6 +6,40 @@ module TreeEng where
 import Trans
 import TransUtils
 
+{- V' OPERATIONS -}
+
+normalizeV' :: GAbsV' -> GAbsV'
+normalizeV' (GAdjoinV'PP v' pp) = 
+  GAdjoinV'PP (normalizeV' v') (normalizePP pp)
+
+-- X takes [picture] -> X does [picture]
+normalizeV' (GMakeV' GArgNP GTake args) =
+  let args' = normalizeArgs args in
+  case n_OfDirObj args' of 
+    Just GPicture -> GMakeV' GArgNP GDo args'
+    _ -> GMakeV' GArgNP GTake args'
+
+-- base case
+normalizeV' (GMakeV' argType verb args) = 
+  GMakeV' argType verb (normalizeArgs args)
+
+
+
+unnormalizeV' :: GAbsV' -> GAbsV'
+unnormalizeV' (GAdjoinV'PP v' pp) = 
+  GAdjoinV'PP (unnormalizeV' v') (unnormalizePP pp)
+
+-- X does [picture] -> X takes picture
+unnormalizeV' (GMakeV' GArgNP GDo args) =
+  let args' = unnormalizeArgs args in
+  case n_OfDirObj args of
+    Just GPicture -> GMakeV' GArgNP GTake args'
+    _ -> GMakeV' GArgNP GDo args'
+
+-- base case
+unnormalizeV' (GMakeV' argType verb args) = 
+  GMakeV' argType verb (unnormalizeArgs args)
+
 
 {- NORMALIZE -}
 normalizeS :: GAbsS -> GAbsS
@@ -25,15 +59,6 @@ normalizeVP_ = transformVP_ normalizeVP__
 
 normalizeVP__ :: GAbsVP__ -> GAbsVP__
 normalizeVP__ = transformVP__ normalizeV'
-
-normalizeV' :: GAbsV' -> GAbsV'
-normalizeV' (GAdjoinV'PP v' pp) = GAdjoinV'PP (normalizeV' v') (normalizePP pp)
-normalizeV' (GMakeV' GArgNP GTake args) =
-  case n_OfDirObj args of 
-    Just GPicture -> (GMakeV' GArgNP GDo (normalizeArgs args))
-    _ -> (GMakeV' GArgNP GTake (normalizeArgs args))
-
-normalizeV' (GMakeV' argType verb args) = GMakeV' argType verb (normalizeArgs args)
 
 normalizeArgs :: GAbsArgStructure -> GAbsArgStructure
 normalizeArgs = transformArgs normalizeNP
@@ -66,15 +91,6 @@ unnormalizeVP_ = transformVP_ unnormalizeVP__
 
 unnormalizeVP__ :: GAbsVP__ -> GAbsVP__
 unnormalizeVP__ = transformVP__ unnormalizeV'
-
-unnormalizeV' :: GAbsV' -> GAbsV'
-unnormalizeV' (GAdjoinV'PP v' pp) = GAdjoinV'PP (unnormalizeV' v') (unnormalizePP pp)
-unnormalizeV' (GMakeV' GArgNP GDo args) =
-  case n_OfDirObj args of
-    Just GPicture -> (GMakeV' GArgNP GTake args)
-    _ -> (GMakeV' GArgNP GDo args)
-
-unnormalizeV' (GMakeV' argType verb args) = GMakeV' argType verb (unnormalizeArgs args)
 
 unnormalizeArgs :: GAbsArgStructure -> GAbsArgStructure
 unnormalizeArgs = transformArgs unnormalizeNP

@@ -51,6 +51,7 @@ def modifiedPrecision(candidate, references, n):
 def bleuSingle(candidates, references, n, best = True):
   minReferenceLength = min(len(ref) for ref in references)
   if (len(candidates) == 0):
+    print candidates, references # TODO temp
     return (MinModifiedPrecision, 0, minReferenceLength)
   if (best):
     # TODO call getGrams(references, n) many times
@@ -63,7 +64,9 @@ def bleuSingle(candidates, references, n, best = True):
     candidate = randomChoice(candidates)
     modPrecision = modifiedPrecision(candidate, references, n)
   if(modPrecision < 1.0):
-    print candidates, references
+    print candidates, references # TODO temporary
+    print "\n"
+
   return (modPrecision, len(candidate), minReferenceLength)
 
 
@@ -88,6 +91,7 @@ def bleu(corpus, n, best = True):
   modPrecision = exp(cumulativeLogModPrecision / len(corpus))
   lengthRatio = float(cumulativeRefLength) / float(cumulativeCandLength)
   brevityPenalty = exp(min(1 - lengthRatio, 0))
+  print "brevity penalty: %s" % brevityPenalty
   return brevityPenalty * modPrecision  
 
 

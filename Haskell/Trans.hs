@@ -95,6 +95,7 @@ data GAbsNP =
 data GAbsN_ =
    GBoy 
  | GDog 
+ | GElephant 
  | GHunger 
  | GMap 
  | GName 
@@ -125,7 +126,7 @@ data GAbsProNP =
 data GAbsProperN =
    GAlice 
  | GBob 
- | GEve 
+ | GEmma 
  | GJoe 
   deriving Show
 
@@ -301,6 +302,7 @@ instance Gf GAbsNP where
 instance Gf GAbsN_ where
   gf GBoy = mkApp (mkCId "Boy") []
   gf GDog = mkApp (mkCId "Dog") []
+  gf GElephant = mkApp (mkCId "Elephant") []
   gf GHunger = mkApp (mkCId "Hunger") []
   gf GMap = mkApp (mkCId "Map") []
   gf GName = mkApp (mkCId "Name") []
@@ -313,6 +315,7 @@ instance Gf GAbsN_ where
     case unApp t of
       Just (i,[]) | i == mkCId "Boy" -> GBoy 
       Just (i,[]) | i == mkCId "Dog" -> GDog 
+      Just (i,[]) | i == mkCId "Elephant" -> GElephant 
       Just (i,[]) | i == mkCId "Hunger" -> GHunger 
       Just (i,[]) | i == mkCId "Map" -> GMap 
       Just (i,[]) | i == mkCId "Name" -> GName 
@@ -371,14 +374,14 @@ instance Gf GAbsProNP where
 instance Gf GAbsProperN where
   gf GAlice = mkApp (mkCId "Alice") []
   gf GBob = mkApp (mkCId "Bob") []
-  gf GEve = mkApp (mkCId "Eve") []
+  gf GEmma = mkApp (mkCId "Emma") []
   gf GJoe = mkApp (mkCId "Joe") []
 
   fg t =
     case unApp t of
       Just (i,[]) | i == mkCId "Alice" -> GAlice 
       Just (i,[]) | i == mkCId "Bob" -> GBob 
-      Just (i,[]) | i == mkCId "Eve" -> GEve 
+      Just (i,[]) | i == mkCId "Emma" -> GEmma 
       Just (i,[]) | i == mkCId "Joe" -> GJoe 
 
 
