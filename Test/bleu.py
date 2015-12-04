@@ -80,8 +80,10 @@ def bleu(corpus, n, best = True):
   cumulativeRefLength = 0
   cumulativeLogModPrecision = 0.0
   for (references, candidates) in corpus:
-    candTuples = [tuple(cand.split()) for cand in candidates]
-    refTuples = [tuple(ref.split()) for ref in references]
+    candTuples = [tuple(x.lower() for x in cand.split())
+                  for cand in candidates]
+    refTuples = [tuple(x.lower() for x in ref.split())
+                 for ref in references]
     (modPrecision, candLen, refLen) = bleuSingle(candTuples, refTuples, n, best)    
     cumulativeLogModPrecision += log(modPrecision)
     cumulativeCandLength += candLen

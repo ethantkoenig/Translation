@@ -20,8 +20,6 @@ def main():
   persistResults(sysIE, nonSemiIE, "Results/System/NonSemiItaToEng.txt")
   persistResults(sysIE, semiIE, "Results/System/SemiItaToEng.txt")
 
-  raise Exception # TODO
-
   ## Baseline ##  
   baseEI = lambda x : bT.translate("Eng", "Ita", x)
   persistResults(baseEI, nonSemiEI, "Results/Baseline/NonSemiEngToIta.txt")

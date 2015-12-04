@@ -27,11 +27,11 @@ def get_key():
 def sanitize(translation):
   ampersandIndex = translation.find("&")
   if(ampersandIndex == -1):
-    return translation.lower()
+    return translation
   semicolonIndex = translation.find(";")
   if(semicolonIndex <= ampersandIndex):
     raise ValueError ("malformatted translation: %s" % translation)
-  return translation[:ampersandIndex].lower() \
+  return translation[:ampersandIndex] \
          + sanitize(translation[semicolonIndex + 1 :])
 
 
