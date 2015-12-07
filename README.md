@@ -9,7 +9,7 @@ To compile the system, simply run
 
     $ make
 
-from the base directory. Required dependencies: gf, ghc
+from the base directory. Required dependencies: `gf`, `ghc`
 
 ## Running
 
