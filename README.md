@@ -30,3 +30,9 @@ from any directory.
 Note that `source translateAliases.sh` must be run before `eng2ita` or `ita2eng`
 can be used for each new terminal session. This is in contrast with `make`,
 which only needs to be run once.
+
+### Format
+
+The input to the system should exclude punctuation and sentence-initial 
+capitals, with exception of words that would be capitalized anyways, such as
+English "I". English contractions, such as "won't", should be expanded.
