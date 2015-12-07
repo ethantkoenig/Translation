@@ -7,7 +7,7 @@ and Italian using an interlingua-based approach.
 
 To compile the system, simply run
 
-  $ make
+    $ make
 
 from the base directory. Required dependencies: gf, ghc
 
@@ -15,15 +15,15 @@ from the base directory. Required dependencies: gf, ghc
 
 To run the system, first run
 
-  $ source translateAliases.sh
+    $ source translateAliases.sh
 
 from the base directory. Then to translate from English to Italian, run
 
-  $ eng2ita "your sentence in quotes"
+    $ eng2ita "your sentence in quotes"
 
 from any directory. Similarly, to translate from Italian to English, run
 
-  $ ita2eng "your sentence in quotes"
+    $ ita2eng "your sentence in quotes"
 
 from any directory.
 

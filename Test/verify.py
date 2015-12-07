@@ -15,8 +15,8 @@ def list_subset(l1, l2):
   return set(l1) <= set(l2)
 
 
-def testStrong():
-  for (eng, ita) in StrongTestCases:
+def verifyStrong():
+  for (eng, ita) in StrongVerificationCases:
     for e in eng:
       translation = translate("Eng", "Ita", e)
       if (not list_equals(translation, ita)):
@@ -34,8 +34,8 @@ def testStrong():
         raise AssertionError  ("Failed test case")
 
 
-def testWeak():
-  for (eng, ita) in StrongTestCases:
+def verifyWeak():
+  for (eng, ita) in StrongVerificationCases:
     for e in eng:
       translation = translate("Eng", "Ita", e)
       if (not list_subset(translation, ita)):
@@ -52,12 +52,10 @@ def testWeak():
         print "Actual: %s" % translation 
         raise AssertionError  ("Failed test case")
 
-def test():
-  testStrong()
-  testWeak()
+def verify():
+  verifyStrong()
+  verifyWeak()
 
 
 if (__name__ == "__main__"):
-  test()
-
-
+  verify()
