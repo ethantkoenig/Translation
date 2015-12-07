@@ -6,15 +6,15 @@ from results import loadResults
 from sys import argv
 
 
-#SysSemiFile = "Results/System/SemiEngToIta.txt"
-#SysNonSemiFile = "Results/System/NonSemiEngToIta.txt"
-#BaseSemiFile = "Results/Baseline/SemiEngToIta.txt"
-#BaseNonSemiFile = "Results/Baseline/NonSemiEngToIta.txt"
+SysSemiFile = "Results/System/SemiEngToIta.txt"
+SysNonSemiFile = "Results/System/NonSemiEngToIta.txt"
+BaseSemiFile = "Results/Baseline/SemiEngToIta.txt"
+BaseNonSemiFile = "Results/Baseline/NonSemiEngToIta.txt"
 
-SysSemiFile = "Results/System/SemiItaToEng.txt"
-SysNonSemiFile = "Results/System/NonSemiItaToEng.txt"
-BaseSemiFile = "Results/Baseline/SemiItaToEng.txt"
-BaseNonSemiFile = "Results/Baseline/NonSemiItaToEng.txt"
+#SysSemiFile = "Results/System/SemiItaToEng.txt"
+#SysNonSemiFile = "Results/System/NonSemiItaToEng.txt"
+#BaseSemiFile = "Results/Baseline/SemiItaToEng.txt"
+#BaseNonSemiFile = "Results/Baseline/NonSemiItaToEng.txt"
 
 # Outputs semi, nonsemi, overall scores for the system and baseline in LaTeX 
 # syntax
