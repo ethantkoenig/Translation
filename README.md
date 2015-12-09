@@ -11,6 +11,12 @@ To compile the system, simply run
 
 from the base directory. Required dependencies: `gf`, `ghc`
 
+To undo compilation, run
+
+    $ make clean
+
+from the base directory.
+
 ## Running
 
 To run the system, first run
@@ -35,4 +41,5 @@ which only needs to be run once.
 
 The input to the system should exclude punctuation and sentence-initial 
 capitals, with exception of words that would be capitalized anyways, such as
-English "I". English contractions, such as "won't", should be expanded.
+English "I". English contractions, such as "won't", should be expanded. Italian
+nominative pronons should always be omitted.
