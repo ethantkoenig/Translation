@@ -5,8 +5,8 @@ import System.Environment (getArgs)
 
 import LanguageNames
 import Trans
-import qualified TextEng (toInput, toOutput)
-import qualified TextIta (toInput, toOutput)
+import qualified TextEng (tokenize, untokenize)
+import qualified TextIta (tokenize, untokenize)
 import qualified TreeEng (normalizeS, unnormalizeS)
 import qualified TreeIta (normalizeS, unnormalizeS)
 
@@ -19,6 +19,9 @@ main = do
   interact (translate grammar from to)
 
 
+{- (translate grammar sourceLang targetLang source) returns the translation of
+ - source from sourceLang to targetLang. Returns "NO PARSE\n" if source not
+ - parsed. Raises error if sourceLang or targetLang not recognized -}
 translate :: PGF -> String -> String -> String -> String
 translate grammar from to utterance =
   let langs = languages grammar in
@@ -30,18 +33,18 @@ translate grammar from to utterance =
                  Just l -> l
                  Nothing -> error (to ++ " is not a valid language")
   in
-  let (toInput, normalize) = case from of
-                    "Eng" -> (TextEng.toInput, TreeEng.normalizeS)
-                    "Ita" -> (TextIta.toInput, TreeIta.normalizeS)
+  let (tokenize, normalize) = case from of
+                    "Eng" -> (TextEng.tokenize, TreeEng.normalizeS)
+                    "Ita" -> (TextIta.tokenize, TreeIta.normalizeS)
                     _ -> error (from ++ " is not a valid langauge")
   in
-  let (toOutput, unnormalize) = case to of
-                      "Eng" -> (TextEng.toOutput, TreeEng.unnormalizeS)
-                      "Ita" -> (TextIta.toOutput, TreeIta.unnormalizeS)
+  let (untokenize, unnormalize) = case to of
+                      "Eng" -> (TextEng.untokenize, TreeEng.unnormalizeS)
+                      "Ita" -> (TextIta.untokenize, TreeIta.unnormalizeS)
                       _ -> error (to ++ " is not a valid language")
   in
-  case parse grammar fromLang (startCat grammar) $ toInput utterance of
+  case parse grammar fromLang (startCat grammar) $ tokenize utterance of
     [] -> "NO PARSE\n"
-    trees -> unlines $ map (toOutput . linearize grammar toLang 
+    trees -> unlines $ map (untokenize . linearize grammar toLang 
                               . gf . unnormalize . normalize . fg) trees
 

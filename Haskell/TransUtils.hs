@@ -3,7 +3,10 @@ module TransUtils where
 import Prelude
 import Trans
 
-{- transforms -}
+{- This module contains functionality for traversing, transforming, and 
+ - extracting abstract syntax trees -}
+
+{- transforms, convenience functions for abstract syntax tree traversal -}
 
 transformS :: (GAbsS_ -> GAbsS_) -> GAbsS -> GAbsS
 transformS f (GDeclarative s_) = GDeclarative (f s_)

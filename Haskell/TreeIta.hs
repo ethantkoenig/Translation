@@ -1,7 +1,5 @@
 module TreeIta where
 
--- import PGF hiding (Tree)
--- import qualified PGF
 
 import Trans
 import TransUtils

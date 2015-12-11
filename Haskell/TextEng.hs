@@ -11,28 +11,31 @@ possessiveRoot s =
   _ -> Nothing
 
 
-
-toInputAux :: [String] -> [String]
-toInputAux (x:xs) =
+{- tokenizes a list of words -}
+tokenizeAux :: [String] -> [String]
+tokenizeAux (x:xs) =
   case possessiveRoot x of
-    Just root -> root:"\'s":(toInputAux xs)
-    Nothing -> x:(toInputAux xs)
+    Just root -> root:"\'s":(tokenizeAux xs)
+    Nothing -> x:(tokenizeAux xs)
 
-toInputAux x = x -- base case
-
-
-toInput :: String -> String
-toInput = unwords . toInputAux . words
+tokenizeAux x = x -- base case
 
 
-toOutputAux :: [String] -> [String]
-toOutputAux (root:"\'s":xs)
-  | last root == 's' = (root ++ "\'"):(toOutputAux xs)
-  | otherwise = (root ++ "\'s"):(toOutputAux xs)
-
-toOutputAux (x:xs) = x:(toOutputAux xs)
-toOutputAux x = x
+{- tokenizes a string from input -}
+tokenize :: String -> String
+tokenize = unwords . tokenizeAux . words
 
 
-toOutput :: String -> String
-toOutput = unwords . toOutputAux . words
+{- untokenizes a list of words -}
+untokenizeAux :: [String] -> [String]
+untokenizeAux (root:"\'s":xs)
+  | last root == 's' = (root ++ "\'"):(untokenizeAux xs)
+  | otherwise = (root ++ "\'s"):(untokenizeAux xs)
+
+untokenizeAux (x:xs) = x:(untokenizeAux xs)
+untokenizeAux x = x
+
+
+{- untokenizes a string for output -}
+untokenize :: String -> String
+untokenize = unwords . untokenizeAux . words
