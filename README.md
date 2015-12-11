@@ -29,7 +29,7 @@ from the base directory. Then to translate from English to Italian, run
 
 from any directory. Similarly, to translate from Italian to English, run
 
-    $ ita2eng "your sentence in quotes"
+    $ ita2eng "la tua frase tra virgolette"
 
 from any directory.
 
