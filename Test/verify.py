@@ -1,5 +1,8 @@
+# Functionality for verifying the system
+
 from verificationCases import StrongVerificationCases, WeakVerificationCases
 from translate import translate
+
 
 # Returns : bool - whether l1 and l2 have the same contents, ignoring
 #                  multiplicity and order
@@ -7,6 +10,7 @@ from translate import translate
 #   l1, l2 : list
 def list_equals(l1, l2):
   return set(l1) == set(l2)
+
 
 # Returns : bool - whether l1 is a subset of l2, ignoring multiplicity and order
 # Arguments:

@@ -1,3 +1,4 @@
+# Functionality for evaluating the system
 
 from numpy import mean
 
@@ -16,10 +17,12 @@ BaseNonSemiFile = "Results/Baseline/NonSemiEngToIta.txt"
 #BaseSemiFile = "Results/Baseline/SemiItaToEng.txt"
 #BaseNonSemiFile = "Results/Baseline/NonSemiItaToEng.txt"
 
-# Outputs semi, nonsemi, overall scores for the system and baseline in LaTeX 
-# syntax
+
+# Outputs semi, nonsemi, overall scores (in that order) for the system and
+# baseline in LaTeX syntax to the given output file
 #
-# outputFilename : str
+# Arguments:
+#   outputFilename : str
 def main(outputFilename):
   sysSemis = loadResults(SysSemiFile)
   sysNonSemis = loadResults(SysNonSemiFile)
@@ -37,8 +40,9 @@ def main(outputFilename):
     for n in [1, 2, 3]:
       floatLen = 6
       sysBest = bleu(sys, n, True)
-      print sysBest
       baseBest = bleu(base, n, True)
+      # since the random results vary from one call to another, we average over
+      # many calls
       sysRand = mean([bleu(sys, n, False) for _ in xrange(100)])
       baseRand = mean([bleu(base, n, False) for _ in xrange(100)])
       output += "%d & %s & %s & %s & %s\n" \
@@ -53,7 +57,7 @@ def main(outputFilename):
 
 if (__name__ == "__main__"):
   if(len(argv) <= 1):
-    print "Need to pass an output file"
+    print "Need to pass an output file as an argument"
   else:
     main(argv[1])
   

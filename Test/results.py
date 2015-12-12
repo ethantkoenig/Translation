@@ -1,5 +1,5 @@
 
-# Functionality for writing/reading translation result to/from files.
+# Functionality for writing/reading translation results to/from files.
 #
 # I choose to persist the results of translation (both those of my system and 
 # those of the Google Translate baseline) for two reasons:
