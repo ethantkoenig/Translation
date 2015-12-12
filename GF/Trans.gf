@@ -8,6 +8,8 @@ abstract Trans = {
     AbsArgStructure AbsArgType;
 
     {- GRAMMATICAL CATEGORIES -}
+    AbsAdj;
+
     AbsCP;
 
     AbsD;
@@ -18,7 +20,7 @@ abstract Trans = {
     AbsProperN;
     AbsN';
     AbsN;
-      AbsN_; {- Number -}
+      AbsN_; {- missing Number -}
 
     AbsPP;
     AbsP;
@@ -27,13 +29,10 @@ abstract Trans = {
     AbsS;
 
     AbsVP; 
-      AbsVP_; {- Polarity -}
-      AbsVP__; {- Tense -}
+      AbsVP_; {- missing Polarity -}
+      AbsVP__; {- missing Polarity, Tense -}
     AbsV';
     AbsV AbsArgType;
-
-    -- AbsAdjP;
-    AbsAdj;
 
   fun
     {- GRAMMATICAL RULES -}
@@ -51,11 +50,11 @@ abstract Trans = {
 
       MakePP : AbsP -> AbsNP -> AbsPP;
 
+      MakeS_ : AbsVP -> AbsS_;
+
       MakeVP__ : AbsV' -> AbsVP__;
       MakeV' : (a : AbsArgType) -> AbsV a -> AbsArgStructure a -> AbsV';
       AdjoinV'PP : AbsV' -> AbsPP -> AbsV';
-
-      MakeS_ : AbsVP -> AbsS_;
 
     {- ARGUMENT TYPES -}
       ArgVoid, ArgNP, ArgAdj, ArgNPNP : AbsArgType;
@@ -90,9 +89,13 @@ abstract Trans = {
       Boy, Dog, Elephant, Hunger, Map, Name,
       Picture, Promise, Student, Woman       : AbsN_;
 
+      {- Pronouns -}
       I, You, He, She, We, Yall, They : AbsProNP;
+
+      {- Proper Names -}
       Alice, Bob, Emma, Joe : AbsProperN;
 
+      {- Prepositions -}
       Under, With : AbsP;
 
       {- Verbs -}

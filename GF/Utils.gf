@@ -1,3 +1,5 @@
+{- Various utilities for all languages -}
+
 resource Utils = open Prelude in {
   param
     Number = Sg | Pl;

@@ -40,4 +40,4 @@ which only needs to be run once.
 ## Documentation
 
 Documentation of the system, including what linguistic constructions the system
-does and does not support, can be found in the Documentation/ directory.
+does and does not support, can be found in the `Documentation/` directory.
