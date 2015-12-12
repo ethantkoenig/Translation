@@ -1,7 +1,7 @@
 # Documentation For Developers
 
-For a broad, high-level overview of the system, refer to **report.pdf** in the
-base directory.
+For a broad, high-level overview of the system, refer to the **Approaches** and
+**Progression** seciotn of **report.pdf** in the base directory.
 
 The source code is divided into three, largely independent directories:
 
